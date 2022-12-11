@@ -1,0 +1,15 @@
+---
+import "../../public/css/styles.css";
+import Layout from "./Layout.astro";
+
+const { frontmatter } = Astro.props;
+const { title, description, permalink } = frontmatter;
+---
+
+<Layout title={title} description={description} permalink={permalink}>
+  <div class="article">
+    <h1>{frontmatter.title}</h1>
+    <p class="date">{frontmatter.publishDate}</p>
+    <slot />
+  </div>
+</Layout>

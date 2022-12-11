@@ -1,0 +1,221 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const stuff = [
+  {
+    year: 2018,
+    subject: "Math",
+    title: 'Second prize at "Myller"',
+    source:
+      "http://national.is.edu.ro/almyller/myllermic/0doc/2018/rezFINmyller2018.pdf",
+  },
+  {
+    year: 2018,
+    subject: "Math",
+    title: 'Honourable Mention at "Mate3" in Suceava ',
+    source:
+      "http://www.colegiulnationaliasi.ro/index.php?option=com_content&view=article&id=909:mate-bucuresti-vatra-dornei&catid=52:evenimente&Itemid=111",
+  },
+  {
+    year: 2018,
+    subject: "Math",
+    title: "Admitted at Center of Excelence in Mathematics 2018-2019",
+    source: "http://national.is.edu.ro/Evenimente/2018%202019/GrupeCex5-7.pdf",
+  },
+
+  {
+    year: 2019,
+    subject: "Math",
+    title: 'Second place at "Micii Matematicieni" in Harlau',
+    source:
+      "https://www.colegiulharlau.info/MM%2031032019/Rezultate%20FINALE%20Concurs%20Micii%20Matematicieni_30.03.2019.pdf",
+  },
+  {
+    year: 2019,
+    subject: "Math",
+    title: "391st place in Romania in the Olympic's national ranking",
+    source:
+      "http://www.colegiulnationaliasi.ro/Evenimente/2018%202019/OJM/ONM2019-REZULTATE_DE_AFISAT-V.pdf",
+  },
+  {
+    year: 2019,
+    subject: "Computer Science",
+    title: "Admitted at Center of Excelence in Programming 2019-2020",
+    source: "https://profs.info.uaic.ro/~infogim/2019/index.html",
+  },
+  {
+    year: 2019,
+    subject: "Computer Science",
+    title: "4th place at Infogim 1",
+    source:
+      "https://profs.info.uaic.ro/~infogim/2019/concursuri/1/6/rez_6.html",
+  },
+
+  {
+    year: 2020,
+    subject: "Physics",
+    title: "Honourable Mention at the Olympiad",
+    source:
+      "https://ea617988-0a8a-4d55-81ea-d7a0326e49b7.filesusr.com/ugd/22dcc7_7d7c8424828a4793a37a7cec2c001cf1.pdf",
+  },
+  {
+    year: 2020,
+    subject: "Computer Science",
+    title: "105th place in Romania in the Olympic's national ranking",
+    source:
+      "http://olimpiada.info/oji2020/index.php?cid=rezultate&w=gim&judet=&clasa=6",
+  },
+  {
+    year: 2020,
+    subject: "Computer Science",
+    title: 'Attented at "Urmasii lui Moisil"',
+    source:
+      "http://www.liis.ro/Documents/download/Rezultate_urmasi_mici_2020.zip",
+  },
+  {
+    year: 2020,
+    subject: "Computer Science",
+    title: "12th place at Infogim 2",
+    source:
+      "https://profs.info.uaic.ro/~infogim/2019/concursuri/2/6/rez_6.html",
+  },
+  {
+    year: 2020,
+    subject: "Computer Science",
+    title: '12th place at the finals of "Infogim" (second image, right)',
+    source: "https://profs.info.uaic.ro/~infogim/2020/index.html",
+  },
+  {
+    year: 2020,
+    subject: "Computer Science",
+    title:
+      "Admitted at Center of Excelence in Programming 2020-2021 (scroll down)",
+    source: "https://profs.info.uaic.ro/~infogim/2020/index.html",
+  },
+  {
+    year: 2020,
+    subject: "Computer Science",
+    title: "27th place at Infogim 1",
+    source:
+      "https://profs.info.uaic.ro/~infogim/2020/concursuri/1/78/rez78.html",
+  },
+
+  {
+    year: 2021,
+    subject: "Physics",
+    title:
+      "163rd place in Romania in the Olympic's national ranking, my id is 23041",
+    source:
+      "https://www.scribd.com/document/507343177/rezultate-judet#download&from_embed",
+  },
+  {
+    year: 2021,
+    subject: "Computer Science",
+    title:
+      "86th place in Romania's Olympic national ranking, my id is IS_7_861 (Clasament național, baraj juniori)",
+    source: "http://srsi.ro/rezultate",
+  },
+
+  {
+    year: 2022,
+    subject: "Computer Science",
+    title: "Honourable Mention at Peppers++",
+    source:
+      "https://drive.google.com/drive/folders/1n18z3R83RwyCBgYSH8nS0iqoB1soI1IB",
+  },
+  {
+    year: 2022,
+    subject: "Math",
+    title: "Scored the maximum grade, 10.00, at the national exam in Romania",
+    source: "https://evaluare.edu.ro",
+  },
+];
+
+let years = [""],
+  list = "";
+
+for (let i = 0; i < stuff.length; i++) {
+  if (years[stuff[i].year] == undefined) years[stuff[i].year] = "";
+  years[stuff[i].year] += `
+   <li>
+      <div class="ach">
+        <highlight>${stuff[i].subject}</highlight>
+        <p>: ${stuff[i].title} 
+          <a href="${stuff[i].source}">Source</a>
+        </p>
+      </div>
+  </li>`;
+}
+
+for (let i = 2022; i >= 2018; i--) {
+  list += `<li>
+        ${i}:
+        <ul>${years[i]}</ul>
+      </li>`;
+}
+
+list += "";
+---
+
+<Layout
+  title="Stefan Asandei"
+  description="This is my personal website! I'm a hobbyst programmer, you can check out my blog!"
+  permalink="stefan-asandei.cf"
+>
+  <section class="intro">
+    <pre
+      id="ascii-text-small">
+ ____  _        __              
+/ ___|| |_ ___ / _| __ _ _ __  
+\___ \| __/ _ \ |_ / _` | '_ \ 
+ ___) | ||  __/  _| (_| | | | | 
+|____/ \__\___|_|  \__,_|_| |_|
+    </pre>
+    <pre
+      id="ascii-text-big">
+ ____  _        __                  _                        _      _
+/ ___|| |_ ___ / _| __ _ _ __      / \   ___  __ _ _ __   __| | ___(_)
+\___ \| __/ _ \ |_ / _` | '_ \    / _ \ / __|/ _` | '_ \ / _` |/ _ \ |
+ ___) | ||  __/  _| (_| | | | |  / ___ \\__ \ (_| | | | | (_| |  __/ |
+|____/ \__\___|_|  \__,_|_| |_| /_/   \_\___/\__,_|_| |_|\__,_|\___|_|
+    </pre>
+    <h1>Hello 👋</h1>
+    <p>
+      I'm a student 🏫 from Europe. My hobby is coding 👨‍💻, I like to challange
+      myself building projects 👾. I'm most intrested in web technologies 🌎 and
+      desktop applications, like game 🎮 engines. I also do competitive
+      programming 💻, where I'm pretty high scored in my country 🏆.
+    </p>
+  </section>
+  <section class="blog-intro">
+    <h1>Blog</h1>
+    <p>
+      I write articles about programming, for fun, you can check them out <a
+        href="/blog">on my blog</a
+      >!
+    </p>
+  </section>
+  <section class="flexing">
+    <h1>School Competitions</h1>
+    <p>
+      I went to a lot of competitions in programming, math and physics. Here are
+      my results over the years.
+    </p>
+    <ul set:html={list} />
+  </section>
+  <section class="contact">
+    <h1>Contact</h1>
+    <p>Here are some ways to contact me:</p>
+    <ul>
+      <li>Email: asandei.stefanel@gmail.com</li>
+      <li>
+        Twitter: <a href="https://twitter.com/stefan_asandei">@stefan_asandei</a
+        >
+      </li>
+      <li>Discord: nikolatesla13#9474</li>
+      <li>
+        GitHub: <a href="https://github.com/NikolaTesla13">Stefan Asandei</a>
+      </li>
+    </ul>
+  </section>
+</Layout>

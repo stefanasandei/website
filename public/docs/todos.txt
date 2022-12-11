@@ -1,0 +1,13 @@
+C++ ranges and views
+Modern C++ features for competitive programming
+C++ templates 
+Multithreading in C++
+Memory management techniques in C++
+
+Who decides the new features in C++?
+Why constants are variable?
+What is C++ used for in the industry?
+
+Reverse engineering on ARM (also teach C++ using assembly)
+Writing a path tracer
+Ray tracing vs Path tracing vs Rasterization 
