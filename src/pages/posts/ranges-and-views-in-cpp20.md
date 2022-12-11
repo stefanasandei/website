@@ -2,7 +2,7 @@
 layout: ../../layouts/PostLayout.astro
 title: "Ranges and views in C++20"
 publishDate: 10 December 2022
-description: "C++20 introduces ranges and views"
+description: "C++20 introduced ranges, a major new feature regarding vector processing."
 author: "Stefan Asandei"
 tags: []
 wip: false
