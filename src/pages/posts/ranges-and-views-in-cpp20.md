@@ -49,14 +49,14 @@ std::ranges::sort(std::views::reverse(v));
 std::ranges::sort(std::views::drop(std::views::reverse(v), 5));
 ```
 
-Now as you saw what's the basic gist of ranges, and how are they implemented? Like always, C++ likes to mess with operator overloading (like they did with `cout <<`), and because of this, the committee decided it's a good idea for ranges to overload the `|` operator (logic or). Each function returns an intermediate range, thus making function chaining possible. Here is an example of implementing this kind of syntactic sugar for a simple struct:
+Now as you saw what's the basic gist of ranges, and how are they implemented? Like always, C++ likes to mess with operator overloading (like they did with `cout <<`), and because of this, the committee decided it's a good idea for ranges to overload the `|` operator (bitwise or). Each function returns an intermediate range, thus making function chaining possible. Here is an example of implementing this kind of syntactic sugar for a simple struct:
 
 ```cpp
 // this is just to demonstrate how operator overloading shouldn't be used
 struct test {
 	int value;
 
-        // overload the logic or operator, by default let's multiply with an int
+        // overload the bitwise or operator, by default let's multiply with an int
 	test operator|(const int x) const {
 		return { value * x }; // return a new struct, to allow method chaining
 	}
@@ -257,7 +257,7 @@ namespace details
         }
     };
 
-    // overload the logic or `|` operator
+    // overload the bitwise or `|` operator
     template <std::ranges::viewable_range R>
     constexpr auto operator | (R&& r, custom_take_range_adaptor_closure const& a)
     {
@@ -288,7 +288,7 @@ int main()
 }
 ```
 
-I know the code is quite lengthy, but I included some comments to hopefully make it clearer. The best way, in my opinion, to understand it is to copy-paste it into a C++ IDE (such as Visual Studio) and start experimenting. See what classes we extended and what the stack call trace looks like (in what order are the functions called, starting from the logic or operator down to the `end()` getter of the `custom_take_view` class).
+I know the code is quite lengthy, but I included some comments to hopefully make it clearer. The best way, in my opinion, to understand it is to copy-paste it into a C++ IDE (such as Visual Studio) and start experimenting. See what classes we extended and what the stack call trace looks like (in what order are the functions called, starting from the bitwise or operator down to the `end()` getter of the `custom_take_view` class).
 
 ## Conclusion
 
