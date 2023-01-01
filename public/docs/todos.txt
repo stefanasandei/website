@@ -1,7 +1,7 @@
-C++ ranges and views
+✅ C++ ranges and views
 Modern C++ features for competitive programming
-C++ templates 
-Multithreading in C++
+✅ C++ templates 
+✅ Multithreading in C++
 Memory management techniques in C++
 
 Who decides the new features in C++?
