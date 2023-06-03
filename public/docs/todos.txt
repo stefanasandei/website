@@ -11,3 +11,9 @@ What is C++ used for in the industry?
 Reverse engineering on ARM (also teach C++ using assembly)
 Writing a path tracer
 Ray tracing vs Path tracing vs Rasterization 
+
+Data fetching patterns
+My GNU/Linux setup
+Building a vector database
+A guide on WebAssembly
+Getting started with WebXR

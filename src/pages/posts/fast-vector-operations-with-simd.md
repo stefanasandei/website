@@ -236,13 +236,15 @@ void add_vectors_simd(float *a, float *b, float *result, size_t size) {
 
 ## Use cases
 
+Vector intrinsics can be used in various fields, where fast vector operations are needed. This includes image processing (filters, grayscale, etc.), math (dot product, etc.) and graphics programming (rasterazation, ray tracing, etc.). Generally every time you work with large volumes of data, the operations can be sped up using SIMD. Based on a [StackOverflow benchmark](https://stackoverflow.blog/2020/07/08/improving-performance-with-simd-intrinsics-in-three-use-cases/), SIMD optimized programs can be 5-12 times faster than the scalar versions.
+
 ## Disavntages
 
-not many
+While working with a lot of data, performance can be limited by the memory bandwidth. There is also an issue regarding precision, since SIMD is working with float numbers. Depending on the algorithm you're writing, data, especially for very small decimal numbers, can be lost.
 
 ## Notes
 
-basically simd is dope af
+In conclusion, almost everytime you're working with vectors, where it's possible to align the data in a favorable way, it's best to use SIMD. Libraries such as GLM already take advantage of this, so it's best just to know enough to have a basic understanding, but to use a solid and tested library. There is also BLAS (Basic Linear Algebra Subprograms), a specification with low-level routines that describes common vector operations. These are organized in levels based on their time complexity (1 is O(n), 2 is O(n^2) and 3 is O(n^3)). BLAS libraries typically use SIMD under the hood.
 
 ## Resources
 
@@ -254,3 +256,4 @@ basically simd is dope af
 - https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
 - https://www.physicsforums.com/insights/an-intro-to-avx-512-assembly-programming/
 - https://github.com/gcc-mirror/gcc/blob/master/gcc/config/i386/cpuid.h
+- https://gist.github.com/csarron/3191b401ec545f78022881f1805cae9a
