@@ -8,7 +8,9 @@ export default defineConfig({
   integrations: [sitemap(), AstroPWA(), lit()],
   markdown: {
     shikiConfig: {
-      theme: "material-palenight",
+      theme: JSON.parse(
+        fs.readFileSync("./public/themes/catppuccin-macho.json", "utf-8")
+      ),
       langs: [],
       wrap: true,
     },
