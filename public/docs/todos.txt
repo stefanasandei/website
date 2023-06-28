@@ -1,17 +1,15 @@
 ✅ C++ ranges and views
-Modern C++ features for competitive programming
 ✅ C++ templates 
 ✅ Multithreading in C++
-Memory management techniques in C++
 
-Who decides the new features in C++?
+Modern C++ features for competitive programming
+Memory management techniques in C++ (c-meme dir)
 Why constants are variable?
-
 Reverse engineering on ARM (also teach C++ using assembly)
 Writing a path tracer
-
 Data fetching patterns
 My GNU/Linux setup
 Building a vector database
 A guide on WebAssembly
 Getting started with OpenXR
+  
