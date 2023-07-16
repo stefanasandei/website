@@ -79,6 +79,12 @@ a:hover {
   margin-right: 3rem;
 }
 
+.lrow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 nav ul {
   list-style: none;
   padding: 0;
@@ -172,10 +178,18 @@ code {
     width: 100vw;
     position: absolute;
     word-break: break-word;
+    overflow-x: hidden;
   }
 
   header {
     font-size: larger;
+  }
+
+  .wrapper {
+    max-width: 100rem;
+    padding-left: 0rem;
+    padding-right: 0rem;
+    text-align: justify;
   }
 }
 
@@ -225,4 +239,16 @@ footer {
 
 .intro pre {
   font-family: "Fira Code", monospace;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  width: 50px;
+  text-align: center;
+  border: 1px solid var(--text);
 }
