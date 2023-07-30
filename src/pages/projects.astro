@@ -1,0 +1,134 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Projects | Stefan Asandei"
+  description="These are some of my passion project."
+  permalink="stefan-asandei.cf/projects"
+>
+  <div>
+    <h1>Projects</h1>
+    <p>
+      These are some of my coding projects, developed solely by myself. Some of
+      them are from the "InfoEducatie" competition, which represents a huge
+      opportunity for me to find time to work on stuff I actually enjoy!
+    </p>
+  </div>
+  <div>
+    <section
+      style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
+    >
+      <p style="margin-bottom: 0;">Started in May 2023</p>
+      <a href="https://helix-coding.vercel.app">
+        <h2 style="margin-top: 0; margin-bottom: 0; font-size: 2rem;">Helix</h2>
+      </a>
+      <p>
+        Helix is a modern social network for programmers. Users can read and
+        write articles, execute code in 10+ languages, solve practice problems
+        and participate in various coding contests hosted my the community.
+        Helix is a long passion project of mine, I got the opportunity to work
+        on it thanks to the InfoEducatie Contest, where I also got the first
+        place with this project. Website url: <a
+          href="https://helix-coding.vercel.app"
+          >https://helix-coding.vercel.app</a
+        >
+      </p>
+      <p>Links:</p>
+      <ul>
+        <li>
+          Frontend: <a href="https://github.com/nikolatesla13/helix"
+            >https://github.com/nikolatesla13/helix</a
+          >
+        </li>
+        <li>
+          Code Execution service: <a
+            href="https://github.com/nikolatesla13/exec"
+            >https://github.com/nikolatesla13/exec</a
+          >
+        </li>
+        <li>
+          Project documentation (RO): <a
+            href="https://github.com/NikolaTesla13/helix/blob/main/docs/DocumentatieNationala.pdf"
+            >https://github.com/NikolaTesla13/helix/blob/main/docs/DocumentatieNationala.pdf</a
+          >
+        </li>
+      </ul>
+      <p>
+        For the frontend I used TypeScript, React, Tailwind, Jotai, Cypress and
+        Storybook. It is served by a NextJS server, which also handles
+        serverless functions.
+      </p>
+      <p>
+        The backend is mainly composed by the serverless function, hosted on
+        Vercel, but the code execution is done by a separate microservice. It is
+        written in Rust and it uses a custom container technology to run the
+        code.
+      </p>
+    </section>
+    <section
+      style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
+    >
+      <p style="margin-bottom: 0;">28-29 July 2023</p>
+      <a href="https://remix-maps.vercel.app">
+        <h2 style="margin-top: 0; margin-bottom: 0; font-size: 2rem;">
+          Remix Maps
+        </h2>
+      </a>
+      <p>
+        This project was developed for the InfoEducatie Hackathon, in 24 hours.
+        The theme was to build a web mapping platform that can find the optimal
+        route between two places, using only free and open source technology,
+        while also taking into account the realtime traffic.
+      </p>
+      <p>Links:</p>
+      <ul>
+        <li>
+          Frontend: <a href="https://github.com/nikolatesla13/remix-maps"
+            >https://github.com/nikolatesla13/remix-maps</a
+          >
+        </li>
+        <li>
+          Backend: <a href="https://github.com/nikolatesla13/remix-maps-backend"
+            >https://github.com/nikolatesla13/remix-maps-backend</a
+          >
+        </li>
+        <li>
+          Project documentation (RO): <a
+            href="https://github.com/NikolaTesla13/remix-maps/blob/main/docs/documentatie.md"
+            >https://github.com/NikolaTesla13/remix-maps/blob/main/docs/documentatie.md</a
+          >
+        </li>
+      </ul>
+      <p>
+        For the Frontend I used Typescript, React, Tailwind and Cypress. It is
+        served to the user from a Remix server, hosted on vercel. I'm using the
+        OpenStreetMap api with LeafletJS for the map data
+      </p>
+      <p>
+        The Backend is a Python3 Flask server, which serves the realtime traffic
+        information. I found a couple of unsecured cameras, which I'm using the
+        get images of streets. After I get the images, I'm using the YOLOv3
+        model to detect the number of cars, which I use to compute the realtime
+        traffic in a certain area. This information is sent to the Frontend
+        which uses it to display the best route.
+      </p>
+    </section>
+    <!-- <section
+      style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
+    >
+      <p style="margin-bottom: 0;">Summer 2023</p>
+      <a href="#">
+        <h2 style="margin-top: 0; margin-bottom: 0; font-size: 2rem;">
+          Crispy Rays
+        </h2>
+      </a>
+      <p>
+        Description goes here
+        <a href="#">read more</a>
+      </p>
+    </section> -->
+  </div>
+</Layout>
+
+<style></style>

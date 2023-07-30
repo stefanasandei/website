@@ -185,6 +185,10 @@ code {
     font-size: larger;
   }
 
+  .too-big {
+    display: none;
+  }
+
   .wrapper {
     max-width: 100rem;
     padding-left: 0rem;
