@@ -49,8 +49,12 @@ body {
 
 html,
 body {
+  width: 90vw;
   max-width: 100%;
-  overflow-x: hidden;
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -69,7 +73,6 @@ a:hover {
   max-width: 75rem;
   padding-left: 2rem;
   padding-right: 2rem;
-  width: 100%;
 }
 
 .row {
@@ -175,8 +178,7 @@ code {
 
 @media (max-width: 500px) {
   body {
-    width: 100vw;
-    position: absolute;
+    max-width: 90vw !important;
     word-break: break-word;
     overflow-x: hidden;
   }
@@ -190,16 +192,10 @@ code {
   }
 
   .wrapper {
-    max-width: 100rem;
-    padding-left: 0rem;
-    padding-right: 0rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     text-align: justify;
   }
-}
-
-:root {
-  --user-font-scale: 1rem - 16px;
-  --max-width: calc(100% - 2rem);
 }
 
 footer {
