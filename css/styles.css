@@ -54,6 +54,7 @@ body {
   margin-left: auto;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 a {
@@ -177,8 +178,6 @@ code {
 
 @media (max-width: 500px) {
   body {
-    width: 100vw;
-    position: absolute;
     word-break: break-word;
     overflow-x: hidden;
   }
