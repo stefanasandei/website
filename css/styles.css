@@ -43,7 +43,6 @@
 body {
   background: var(--base);
   color: var(--text);
-  /* font-family: "Poppins", sans-serif; */
   font-family: "Fira Code", monospace;
 }
 
@@ -178,7 +177,8 @@ code {
 
 @media (max-width: 500px) {
   body {
-    max-width: 90vw !important;
+    width: 100vw;
+    position: absolute;
     word-break: break-word;
     overflow-x: hidden;
   }
@@ -192,8 +192,9 @@ code {
   }
 
   .wrapper {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    max-width: 100rem;
+    padding-left: 0rem;
+    padding-right: 0rem;
     text-align: justify;
   }
 }
