@@ -16,7 +16,7 @@ Types of networks, by model:
 - Client - Server: the client requests content which is processed and sent by the server
 - Peer to peer: each device can be either a client or a server, no dedicated server is required
 
-Types of networks, by dimension:
+Types of networks, by size:
 
 - LAN = Local Area Network (home, school, company size)
 - MAN = Metropolitan Area Network (multiple LANs)
@@ -350,8 +350,99 @@ Fiber vs. Copper:
 Wireless:
 
 - types: WiFi, Bluetooth, WiMax, Zigbee
+- WLAN: IEEE 802.11
+- Ethernet: IEEE 802.3
+- WPAN (bluetooth, rfid): IEEE 802.15
 
 Bit encodings:
 
 - NRZ = Non-Return to Zero, 1 when a certain voltage is exceeded, otherwise 0
 - Manchester = map a voltage range (-v to +v) from 0 to 1
+
+## Data link layer
+
+Responsibilities:
+
+- controlls the enviorment access (wireless, copper or optic cables)
+- detects errors
+- recieves data from layer 3
+- works with frames
+
+Sublayers:
+
+- LLC = Logical Link Control (software, communicates with layer 3); IEEE 802.2
+- MAC = Media Access Control (hardware, works with layer 1); 802.3, 802.11, 802.15
+
+LAN Topologies:
+
+- LAN = local area network
+- star, bus, ring
+
+WAN Topologies:
+
+- WAN = wide area network
+- Point to point, hub and spoke, mesh
+
+Enviorment types:
+
+- Half duplex (one way communication)
+- Full duplex (two channels, for communication and receiving)
+
+Wireless is half duplex.
+
+### Ethernet
+
+MAC Address: switch
+
+IP Address: router
+
+Mac Address:
+
+- burned in
+- 48 bits
+- unique
+- examples: OUI (organizational unique id) + VA (vendor assigned)
+
+Types of MAC addresses:
+
+- Broadcast (FF:FF:FF:FF:FF:FF)
+- Multicast (01:00:5E:XX:XX:XX)
+- Unicast
+
+Ethername frame:
+
+- header
+- destination address
+- source address
+- type
+- data
+- FCS
+
+Address Resolution Protocol (ARP):
+
+- IP to MAC mappings
+- timer
+- command: "shop ip arp"
+
+Switches:
+
+- don't have an ARP table (for now :D)
+- routers use ARP, switches use CAM
+- they use the CAM table
+- CAM = Content Addressable Memory, aka the brain of a switch
+- the CAM table has MACs to interfaces mappings
+- "show mac-address-table"
+
+CAM Algorithm:
+
+- source MAC: is the MAC in the table?
+  - yes: resets the timer to 300
+  - no: add the new MAC address with the coresponding port (e.g. Fa0/1)
+- destination MAC: is the MAC in the table?
+  - yes: send the frame on the coresponding port
+  - no: flooding (sends back on all interfaces except the source one)
+
+Buffering methods:
+
+- port based: each port has its own queue
+- shared memory: ports share the same memory space
