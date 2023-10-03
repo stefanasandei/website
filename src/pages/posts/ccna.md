@@ -234,7 +234,7 @@ The PDUs of the OSI stack layers:
 | Hardware   | Layer        | PDU     |
 | ---------- | ------------ | ------- |
 | Hub        | Physical     | Bits    |
-| Switch     | Link         | Frames  |
+| Switch     | Data Link    | Frames  |
 | Router     | Network      | Packet  |
 |            | Transport    | Segment |
 |            | Session      | SPDU    |
@@ -359,7 +359,7 @@ Bit encodings:
 - NRZ = Non-Return to Zero, 1 when a certain voltage is exceeded, otherwise 0
 - Manchester = map a voltage range (-v to +v) from 0 to 1
 
-## Data link layer
+## 5. Data link layer
 
 Responsibilities:
 
@@ -442,7 +442,46 @@ CAM Algorithm:
   - yes: send the frame on the coresponding port
   - no: flooding (sends back on all interfaces except the source one)
 
+CAM table example:
+| MAC Address | Interface | Timer |
+|-------------------|-----------|--------|
+| AF:A1:10:11:FF:BA | Fa0/1 | 300 |
+
 Buffering methods:
 
 - port based: each port has its own queue
 - shared memory: ports share the same memory space
+
+Collision domains:
+
+- extended by: Hub
+- delimited by: Router, Switch, End Devices
+
+Number of broadcast domains = number of networks
+
+## 6. Network layer
+
+IPv4 & IPv6
+
+|                     | IPv4                                 | IPv6                 |
+| ------------------- | ------------------------------------ | -------------------- |
+| Number of bits      | 32                                   | 128                  |
+| Number of fields    | 12                                   | 8                    |
+| Required processing | TTL modification & HCS recalculation | modify the Hop limit |
+
+How routing works:
+
+- is the destination localhost (127.0.0.1 or ::1)?
+- is the destination in the same network?
+- is the destination in another network? send the packet to the Default Gateway
+
+Default Gateway:
+
+- an IP adress
+- the router's interface that I am connected to
+
+Routing Table:
+
+- the router's brain
+- routes from the same network are automatically added
+- routes outside the local network can either be static (added by the network admin) or dynamic (discovered using a routing protocol)
