@@ -231,15 +231,15 @@ The physical layer, the first one of the OSI stack, works with bits.
 
 The PDUs of the OSI stack layers:
 
-| Hardware   | Layer        | PDU     |
-| ---------- | ------------ | ------- |
-| Hub        | Physical     | Bits    |
-| Switch     | Data Link    | Frames  |
-| Router     | Network      | Packet  |
-|            | Transport    | Segment |
-|            | Session      | SPDU    |
-|            | Presentation | SPDU    |
-| EndDevices | Application  | APDU    |
+| Hardware    | Layer        | PDU     |
+| ----------- | ------------ | ------- |
+| Hub         | Physical     | Bits    |
+| Switch      | Data Link    | Frames  |
+| Router      | Network      | Packet  |
+|             | Transport    | Segment |
+|             | Session      | SPDU    |
+|             | Presentation | PPDU    |
+| End Devices | Application  | APDU    |
 
 Physical Layer properties:
 
@@ -485,3 +485,143 @@ Routing Table:
 - the router's brain
 - routes from the same network are automatically added
 - routes outside the local network can either be static (added by the network admin) or dynamic (discovered using a routing protocol)
+
+### IP Addressing
+
+IPv4:
+
+- 32 bits
+- network & host parts
+- network identifies its network (LAN)
+- host identifies the device
+
+Mask:
+
+- one blocks of 1s then a portion with only 0s
+- example: 255.255.240.0 => last 12 bits are for the host
+- short notation: "/20" => first 20 bits are 1
+- 1s for the network and 0s for the host
+
+Types of addresses:
+
+- network address:
+
+  - can't be assigned to an equipment
+
+- broadcast address:
+
+  - can't be assigned to an equipment
+
+- allocable address:
+  - can be allocated to an equipment
+
+Example:
+
+- 129.100.68.224 /21
+- `1000 0001 0110 0100 0100 0100 1110 0000` - ip
+- `1111 1111 1111 1111 1111 1000 0000 0000` - mask
+- `1000 0001 0110 0100 0100 0100 0000 0000` - ip & mask = network address (129.100.64.0 /21):
+- `1000 0001 0110 0100 0100 0111 1111 1111` - ip | ~mask = broadcast address (192.100.72.255 /21):
+- which means:
+  - from 129.100.64.0/21 to 129.100.71.255/21 are assignable IPs in my network
+
+Classful addressing:
+
+- A: /8
+- B: /16
+- C: /24
+- D: N/A
+- E: N/A
+
+Private addresses used only in private networks:
+
+- 10.0.0.0 - 10.255.255.255 => /8
+- 172.16.0.0 - 172.31.255.255 => /12
+- 192.168.0.0 - 192.169.255.255 -> /16
+
+### ICMP
+
+- the protocol used in the ping utility
+- sends a message between two devices
+- checks errors than can occur in communication
+
+Types of messages:
+
+- RA = router advertisment (sent every 200s)
+- RS = requests the IPv6 address of all routers
+- NS = checks if an IPv6 address is unique
+- NA = answer to NS (neighbour advertisment)
+
+## Transport layer
+
+- works with segments or datagrams
+- virtual ports
+
+- splits data into smaller packages
+- reassembles the data on its destination
+
+- well known ports: 0-1023
+- registered: 1024-45151
+- private: 45152-65535
+
+| port  | protocol | application |
+| ----- | -------- | ----------- |
+| 20    | TCP      | FTP Data    |
+| 21    | TCP      | FTP Control |
+| 22    | TCP      | SSH         |
+| 23    | TCP      | Telnet      |
+| 25    | TCP      | SMTP        |
+| 53    | TCP/UDP  | DNS         |
+| 67,68 | UDP      | DHCP        |
+| 69    | UDP      | TFTP        |
+| 80    | TCP      | HTTP        |
+| 110   | TCP      | POP3        |
+| 443   | TCP      | SSL/HTTPS   |
+
+- TCP = transmission control protocol (reliable, safe)
+- UDP = user Datagram protocol (unreliable, fast)
+
+### TCP
+
+- Header:
+
+  - source & destination ports (each 16 bits)
+  - sequence number = SEQ
+  - acknoledgement number = ACK
+  - header length
+  - reserved: 6 bits of zero
+  - controk bits: URG, ACK, PSH, RST, SYN, FIN
+  - window: hints about how much data the current stream can handle
+  - checksum
+  - urgent
+  - options
+
+- Creating a TCP connection (3 way handshake):
+
+  - Header view:
+    - -> Seq = 69, ACK = 0
+    - <- Seq = 42, ACK = 69 + 1
+    - -> Seq = 70, ACK = 42 + 1
+    - <- Seq = 43, ACK = 70 + 1
+  - Control Bits view:
+    - -> SYN
+    - <- SYN + ACK
+    - -> ACK
+
+- Closing a TCP connection (also a 3 way handshake):
+  - -> FIN
+  - <- ACK
+  - <- FIN
+  - -> ACK
+
+### UDP
+
+- fast but not safe
+- doesn't resend data
+- smaller header
+- doesn't confirm events
+
+- Header:
+  - source & destination ports
+  - length
+  - checksum
