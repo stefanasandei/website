@@ -233,3 +233,11 @@ todo one day maybe -->
 ## Conclusion
 
 Memory management is a key aspect of software development and it shouldn't be overlooked. The memory safety helpers of languages such as Rust are one of their core features and the reason why people are moving from traditional system languages, like C or C++. This is why I consider all C++ programmers should take memory management very seriously and consider using modern language features & best practices to ensure memory safety.
+
+## References
+
+- https://en.cppreference.com/w/cpp/language/raii
+- https://courses.engr.illinois.edu/cs225/fa2022/resources/stack-heap/
+- https://www.plantation-productions.com/Webster/www.artofasm.com/DOS/ch11/CH11-4.html
+- https://en.cppreference.com/w/cpp/memory/allocator
+- https://godbolt.org/
