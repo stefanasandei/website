@@ -43,6 +43,8 @@ Now onto learning goals:
  - learn more deep learning and machine learning with Python
  - build more microservices in Go
 
+I'm thinking I should focus and learn stuff I actually want to work in my life. I don't want to work on boring projects, that exist simply as money-maker machine for some company. That's why I don't want to focus on stuff like Java, C# or PHP. I'm manifesting for the universe to give me nice challanges :) That's why I decided to focus on these languages: C++, Go, C and Python.
+
 I think I already have a good foundation. I want to extend this foundation and make it stronger.
 
 ## Conclusion
