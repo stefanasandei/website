@@ -15,7 +15,7 @@ Memory management is usually abstracted in most languages, however, that is not 
 
 Objects are allocated by default on the stack. It is the most basic way of managing memory, while also being very fast. It is a continuous block of memory, which allows the program to take advantage of hot L1 and L2 cache. Let's take a loop at a side-by-side comparison of some C++ code and its respective x86_64 assembly-generated code:
 
-<div style="code-row">
+<div class="code-row">
 
 ```cpp
 int main() {

@@ -262,8 +262,21 @@ td {
   margin-right: auto;
 }
 
-@media (max-width: 500px) {
+.code-fat-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: 678px) {
   .code-row {
+    flex-direction: column;
+  }
+
+  .code-fat-row {
     flex-direction: column;
   }
 }
