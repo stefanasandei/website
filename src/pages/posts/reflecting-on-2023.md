@@ -32,7 +32,7 @@ Besides programming, I also want to learn more physics. In the goals section, I 
 Let's start with some quantifiable goals:
  - good prize at FII Code, a practical coding competition starting in January
  - qualify for the national phase of the Romanian Cansat and Rocketry Competition
- - at least top 5 at the national phase of the CS Innovation Olympiad of Romania
+ - at least top 5 at the national phase of the "Infoeducatie" Olympiad of Romania
  - have at least 1 or 2 talks about deep learning (or other CS topic)
  - have about 5 "major" projects (mostly C++ and C/Go) 
 

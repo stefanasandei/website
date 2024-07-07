@@ -137,13 +137,6 @@ const stuff = [
     source: "https://peppers-robotics.ro",
   },
 
-  // {
-  //   year: 2023,
-  //   subject: "Engineering",
-  //   title:
-  //     "Designed and prototyped a model Rocket as part of the Romanian Rocketry Championship",
-  //   source: "https://photos.google.com/share/AF1QipOTbhsUaX4nBi73JFvmK_3_6j6fPn5brCsvx8c09Y-XehdT-OIuK3yAXsiRSESvDw/photo/AF1QipOZNuRMpW94BZsrvYuDkwcCuI1Abeda3kzyI9FF?key=cVcxdk05OFlvTS1LeFZKX0RiaXdlSms3Vk9DVjhB",
-  // },
   {
     year: 2023,
     subject: "Computer Science",
@@ -162,7 +155,7 @@ const stuff = [
     year: 2023,
     subject: "Engineering",
     title:
-      "Motivate Award 2nd place at the FIRST World Championship in Houston, Texas, USA",
+      "🥈 Motivate Award 2nd place at the FIRST World Championship in Houston, Texas, USA",
     source: "#",
   },
   {
@@ -175,7 +168,7 @@ const stuff = [
     year: 2023,
     subject: "Computer Science",
     title:
-      "Ranked on the 110th place in the national classament for the Olympiad",
+      "Ranked on the 110th place in the national leaderboard at the Olympiad of Informatics",
     source: "#",
   },
 
@@ -183,7 +176,27 @@ const stuff = [
     year: 2024,
     subject: "Computer Science",
     title:
-      "🥉 Bronze medal at the national phase of Informatics Olympiad for Teams (IIOT)",
+      "🥇 Gold medal at the International Infomatrix Contest (web category)",
+    source: "#",
+  },
+  {
+    year: 2024,
+    subject: "Computer Science",
+    title:
+      "🥉 Bronze medal at the National Olympiad of Information Technology (C#)",
+    source: "#",
+  },
+  {
+    year: 2024,
+    subject: "Engineering",
+    title: "Third place at the Romanian CanSat and Rocketry Championsip",
+    source: "#",
+  },
+  {
+    year: 2024,
+    subject: "Computer Science",
+    title:
+      "🥉 Bronze medal at the National Olympiad of Informatics (46th place out of ~1300)",
     source: "#",
   },
   {
@@ -197,21 +210,7 @@ const stuff = [
     year: 2024,
     subject: "Computer Science",
     title:
-      "🥉 Bronze medal at the National Olympiad of Informatics (46th place out of ~1300)",
-    source: "#",
-  },
-  {
-    year: 2024,
-    subject: "Engineering",
-    title:
-      "Third place at the Romanian CanSat and Rocketry Championsip",
-    source: "#",
-  },
-  {
-    year: 2024,
-    subject: "Computer Science",
-    title:
-      "🥉 Bronze medal at the National Olympiad of Information technology (C#)",
+      "🥉 Bronze medal at the national phase of Informatics Olympiad for Teams (IIOT)",
     source: "#",
   },
 ];
@@ -265,60 +264,32 @@ list += "";
     </pre>
     <h1>Hello 👋</h1>
     <p>
-      <!-- I'm a student 🏫 from Europe. My hobby is coding 👨‍💻, I like to challange
-      myself building projects 👾. I'm most intrested in web technologies 🌎 and
-      desktop applications, like game 🎮 engines. I also do competitive
-      programming 💻, where I'm pretty high scored in my country 🏆. -->
-
-       I'm a high school student from Romania with a deep passion for Computer Science
-      and Physics. I'm also involved in CS education for other students, which is
-      reason why I built <a
-        href="https://helix-coding.vercel.app"
-        target="_blank">Helix</a
-      >, the best way to learn and understand Computer Science, <i
-        >the right way</i
-      >. I'm also hosting a national competition there this autumn!
+      I'm Stefan, a highschool student from Romania interested in Machine
+      Learning, Computer Graphics, Networking, and building software. A lot of
+      my work is open-source on <a href="https://github.com/stefanasandei"
+        >Github</a>. You can contact me via <a href="mailto:asandei.stefanel@gmail.com
+">email</a>.
+      </a>
     </p>
-  </section>
-  <section class="blog-intro">
-    <h1>Stuff I make</h1>
-    <!-- not sure abiout the title... -->
-    <section class="blog-intro">
-      <p>
-        You can read about some of my best personal projects <a href="/projects"
-          >here</a
-        >.
-      </p>
+    <section class="flexing">
+      <h1>Competitions</h1>
+      <ul set:html={list} />
     </section>
-    <p>
-      I write articles about computer science, you can check them out <a href="/blog"
-        >on my blog</a
-      >. 
-    </p>
-      <i><q cite="https://twitter.com/ProfFeynman/status/1382902817153687555?lang=en">If you want to master something, teach it. The more you teach, the better you learn.</q></i>
-  </section>
-
-  <section class="flexing">
-    <h1>School Competitions</h1>
-    <p>
-      I went to a lot of competitions in programming, math and physics. Here are
-      my results over the years.
-    </p>
-    <ul set:html={list} />
-  </section>
-  <section class="contact">
-    <h1>Contact</h1>
-    <p>Here are some ways to contact me:</p>
-    <ul>
-      <li>Email: asandei.stefanel@gmail.com</li>
-      <li>
-        Twitter: <a href="https://twitter.com/stefan_asandei">@stefan_asandei</a
-        >
-      </li>
-      <li>Discord: stefanasandei</li>
-      <li>
-        GitHub: <a href="https://github.com/stefanasandei">Stefan Asandei</a>
-      </li>
-    </ul>
+    <section class="contact">
+      <h1>Contact</h1>
+      <p>Here are some ways to contact me:</p>
+      <ul>
+        <li>Email: asandei.stefanel@gmail.com</li>
+        <li>
+          Twitter: <a href="https://twitter.com/stefan_asandei"
+            >@stefan_asandei</a
+          >
+        </li>
+        <li>Discord: stefanasandei</li>
+        <li>
+          GitHub: <a href="https://github.com/stefanasandei">Stefan Asandei</a>
+        </li>
+      </ul>
+    </section>
   </section>
 </Layout>

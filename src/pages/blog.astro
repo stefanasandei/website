@@ -1,7 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
-let posts = await Astro.glob("./posts/*.md");
+let posts = [
+  ...(await Astro.glob("./posts/*.md")),
+  ...(await Astro.glob("./posts/*.mdx")),
+];
 posts = posts.sort(
   (a, b) =>
     new Date(b.frontmatter.publishDate).valueOf() -
@@ -9,7 +12,11 @@ posts = posts.sort(
 );
 ---
 
-<Layout title="Blog | Stefan Asandei" description="This is my programming related blog." permalink="stefan-asandei.cf/blog">
+<Layout
+  title="Blog | Stefan Asandei"
+  description="This is my programming related blog."
+  permalink="stefan-asandei.cf/blog"
+>
   <main>
     <h1>Blog articles</h1>
     <p>

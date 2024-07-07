@@ -146,13 +146,8 @@ code {
 
 .article h1 {
   text-align: center;
-  background-image: linear-gradient(to top, var(--tw-gradient-stops));
-  --tw-gradient-from: var(--text);
-  --tw-gradient-to: rgb(249 115 22 / 0);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-  --tw-gradient-to: var(--lavender);
   background-clip: text;
-  color: #0000;
+  color: var(--text);
   -webkit-background-clip: text;
   font-size: 36px;
   margin-bottom: 0;
