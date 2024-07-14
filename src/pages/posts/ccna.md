@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "CCNA theory and notes"
-publishDate: 14 September 2023
+pubDate: 14 September 2023
 description: "Why have a notebook when you have a personal website?"
 author: "Stefan Asandei"
 tags: []

@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Fast vector operations with SIMD"
-publishDate: 24 January 2023
+pubDate: 24 January 2023
 description: "What if we can work with 8+ elements at a time?"
 author: "Stefan Asandei"
 tags: []

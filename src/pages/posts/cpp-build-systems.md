@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: C++ build systems
-publishDate: 3 August 2022
+pubDate: 3 August 2022
 description: Checking out various build systems for C++
 author: "Stefan Asandei"
 tags: []

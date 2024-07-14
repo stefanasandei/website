@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "An introduction to C++ templates"
-publishDate: 28 December 2022
+pubDate: 28 December 2022
 description: "Templates are one of the core features of C++"
 author: "Stefan Asandei"
 tags: []

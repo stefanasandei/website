@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: Tricks used in the original Doom
-publishDate: 20 July 2022
+pubDate: 20 July 2022
 description: Seeing the various ways the id Software engineers used in the 90's.
 author: "Stefan Asandei"
 tags: []

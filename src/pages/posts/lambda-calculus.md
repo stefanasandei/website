@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Thinking in Lambda Calculus"
-publishDate: 14 July 2023
+pubDate: 14 July 2023
 description: "What if everything could be a function?"
 author: "Stefan Asandei"
 tags: []

@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: Web3 and Ethereum
-publishDate: 16 December 2021
+pubDate: 16 December 2021
 description: Technical details about the upcoming Web3 and its changes.
 author: "Stefan Asandei"
 tags: []

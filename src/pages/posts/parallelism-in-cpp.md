@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Parallelism in C++"
-publishDate: 31 December 2022
+pubDate: 31 December 2022
 description: "Let's discuss about threads, mutexes, async/await and much more"
 author: "Stefan Asandei"
 tags: []

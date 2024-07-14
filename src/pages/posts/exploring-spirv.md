@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Exploring file formats #1: SPIR-v"
-publishDate: 28 December 2023
+pubDate: 28 December 2023
 description: "Let's explore the assembly language of the GPUs!"
 author: "Stefan Asandei"
 tags: []

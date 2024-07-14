@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Reflecting on 2023 and looking forward to 2024"
-publishDate: 31 December 2023
+pubDate: 31 December 2023
 description: "My yearly theme for 2024"
 author: "Stefan Asandei"
 tags: []

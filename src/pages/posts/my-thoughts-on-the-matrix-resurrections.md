@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: My thoughts on The Matrix Resurrections
-publishDate: 26 December 2021
+pubDate: 26 December 2021
 description: My interpretation on the movie, some notable details and my overall thoughts.
 author: "Stefan Asandei"
 tags: []

@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "ONI Recap"
-publishDate: 22 April 2024
+pubDate: 22 April 2024
 description: "oni deez nuts"
 author: "Stefan Asandei"
 tags: []

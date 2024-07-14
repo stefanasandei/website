@@ -9,7 +9,7 @@ const { title, description, permalink } = frontmatter;
 <Layout title={title} description={description} permalink={permalink}>
   <div class="article">
     <h1>{frontmatter.title}</h1>
-    <p class="date">{frontmatter.publishDate}</p>
+    <p class="date">{frontmatter.pubDate}</p>
     <slot />
   </div>
 </Layout>

@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Exploring file formats #0: pkpass"
-publishDate: 28 June 2023
+pubDate: 28 June 2023
 description: "How I used my coding skills to get back my flying ticket."
 author: "Stefan Asandei"
 tags: []

@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: Memory management in modern C++
-publishDate: 21 December 2023
+pubDate: 21 December 2023
 description: How to better manage memory using specific programming techniques
 author: "Stefan Asandei"
 tags: []

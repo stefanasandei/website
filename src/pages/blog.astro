@@ -7,8 +7,8 @@ let posts = [
 ];
 posts = posts.sort(
   (a, b) =>
-    new Date(b.frontmatter.publishDate).valueOf() -
-    new Date(a.frontmatter.publishDate).valueOf()
+    new Date(b.frontmatter.pubDate).valueOf() -
+    new Date(a.frontmatter.pubDate).valueOf()
 );
 ---
 
@@ -28,7 +28,7 @@ posts = posts.sort(
         posts.map((post) =>
           post.frontmatter.wip != true ? (
             <div style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)">
-              <p style="margin-bottom: 0;">{post.frontmatter.publishDate}</p>
+              <p style="margin-bottom: 0;">{post.frontmatter.pubDate}</p>
               <a href={post.url}>
                 <h2 style="margin-top: 0; margin-bottom: 0; font-size: 2rem;">
                   {post.frontmatter.title}

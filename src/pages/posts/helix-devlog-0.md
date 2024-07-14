@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Building a real web product"
-publishDate: 8 June 2023
+pubDate: 8 June 2023
 description: "Didn't expect to be this hard!"
 author: "Stefan Asandei"
 tags: []
