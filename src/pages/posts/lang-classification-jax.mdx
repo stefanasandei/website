@@ -1,0 +1,151 @@
+---
+layout: ../../layouts/PostLayout.astro
+title: "Language classification using JAX"
+pubDate: 5 August 2024
+description: "We will build MLP, RNN and LSTM networks, from scratch, with JAX"
+author: "Stefan Asandei"
+tags: []
+wip: true
+---
+
+import Latex from "../../components/Latex.astro";
+
+## Introduction
+
+intro
+
+## Prerequisites
+
+prerequisites
+
+## Dataset
+
+dataset
+
+<Latex
+  formula="
+\text{char = } \begin{bmatrix}
+0 & 0 & 0 & 1 & 0 & \cdots & 0 & 0
+\end{bmatrix}
+"
+  big={true}
+/>
+
+```py 
+char.shape = (vocab_size) = (28)
+```
+
+<Latex
+  formula="
+\text{word = } \begin{bmatrix}
+0 & 0 & 0 & 1 & 0 & \cdots & 0 & 0 \\ 
+0 & 0 & 0 & 0 & 0 & \cdots & 1 & 0 \\ 
+0 & 1 & 0 & 0 & 0 & \cdots & 0 & 0 
+\end{bmatrix}
+"
+  big={true}
+/>
+
+```py 
+word.shape = (max_chars, vocab_size) = (10, 28)
+```
+
+<Latex
+  formula="
+\text{sentence = } \begin{bmatrix}
+\text{word}_{\text{ 0}} & \text{word}_{\text{ 1}} & \cdots & \text{word}_{\text{ n}} 
+\end{bmatrix}
+  "
+  big={true}
+/>
+
+```py 
+word.shape = (max_words, max_chars, vocab_size) = (15, 10, 28)
+```
+
+## MLP
+
+Multilayer perceptron
+
+<Latex
+  formula="\hat{y} = \tanh{(x W_1^T + b_1)} W_2^{T} + b_2"
+  big={true}
+/>
+
+```py
+n_input = data["vocab_size"] * data["max_chars_in_word"]  # 28 * 10
+n_hidden = 100
+n_output = data["num_classes"]  # 7
+
+W1 = jax.random.uniform(key, (n_input, n_hidden)) * 0.05  # kaiming init
+b1 = jnp.zeros((n_hidden))
+W2 = jax.random.uniform(key, (n_hidden, n_output)) * 0.01
+b2 = jnp.zeros((n_output))
+parameters = [W1, b1, W2, b2]
+```
+
+```py
+@jax.jit
+def forward(params: list[jax.Array], X: jax.Array) -> jax.Array:
+    h = X.reshape(-1, n_input)
+
+    # go until the layer before the last one
+    for W, b in zip(params[:-2], params[1:-2]):
+        hpreact = h @ W + b
+        h = jnp.tanh(hpreact)
+
+    logits = h @ params[-2] + params[-1]
+    return logits
+```
+
+
+## RNN
+
+Recurrent neural network
+
+<Latex
+  formula="h^{(t)} = \tanh{(x^{(t)} W_{ih}^{T} + b_{ih} +  h^{(t-1)} W_{hh}^{T} + b_{hh})}"
+  big={true}
+/>
+
+<Latex
+  formula="\hat{y}^{(t)} = h^{(t)} W_{ho}^{T} + b_{ho}"
+  big={true}
+/>
+
+
+## LSTM
+
+Long short-term memory
+
+```py
+class LSTM(nn.Module):
+    sentence_size: int
+    input_size: int
+    hidden_size: int
+    output_size: int
+
+    def setup(self):
+        self.lstm = nn.OptimizedLSTMCell(features=self.hidden_size)
+        self.h2o = nn.Dense(self.output_size)
+
+    def __call__(self, x):
+        x = x.reshape(-1, self.sentence_size, self.input_size)
+        batch_size, seq_length = x.shape[0], x.shape[1]
+        carry = self.lstm.initialize_carry(
+            key, (batch_size,))
+
+        outputs = []
+        for t in range(seq_length):
+            carry, y = self.lstm(carry, x[:, t])
+            outputs.append(y)
+
+        output = outputs[-1]
+        output = self.h2o(output)
+
+        return output
+```
+
+## Conclusion
+
+Conclusion
