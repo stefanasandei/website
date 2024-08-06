@@ -57,7 +57,7 @@ Auto differentiation can only be applied to functions returning a scalar (think 
 
 <Latex
   formula="
-f(X) = \sum_{x_i \in X} x_i^2 \implies \frac{\mathrm{d} f}{\mathrm{d} X} = 2X
+f(X) = \sum_{x_i \in X} x_i^2 \implies \frac{\partial f}{\partial x_i} = 2x_i
 "
   big={true}
 />
@@ -295,10 +295,10 @@ This concludes our MLP module. It's the foundation for the later models. The tra
 
 ## RNN
 
-Recurrent neural network allow for variable sized input. Thanks to their temporal structure, RNNs can learn patterns from sequences. Instead of feeding in a single word, we will feed in a sequence of words (a sentence). RNNs achieve this using a hidden state, which is feed in for every word. It is modified by a hidden layer, used to encode special temporal information.
+Recurrent neural networks allow for variable sized input. Thanks to their temporal structure, RNNs can learn patterns from sequences. Instead of feeding in a single word, we will feed in a sequence of words (a sentence). RNNs achieve this using a hidden state, which is feed in for every word. It is modified by a hidden layer, used to encode special temporal information.
 
 <Latex
-  formula="h^{(t)} = \tanh{(x^{(t)} W_{ih}^{T} + b_{ih} +  h^{(t-1)} W_{hh}^{T} + b_{hh})}"
+  formula="h^{(t)} = \tanh{(x^{(t)} W_{ih}^{T} + h^{(t-1)} W_{hh}^{T} + b_{hh})}"
   big={true}
 />
 
@@ -308,7 +308,7 @@ The t in the upper side of variables indicates the time step. As you can see, th
 
 This approach is great for encoding temporal information, however it has two main flaws. Its linear nature requires inputs to be feed in in order, which is bad for paralelism and speed. Besides this, the hidden state has a limited size, which makes it hard to encode relevant information for large sequences. We may think that the most important information can be found at a later stage in the sequence, however an RNN will pack the whole sequence in the hidden state. The second issue can be solved by using an LSTM or GRU model. The first issue is addressed by Transformer models thanks to their attention mechanism.
 
-TODO: equinox
+For the actual implementation, I'm going to use the Equinox library. It's a JAX library that handles utility functions to use with JAX, such as PyTree manipulation. For example, we want to use JAX auto differentiation, however for a clean implementation we also want the model parameters to be part of a class. PyTrees are a data structure that JAX understands and can work with. Equinox enables our class to inherit PyTree structure.
 
 ```py
 import equinox as eqx
@@ -351,13 +351,51 @@ class RNN(eqx.Module):
 model = RNN(n_input, n_hidden, n_output)
 ```
 
-TODO: forward function, update, validation loss
+For the forward pass, we need to feed the model each word from the sequence one by one along with the hidden state from the previous state. At the start, the hidden state is made only of zeros.
+
+```py
+@eqx.filter_jit
+def forward(model: eqx.Module, X: jax.Array) -> jax.Array:
+    hidden = jnp.zeros((1, n_hidden))
+
+    for i in range(X.shape[0]):
+        logits, hidden = model(X[i], hidden)
+
+    return logits
+```
+
+We also annotate the loss function with filter_value_and_grad from Equinox. This way it returns a tuple, the first value being the actual value and the second value is the gradient. This is just another way to achieve the same thing, but with only one function call.
+
+```py
+@eqx.filter_value_and_grad
+def get_loss(model: eqx.Module, X: jax.Array, y: jax.Array):
+    logits = forward(model, X)
+
+    # # cross entropy loss
+    counts = jnp.exp(logits)
+    prob = counts / counts.sum(1, keepdims=True)
+    loss = -jnp.mean(jnp.log(prob[0, y]))
+
+    return loss
+```
+
+The training loop is essentially the same. Running it for 20k steps with learning rate decay and SGD update yields better results than the MLP.
+
+![plot](https://github.com/stefanasandei/english-or-spanish/blob/main/plots/Figure_2_rnn.png?raw=true)
+
+In the end, we get an accuracy of 80.17% with a validation loss of 0.61. Checkout the GitHub reposity for the full source code.
 
 ## LSTM
 
-Long short-term memory
+The last but not least model we're going to try is the Long short-term memory (LSTM). LSTMs solve the issue of encoding and remembering useful information by utilizing gates: the input, forget, cell and output gates. These gates control how much information is allowed to flow into and out of the cell. We won't implement these from scratch, since it requires a little more effort and code, while only being an optimization already overkill for this toy project.
+
+To also introduce more JAX concepts, I decided to use the Flax and Optax libraries. Flax is a library that offers neural network utilities and modules to more easily compose models in a functional way. A flax model is immutable, so we need to initialize its parameters separately. Optax is a library for gradient optimization, which implements common industry standard algorithms such as Adam, which we are going to use to improve our results. Here is our model class definition, deriving from the Flax Module base class.
 
 ```py
+from flax import linen as nn
+from flax.training import train_state
+import optax
+
 class LSTM(nn.Module):
     sentence_size: int
     input_size: int
@@ -385,6 +423,81 @@ class LSTM(nn.Module):
         return output
 ```
 
+To actually create the model we need to initialize its parameters in a varibale. For this we need to feed in an example input, so Flax can figure out the shapes. After we create the model and its parameters, we can create an Adam optimizer and initialize a train state. A train state is a useful utility which helps manage state related to the training process.
+
+```py
+nput_size = data["max_chars_in_word"] * data["vocab_size"]
+hidden_size = 128
+output_size = data["num_classes"]
+
+# Initialize the model
+model = LSTM(sentence_size=data["max_words_in_sentence"], input_size=input_size, hidden_size=hidden_size,
+             output_size=output_size)
+
+# Create an example input to initialize the model parameters
+ix = jax.random.randint(key, (batch_size,), 0, len(Xtr))
+example_input = Xtr[ix]
+
+# Initialize model parameters
+variables = model.init(key, example_input)
+params = variables['params']
+
+# Define a simple optimizer and training state
+optimizer = optax.adam(learning_rate=lr)
+state = train_state.TrainState.create(
+    apply_fn=model.apply, params=params, tx=optimizer)
+```
+
+The loss function is very similar, however it uses Flax functions to achieve better performance. We also use optax to update the parameters in the backward pass.
+
+```py
+@jax.jit
+def compute_loss(params, batch, targets):
+    logits = model.apply({'params': params}, batch)
+    one_hot_targets = jax.nn.one_hot(targets, num_classes=output_size)
+    loss = optax.softmax_cross_entropy(logits, one_hot_targets).mean()
+    return loss
+
+
+@jax.jit
+def train_step(state, batch, targets):
+    def loss_fn(params):
+        return compute_loss(params, batch, targets)
+    grad_fn = jax.value_and_grad(loss_fn)
+    loss, grads = grad_fn(state.params)
+    state = state.apply_gradients(grads=grads)
+    return state, loss
+```
+
+The training code is much shorter this time. We update the train state each step, it holds the parameters and the method to update them using the optimizer.
+
+```py
+for step in range(steps + 1):
+    key, _ = jax.random.split(key)
+    ix = jax.random.randint(key, (batch_size,), 0, len(Xtr))
+    Xb, Yb = Xtr[ix], Ytr[ix]
+
+    state, loss = train_step(state, Xb, Yb)
+    lossi.append(loss)
+
+    if step % 500 == 0:
+        print(f"step {step}: loss={loss:.2f}")
+```
+
+![plot](https://github.com/stefanasandei/english-or-spanish/blob/main/plots/Figure_1_lstm.png?raw=true)
+
+On a side note, this is defintetly overfitting. To take advantage of an LSTM model, we would need a larger or more complex dataset. However, we are getting good results with a final 95.27% accuracy and a 0.27 validation loss.
+
 ## Conclusion
 
-Conclusion
+Language classification can be challenging task, however with modern deep learning algorithms it can be tackled in a matter of hours. We looked at three different neural network architectures, each improving on the previous one. JAX is a powerful functional library that enables fast calculations, however it can take time to get used to it. Personally I like to use JAX when I want to implement something "from scratch", without a manual backward pass. I have also written PyTorch versions of these models in the repository, so you can compare the code and implementation differences.
+
+## References
+
+- "The Unreasonable Effectiveness of Recurrent Neural Networks": https://karpathy.github.io/2015/05/21/rnn-effectiveness/
+- "Language modeling with Jax and RNNs": https://svenschmit.com/jax-language-model-rnn
+- JAX docs: https://jax.readthedocs.io/en/latest/quickstart.html
+- Flax docs: https://flax.readthedocs.io/en/latest/
+- Optax docs: https://optax.readthedocs.io/en/latest/
+- Equinox docs: https://docs.kidger.site/equinox/examples/train_rnn/
+- Pytorch docs on LSTM: https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html
