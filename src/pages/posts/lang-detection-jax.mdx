@@ -295,14 +295,63 @@ This concludes our MLP module. It's the foundation for the later models. The tra
 
 ## RNN
 
-Recurrent neural network
+Recurrent neural network allow for variable sized input. Thanks to their temporal structure, RNNs can learn patterns from sequences. Instead of feeding in a single word, we will feed in a sequence of words (a sentence). RNNs achieve this using a hidden state, which is feed in for every word. It is modified by a hidden layer, used to encode special temporal information.
 
 <Latex
   formula="h^{(t)} = \tanh{(x^{(t)} W_{ih}^{T} + b_{ih} +  h^{(t-1)} W_{hh}^{T} + b_{hh})}"
   big={true}
 />
 
+The t in the upper side of variables indicates the time step. As you can see, the first linear layer maps the input to the hidden state. The second hidden layer maps the hidden state to itself. These two layers are summed up togheter, which is why we need a single bias. The output of this sum is the input for the tanh activation function. The final layer take the hidden output and maps it to the output logits.
+
 <Latex formula="\hat{y}^{(t)} = h^{(t)} W_{ho}^{T} + b_{ho}" big={true} />
+
+This approach is great for encoding temporal information, however it has two main flaws. Its linear nature requires inputs to be feed in in order, which is bad for paralelism and speed. Besides this, the hidden state has a limited size, which makes it hard to encode relevant information for large sequences. We may think that the most important information can be found at a later stage in the sequence, however an RNN will pack the whole sequence in the hidden state. The second issue can be solved by using an LSTM or GRU model. The first issue is addressed by Transformer models thanks to their attention mechanism.
+
+TODO: equinox
+
+```py
+import equinox as eqx
+
+class RNN(eqx.Module):
+    # jax will differentiate only floating point terms, ignoring int members
+    n_input: int
+
+    Wi2h: jax.Array
+    Wh2h: jax.Array
+    bh: jax.Array
+    Wh2o: jax.Array
+    bo: jax.Array
+
+    def __init__(self, n_input: int, n_hidden: int, n_output: int):
+        self.n_input = n_input
+
+        self.Wi2h = jax.random.normal(key, (n_input, n_hidden)) * 0.05  # kaiming init
+        self.Wh2h = jax.random.normal(key, (n_hidden, n_hidden)) * 0.01
+        self.bh = jnp.zeros((n_hidden))
+        self.Wh2o = jax.random.normal(key, (n_hidden, n_output)) * 0.01
+        self.bo = jnp.zeros((n_output))
+
+    def __call__(self, X: jax.Array, hidden: jax.Array) -> tuple[jax.Array, jax.Array]:
+        X = X.reshape(-1, self.n_input)
+
+        # first two layers: input to hidden and hidden to hidden
+        hpreact = X @ self.Wi2h + hidden @ self.Wh2h + self.bh
+        hidden = jnp.tanh(hpreact)
+
+        # map hidden to the output logits
+        out = hidden @ self.Wh2o + self.bo
+
+        # also return the hidden state, will be used for the next
+        # element in the sequence
+        return out, hidden
+
+
+# create the model
+model = RNN(n_input, n_hidden, n_output)
+```
+
+TODO: forward function, update, validation loss
 
 ## LSTM
 
