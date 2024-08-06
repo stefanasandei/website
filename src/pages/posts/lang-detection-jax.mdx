@@ -1,0 +1,251 @@
+---
+layout: ../../layouts/PostLayout.astro
+title: "Language detection using JAX"
+pubDate: 5 August 2024
+description: "We will build MLP, RNN and LSTM networks, from scratch, with JAX"
+author: "Stefan Asandei"
+tags: []
+wip: true
+---
+
+import Latex from "../../components/Latex.astro";
+
+## Introduction
+
+The task of language detection, in the context of deep learning, implies finding the language a word or sentence is written in. This can be done in many ways. In this article, I want to present three different approaches, gradually using more complex architectures. The first two models will be built mostly from scratch, starting from the mathematics. The third and final model will be written in a more "production-ready" way, to showcase important features of the framework. Regarding the implementation framework, I'll be using JAX.
+
+Why JAX? Glad you asked! Jax is a library for composable functions transformations. Its core transformations are for auto differentiation, JIT and vectorization. Besides these features, it also enables acceleration on a GPU/TPU. It has a numpy-style API, which enables us to write linear algebra in a fast and easy way. It's basically numpy + auto differentiation + acceleration. I want to implement these algorithms "from scratch", but I do not want to also write the backward pass from scratch, that can be left up to JAX.
+
+To sum it all up, three deep learning architectures (MLP, RNN, LSTM) implemented, more or less, from scratch using JAX. We'll be using these model to classify text into seven possible languages. The final source code is available on my GitHub: [link](https://github.com/stefanasandei/english-or-spanish).
+
+## Prerequisites
+
+Before we move on to writing these models, let's see the general structure each of these models will roughly follow: hyperparameters deffinition, data preparation, forward & backward passes functions, training loop, validation loss & accuracy checking, sampling, plotting. In every source file, I have delimited these sections using numbered comments.
+
+As I said, these models will be written in JAX. Here is a mini-tutorial for this library. JAX has a numpy-like API, as a convention we alias it as `jnp` when we import, after that we can use it like numpy:
+
+```py
+import jax
+import jax.numpy as jnp
+
+a = jnp.array([1, 2, 3])
+print(a * 2) # [2 4 6]
+
+# JAX will use a GPU by default, if you have one
+print(a.devices()) # {cuda(id=0)}
+```
+
+Function transformations are at the core of JAX. One of the available transformations is auto differentiation:
+
+```py
+import jax
+import jax.numpy as jnp
+
+
+def f(x: jax.Array) -> jax.Array:
+  return (x ** 2).sum()
+
+df = jax.grad(f)
+
+x = jnp.array([0, 1, 2], dtype=jnp.float32)
+
+print(f(x)) # 5.0
+print(df(x)) # [0. 2. 4.]
+```
+
+Auto differentiation can only be applied to functions returning a scalar (think loss function). We can also change which argument to differentiation with respect to, using the `argnums` parameter. Let's also check the math:
+
+<Latex
+  formula="
+f(X) = \sum_{x_i \in X} x_i^2 \implies \frac{\mathrm{d} f}{\mathrm{d} X} = 2X
+"
+  big={true}
+/>
+
+Another important transformation is JIT. By default, JAX launches each kernel operation in a function, one by one. With JIT we can compile this sequence of operations together:
+
+```py
+@jax.jit
+def f(x: jax.Array) -> jax.Array:
+  x = x**2
+  return x.mean()
+```
+
+And one more special thing about JAX: pseudo randomness. JAX handles this in a different way from most libraries, it uses the concept of keys. A key can be created from a seed, or from another key (by splitting it). A common pattern is that we start with a base seed and a key, and we split it into a key and subkey each time we need to generate random numbers. Using the same key twice is a forbidden pattern in JAX, unless we want to generate the same numbers again.
+
+```py
+import jax
+
+key = jax.random.key(42)
+
+# bad
+a = jax.random.uniform(key, (3,))
+b = jax.random.uniform(key, (3,))
+
+print(a == b) # [ True  True  True]
+
+# good
+key, subkey = jax.random.split(key)
+a = jax.random.uniform(key, (3,))
+b = jax.random.uniform(subkey, (3,))
+```
+
+These are the basics of JAX! There is more to this library, but it's enough to start building these models. You can read more about JAX [here](https://jax.readthedocs.io/en/latest/index.html).
+
+## Dataset
+
+To train a neural network, we need some data. A great place to find good datasets is Kaggle. I decided to use [this](https://www.kaggle.com/datasets/basilb2s/language-detection) data. It has 17 total languages, but we'll use only 7 of them (only ascii languages). I also wrote a couple of utility functions to clear this dataset, by removing non alphanumeric characters. You can find these functions in the [data_utils.py](https://github.com/stefanasandei/english-or-spanish/blob/main/src/data_utils.py) file from the project repository.
+
+More interesting than data cleanup is data encoding! How can we encode this data so we can efficinely later forward it thru a neural network? Let's start with a one-hot encoding for each character. A one-hot vector is full of zeros, except of one element which is one. We can have each character be a vector of the size of the vocabullary, 28 in our case, and flip the element of the correct index to one. Example:
+
+<Latex
+  formula="
+\text{char = } \begin{bmatrix}
+0 & 0 & 0 & 1 & 0 & \cdots & 0 & 0
+\end{bmatrix}
+"
+  big={true}
+/>
+
+```py
+char.shape = (vocab_size) = (28)
+```
+
+Let's go one dimension deeper, a word is just a vector of characters. This yields a vector with two dimensions, each element being a one-hot vector:
+
+<Latex
+  formula="
+\text{word = } \begin{bmatrix}
+0 & 0 & 0 & 1 & 0 & \cdots & 0 & 0 \\ 
+0 & 0 & 0 & 0 & 0 & \cdots & 1 & 0 \\ 
+0 & 1 & 0 & 0 & 0 & \cdots & 0 & 0 
+\end{bmatrix}
+"
+  big={true}
+/>
+
+```py
+word.shape = (max_chars, vocab_size) = (10, 28)
+```
+
+And a sentence is a vector of words. This translates to a three dimensional tensor, each element being a word. Later when we train, we will add a fourth dimension to represent the batch dimension.
+
+<Latex
+  formula="
+\text{sentence = } \begin{bmatrix}
+\text{word}_{\text{ 0}} & \text{word}_{\text{ 1}} & \cdots & \text{word}_{\text{ n}} 
+\end{bmatrix}
+  "
+  big={true}
+/>
+
+```py
+sentence.shape = (max_words, max_chars, vocab_size) = (15, 10, 28)
+```
+
+For best practices, let's create a train/validation dataset split:
+
+```py
+data = get_data_params()
+X, Y = get_seq_dataset(seed)
+
+n = int(0.8 * data["data_size_seq"])
+
+# X.shape = (5800, 15, 10, 28) -> each batch has a sentence with a max of 15 words, each has at most 10 characters
+# Y.shape = (5800,) -> the correct class index for each batch
+
+Xtr, Ytr = X[:n], Y[:n]
+Xval, Yval = X[n:], Y[n:]
+```
+
+Similarly, we can create a tensors for the model that requires fixed size of inputs (the MLP):
+
+```py
+X, Y = get_dataset(seed)
+
+# X.shape = (71416, 10, 28) -> each batch has a word with at most 10 characters
+# Y.shape = (71416,) -> the correct class index for each batch
+# the rest is the same
+```
+
+Check the repository for the full source code, there are more tiny boring details, such as data padding. After all of this work, we can finally go into the neural network models! :)
+
+## MLP
+
+TODO here
+Multilayer perceptron
+
+<Latex formula="\hat{y} = \tanh{(x W_1^T + b_1)} W_2^{T} + b_2" big={true} />
+
+```py
+n_input = data["vocab_size"] * data["max_chars_in_word"]  # 28 * 10
+n_hidden = 100
+n_output = data["num_classes"]  # 7
+
+W1 = jax.random.uniform(key, (n_input, n_hidden)) * 0.05  # kaiming init
+b1 = jnp.zeros((n_hidden))
+W2 = jax.random.uniform(key, (n_hidden, n_output)) * 0.01
+b2 = jnp.zeros((n_output))
+parameters = [W1, b1, W2, b2]
+```
+
+```py
+@jax.jit
+def forward(params: list[jax.Array], X: jax.Array) -> jax.Array:
+    h = X.reshape(-1, n_input)
+
+    # go until the layer before the last one
+    for W, b in zip(params[:-2], params[1:-2]):
+        hpreact = h @ W + b
+        h = jnp.tanh(hpreact)
+
+    logits = h @ params[-2] + params[-1]
+    return logits
+```
+
+## RNN
+
+Recurrent neural network
+
+<Latex
+  formula="h^{(t)} = \tanh{(x^{(t)} W_{ih}^{T} + b_{ih} +  h^{(t-1)} W_{hh}^{T} + b_{hh})}"
+  big={true}
+/>
+
+<Latex formula="\hat{y}^{(t)} = h^{(t)} W_{ho}^{T} + b_{ho}" big={true} />
+
+## LSTM
+
+Long short-term memory
+
+```py
+class LSTM(nn.Module):
+    sentence_size: int
+    input_size: int
+    hidden_size: int
+    output_size: int
+
+    def setup(self):
+        self.lstm = nn.OptimizedLSTMCell(features=self.hidden_size)
+        self.h2o = nn.Dense(self.output_size)
+
+    def __call__(self, x):
+        x = x.reshape(-1, self.sentence_size, self.input_size)
+        batch_size, seq_length = x.shape[0], x.shape[1]
+        carry = self.lstm.initialize_carry(
+            key, (batch_size,))
+
+        outputs = []
+        for t in range(seq_length):
+            carry, y = self.lstm(carry, x[:, t])
+            outputs.append(y)
+
+        output = outputs[-1]
+        output = self.h2o(output)
+
+        return output
+```
+
+## Conclusion
+
+Conclusion
