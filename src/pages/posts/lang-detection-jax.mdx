@@ -172,10 +172,11 @@ Check the repository for the full source code, there are more tiny boring detail
 
 ## MLP
 
-TODO here
-Multilayer perceptron
+The first model we are going to build is a Multilayer perceptron. It's a network based on linear regression, however it adds activation functions between layers for nonlinearity. This adds more flexibility to the model and enables better pattern recognition. If we didn't have activation functions, or we used the identity function as an activation, it can be mathematically proven that multiple of those layers can be equivalent to one layer with one weight matrix and a bias. We are going to have 2 layers, with a tanh activation function between. The following formula can describe our model:
 
 <Latex formula="\hat{y} = \tanh{(x W_1^T + b_1)} W_2^{T} + b_2" big={true} />
+
+Y hat denotes are prediction. The first layers is feed in as input to the tanh. The output of the activation function is the input for the second and final layer, which will output our prediction, also known as logits. We need to define the parameters of the network. It'll have one linear hidden layer and one linear output layer. A linear/dense layer implies a weights matrix and a bias vector. This means our network will require four parameters, which I will also put in a list so it will be easier later to update the parameters.
 
 ```py
 n_input = data["vocab_size"] * data["max_chars_in_word"]  # 28 * 10
@@ -189,19 +190,108 @@ b2 = jnp.zeros((n_output))
 parameters = [W1, b1, W2, b2]
 ```
 
+The forward pass takes in the model parameters and an input array X. It's a common idiom in JAX to have an immutable model architecture/module, and to pass the mutable parameters around, which we'll better see with later models when we'll also use Flax and Optax. In this simple example, the model parameters can be represented as a list of JAX arrays. First we need to reshape the input so we can multiply it with the weights. The zip method in Python takes two iterators and binds them togheter, thus we can iterate over the parameters with Ws and bs for each layer at a time. This of course requires attention when declarating the parameters array. It will become cleaner in later models, once we introduce PyTree as a better abstraction for models.
+
 ```py
 @jax.jit
 def forward(params: list[jax.Array], X: jax.Array) -> jax.Array:
+    # from (batch, 10, 28) to (batch, 280)
     h = X.reshape(-1, n_input)
 
     # go until the layer before the last one
     for W, b in zip(params[:-2], params[1:-2]):
+        # hidden layer
         hpreact = h @ W + b
         h = jnp.tanh(hpreact)
 
+    # output layer
     logits = h @ params[-2] + params[-1]
     return logits
 ```
+
+To measure how well our model is going, we are going to use the cross entropy loss function. It's a common loss function for classification tasks. It's also equivalent to measuring the negative log likelihood of the softmax of the logits. Here is a naive implementation in code:
+
+```py
+@jax.jit
+def get_loss(params: list[jax.Array], X: jax.Array, y: jax.Array):
+    logits = forward(params, X) # y hat
+
+    # cross entropy loss
+    counts = jnp.exp(logits)
+    prob = counts / counts.sum(1, keepdims=True)
+    loss = -jnp.mean(jnp.log(prob[jnp.arange(y.shape[0]), y]))
+
+    return loss
+```
+
+Here we are adding a JIT transformation to speed up the execution of the function. Notice we are taking in the parameters of the model and we compute the forward pass inside. This is a common JAX idiom. Thanks to this, we can create a `get_grad` function, which applies the auto differentiation transform to the loss function, it will differentiate with respect to the first argument (the model parameters) by default.
+
+```py
+# differentiate with respect to the first argument (model params)
+get_grad = jax.grad(get_loss)
+
+
+@jax.jit
+def update(params: jax.Array, gradient: jax.Array) -> jax.Array:
+    # stochastic gradient descent
+    return [p - lr * grad for p, grad in zip(params, gradient)]
+```
+
+Now we have the three main puzzle pieces that define our neural network: model parameters, forward pass and a backward pass. The forward pass will propagate the input thru the network until we get a final vector of probabilities, which should predict the correct label (the language the text passed in is written in). The backward pass first will differenties the loss function with respect to the model parameter, and then it will update the parameters with the specific gradient multiplied by a learning rate, set as a hyperparameter. Putting all of these togheter, we can write a training loop:
+
+```py
+for step in range(steps + 1):
+    # mini-batch
+    key, _ = jax.random.split(key)  # get a new key from jax
+    ix = jax.random.randint(key, (batch_size,), 0, Xtr.shape[0])
+    Xb, Yb = Xtr[ix], Ytr[ix]
+
+    # forward pass
+    loss = get_loss(parameters, Xb, Yb)
+    lossi.append(loss) # for the plot
+
+    if step % 500 == 0:
+        print(f"step {step}: loss={loss:.2f}")
+
+    # learning rate decay
+    if step == decay_step:
+        lr /= 10
+
+    # backward pass
+    gradient = get_grad(parameters, Xb, Yb)
+    parameters = update(parameters, gradient)
+```
+
+We use mini batches to speed up our training loop. First we choose a mini batch, run it thru the forward pass, get the loss and after that comes the backward pass. In JAX, we could also run only the backward pass, since JAX doesn't require us to run the function normally before differentiation, we could also just mark the get_loss function as jax.grad and it would also work. I'm writing code this way to better show the elements of the training loop.
+
+Well, after we let the training loop run for about 20k steps, we can get quite a decent model. I managed to get a 66.72% accuracy with a 0.96 validation loss. These values will improves with more advanced models, but for the moment it works. Here is how to compute the validation loss. (spoiler: very easy!)
+
+```py
+valid_loss = get_loss(parameters, Xval, Yval)
+print(f"valid_loss={valid_loss:.3f}")  # best loss is 0.969
+```
+
+We can also sample from the model to test how well it works in practice. It prooves to work quite well on simple & common words. Besides this implementation, we could also ask the user for input and predict that. JAX also provides a function jax.nn.softmax which would simplify this code (and work much faster as a single kernel on the GPU), but I left the explicit implementation for now.
+
+```py
+words = ["hola", "energy", "nicht", "ciao", "haben", "ich"]
+# preds: spanish, english, german, italian, german, german
+for word in words:
+    enc = encode_word(word)
+    logits = forward(parameters, enc)[0]
+
+    # softmax
+    counts = jnp.exp(logits)
+    prob = counts / counts.sum(0, keepdims=True)
+    label_index = jnp.argmax(prob, 0)
+    print(f"{word}: {data['labels'][label_index]}")
+```
+
+Remember we added our loss to a list? We can use that to plot it now. As a note, I used kaiming initialization for model parameters so we get a better loss in the beginning, thus helping our model to learn faster.
+
+![plot](https://github.com/stefanasandei/english-or-spanish/blob/main/plots/Figure_3_mlp.png?raw=true)
+
+This concludes our MLP module. It's the foundation for the later models. The training loop, backward pass and loss function will be basically the same for the following networks. The model architecture and parameters will provide the essential improvement.
 
 ## RNN
 
