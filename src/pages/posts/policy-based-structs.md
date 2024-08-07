@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/PostLayout.astro
 title: "Policy based data structures in C++"
-publishDate: 10 july 2024
+pubDate: 10 july 2024
 description: "Non-standard structures from gcc"
 author: "Stefan Asandei"
 tags: []
