@@ -42,7 +42,7 @@ import jax.numpy as jnp
 
 
 def f(x: jax.Array) -> jax.Array:
-  return (x ** 2).sum()
+  return (x ** 2).sum()
 
 df = jax.grad(f)
 
@@ -66,8 +66,8 @@ Another important transformation is JIT. By default, JAX launches each kernel op
 ```py
 @jax.jit
 def f(x: jax.Array) -> jax.Array:
- x = x**2
-  return x.mean()
+  x = x**2
+  return x.mean()
 ```
 
 And one more special thing about JAX: pseudo-randomness. JAX handles this in a different way from most libraries, it uses the concept of keys. A key can be created from a seed, or from another key (by splitting it). A common pattern is that we start with a base seed and a key, and we split it into a key and subkey each time we need to generate random numbers. Using the same key twice is a forbidden pattern in JAX, unless we want to generate the same numbers again.
@@ -194,18 +194,18 @@ The forward pass takes in the model parameters and an input array X. It's a comm
 ```py
 @jax.jit
 def forward(params: list[jax.Array], X: jax.Array) -> jax.Array:
-    # from (batch, 10, 28) to (batch, 280)
- h = X.reshape(-1, n_input)
+  # from (batch, 10, 28) to (batch, 280)
+  h = X.reshape(-1, n_input)
 
-    # go until the layer before the last one
-    for W, b in zip(params[:-2], params[1:-2]):
-        # hidden layer
- hpreact = h @ W + b
- h = jnp.tanh(hpreact)
+  # go until the layer before the last one
+  for W, b in zip(params[:-2], params[1:-2]):
+    # hidden layer
+    hpreact = h @ W + b
+    h = jnp.tanh(hpreact)
 
-    # output layer
- logits = h @ params[-2] + params[-1]
-    return logits
+  # output layer
+  logits = h @ params[-2] + params[-1]
+  return logits
 ```
 
 To measure how well our model is going, we are going to use the cross entropy loss function. It's a common loss function for classification tasks. It's also equivalent to measuring the negative log likelihood of the softmax of the logits. Here is a naive implementation in code:
@@ -213,14 +213,14 @@ To measure how well our model is going, we are going to use the cross entropy lo
 ```py
 @jax.jit
 def get_loss(params: list[jax.Array], X: jax.Array, y: jax.Array):
- logits = forward(params, X) # y hat
+  logits = forward(params, X) # y hat
 
-    # cross entropy loss
- counts = jnp.exp(logits)
- prob = counts / counts.sum(1, keepdims=True)
- loss = -jnp.mean(jnp.log(prob[jnp.arange(y.shape[0]), y]))
+  # cross entropy loss
+  counts = jnp.exp(logits)
+  prob = counts / counts.sum(1, keepdims=True)
+  loss = -jnp.mean(jnp.log(prob[jnp.arange(y.shape[0]), y]))
 
-    return loss
+  return loss
 ```
 
 Here we are adding a JIT transformation to speed up the execution of the function. Notice we are taking in the parameters of the model and we compute the forward pass inside. This is a common JAX idiom. Thanks to this, we can create a `get_grad` function, which applies the auto differentiation transform to the loss function, it will differentiate with respect to the first argument (the model parameters) by default.
@@ -232,33 +232,33 @@ get_grad = jax.grad(get_loss)
 
 @jax.jit
 def update(params: jax.Array, gradient: jax.Array) -> jax.Array:
-    # stochastic gradient descent
-    return [p - lr * grad for p, grad in zip(params, gradient)]
+  # stochastic gradient descent
+  return [p - lr * grad for p, grad in zip(params, gradient)]
 ```
 
 Now we have the three main puzzle pieces that define our neural network: model parameters, a forward pass, and a backward pass. The forward pass will propagate the input through the network until we get a final vector of probabilities, which should predict the correct label (the language the text passed in is written in). The backward pass first will differentiate the loss function with respect to the model parameter, and then it will update the parameters with the specific gradient multiplied by a learning rate, set as a hyperparameter. Putting all of these togheter, we can write a training loop:
 
 ```py
 for step in range(steps + 1):
-    # mini-batch
- key, _ = jax.random.split(key)  # get a new key from jax
- ix = jax.random.randint(key, (batch_size,), 0, Xtr.shape[0])
- Xb, Yb = Xtr[ix], Ytr[ix]
+  # mini-batch
+  key, _ = jax.random.split(key)  # get a new key from jax
+  ix = jax.random.randint(key, (batch_size,), 0, Xtr.shape[0])
+  Xb, Yb = Xtr[ix], Ytr[ix]
 
-    # forward pass
- loss = get_loss(parameters, Xb, Yb)
- lossi.append(loss) # for the plot
+  # forward pass
+  loss = get_loss(parameters, Xb, Yb)
+  lossi.append(loss) # for the plot
 
-    if step % 500 == 0:
-        print(f"step {step}: loss={loss:.2f}")
+  if step % 500 == 0:
+    print(f"step {step}: loss={loss:.2f}")
 
-    # learning rate decay
-    if step == decay_step:
- lr /= 10
+  # learning rate decay
+  if step == decay_step:
+    lr /= 10
 
-    # backward pass
- gradient = get_grad(parameters, Xb, Yb)
- parameters = update(parameters, gradient)
+  # backward pass
+  gradient = get_grad(parameters, Xb, Yb)
+  parameters = update(parameters, gradient)
 ```
 
 We use mini-batches to speed up our training loop. First we choose a mini-batch, run it through the forward pass, get the loss and after that comes the backward pass. In JAX, we could also run only the backward pass, since JAX doesn't require us to run the function normally before differentiation, we could also just mark the get_loss function as jax.grad and it would also work. I'm writing code this way to better show the elements of the training loop.
@@ -276,14 +276,14 @@ We can also sample from the model to test how well it works in practice. It proo
 words = ["hola", "energy", "nicht", "ciao", "haben", "ich"]
 # preds: spanish, english, german, italian, german, german
 for word in words:
- enc = encode_word(word)
- logits = forward(parameters, enc)[0]
+  enc = encode_word(word)
+  logits = forward(parameters, enc)[0]
 
-    # softmax
- counts = jnp.exp(logits)
- prob = counts / counts.sum(0, keepdims=True)
- label_index = jnp.argmax(prob, 0)
-    print(f"{word}: {data['labels'][label_index]}")
+  # softmax
+  counts = jnp.exp(logits)
+  prob = counts / counts.sum(0, keepdims=True)
+  label_index = jnp.argmax(prob, 0)
+  print(f"{word}: {data['labels'][label_index]}")
 ```
 
 Remember we added our loss to a list? We can use that to plot it now. As a note, I used kaiming initialization for model parameters so we get a better loss in the beginning, thus helping our model to learn faster.
@@ -313,37 +313,37 @@ For the actual implementation, I'm going to use the Equinox library. It's a JAX 
 import equinox as eqx
 
 class RNN(eqx.Module):
-    # jax will differentiate only floating point terms, ignoring int members
- n_input: int
+  # jax will differentiate only floating point terms, ignoring int members
+  n_input: int
 
- Wi2h: jax.Array
- Wh2h: jax.Array
- bh: jax.Array
- Wh2o: jax.Array
- bo: jax.Array
+  Wi2h: jax.Array
+  Wh2h: jax.Array
+  bh: jax.Array
+  Wh2o: jax.Array
+  bo: jax.Array
 
-    def __init__(self, n_input: int, n_hidden: int, n_output: int):
-        self.n_input = n_input
+  def __init__(self, n_input: int, n_hidden: int, n_output: int):
+    self.n_input = n_input
 
-        self.Wi2h = jax.random.normal(key, (n_input, n_hidden)) * 0.05  # kaiming init
-        self.Wh2h = jax.random.normal(key, (n_hidden, n_hidden)) * 0.01
-        self.bh = jnp.zeros((n_hidden))
-        self.Wh2o = jax.random.normal(key, (n_hidden, n_output)) * 0.01
-        self.bo = jnp.zeros((n_output))
+    self.Wi2h = jax.random.normal(key, (n_input, n_hidden)) * 0.05  # kaiming init
+    self.Wh2h = jax.random.normal(key, (n_hidden, n_hidden)) * 0.01
+    self.bh = jnp.zeros((n_hidden))
+    self.Wh2o = jax.random.normal(key, (n_hidden, n_output)) * 0.01
+    self.bo = jnp.zeros((n_output))
 
-    def __call__(self, X: jax.Array, hidden: jax.Array) -> tuple[jax.Array, jax.Array]:
- X = X.reshape(-1, self.n_input)
+  def __call__(self, X: jax.Array, hidden: jax.Array) -> tuple[jax.Array, jax.Array]:
+    X = X.reshape(-1, self.n_input)
 
-        # first two layers: input to hidden and hidden to hidden
- hpreact = X @ self.Wi2h + hidden @ self.Wh2h + self.bh
- hidden = jnp.tanh(hpreact)
+    # first two layers: input to hidden and hidden to hidden
+    hpreact = X @ self.Wi2h + hidden @ self.Wh2h + self.bh
+    hidden = jnp.tanh(hpreact)
 
-        # map hidden to the output logits
- out = hidden @ self.Wh2o + self.bo
+    # map hidden to the output logits
+    out = hidden @ self.Wh2o + self.bo
 
-        # also return the hidden state, will be used for the next
-        # element in the sequence
-        return out, hidden
+    # also return the hidden state, will be used for the next
+    # element in the sequence
+    return out, hidden
 
 
 # create the model
@@ -355,12 +355,12 @@ For the forward pass, we need to feed the model each word from the sequence one 
 ```py
 @eqx.filter_jit
 def forward(model: eqx.Module, X: jax.Array) -> jax.Array:
- hidden = jnp.zeros((1, n_hidden))
+  hidden = jnp.zeros((1, n_hidden))
 
-    for i in range(X.shape[0]):
- logits, hidden = model(X[i], hidden)
+  for i in range(X.shape[0]):
+    logits, hidden = model(X[i], hidden)
 
-    return logits
+  return logits
 ```
 
 We also annotate the loss function with filter_value_and_grad from Equinox. This way it returns a tuple, the first value being the actual value and the second value being the gradient. This is just another way to achieve the same thing but with only one function call.
@@ -368,14 +368,14 @@ We also annotate the loss function with filter_value_and_grad from Equinox. This
 ```py
 @eqx.filter_value_and_grad
 def get_loss(model: eqx.Module, X: jax.Array, y: jax.Array):
- logits = forward(model, X)
+  logits = forward(model, X)
 
-    # # cross entropy loss
- counts = jnp.exp(logits)
- prob = counts / counts.sum(1, keepdims=True)
- loss = -jnp.mean(jnp.log(prob[0, y]))
+  # cross entropy loss
+  counts = jnp.exp(logits)
+  prob = counts / counts.sum(1, keepdims=True)
+  loss = -jnp.mean(jnp.log(prob[0, y]))
 
-    return loss
+  return loss
 ```
 
 The training loop is essentially the same. Running it for 20k steps with learning rate decay and SGD update yields better results than the MLP.
@@ -396,30 +396,30 @@ from flax.training import train_state
 import optax
 
 class LSTM(nn.Module):
- sentence_size: int
- input_size: int
- hidden_size: int
- output_size: int
+  sentence_size: int
+  input_size: int
+  hidden_size: int
+  output_size: int
 
-    def setup(self):
-        self.lstm = nn.OptimizedLSTMCell(features=self.hidden_size)
-        self.h2o = nn.Dense(self.output_size)
+  def setup(self):
+    self.lstm = nn.OptimizedLSTMCell(features=self.hidden_size)
+    self.h2o = nn.Dense(self.output_size)
 
-    def __call__(self, x):
- x = x.reshape(-1, self.sentence_size, self.input_size)
- batch_size, seq_length = x.shape[0], x.shape[1]
- carry = self.lstm.initialize_carry(
- key, (batch_size,))
+  def __call__(self, x):
+    x = x.reshape(-1, self.sentence_size, self.input_size)
+    batch_size, seq_length = x.shape[0], x.shape[1]
+    carry = self.lstm.initialize_carry(
+      key, (batch_size,))
 
- outputs = []
-        for t in range(seq_length):
- carry, y = self.lstm(carry, x[:, t])
- outputs.append(y)
+    outputs = []
+    for t in range(seq_length):
+      carry, y = self.lstm(carry, x[:, t])
+      outputs.append(y)
 
- output = outputs[-1]
- output = self.h2o(output)
+    output = outputs[-1]
+    output = self.h2o(output)
 
-        return output
+    return output
 ```
 
 To actually create the model we need to initialize its parameters in a varibale. For this we need to feed in an example input, so Flax can figure out the shapes. After we create the model and its parameters, we can create an Adam optimizer and initialize a train state. A train state is a useful utility that helps manage state related to the training process.
@@ -444,7 +444,7 @@ params = variables['params']
 # define a simple optimizer and training state
 optimizer = optax.adam(learning_rate=lr)
 state = train_state.TrainState.create(
-    apply_fn=model.apply, params=params, tx=optimizer)
+  apply_fn=model.apply, params=params, tx=optimizer)
 ```
 
 The loss function is very similar, however it uses Flax functions to achieve better performance. We also use optax to update the parameters in the backward pass.
@@ -452,35 +452,35 @@ The loss function is very similar, however it uses Flax functions to achieve bet
 ```py
 @jax.jit
 def compute_loss(params, batch, targets):
- logits = model.apply({'params': params}, batch)
- one_hot_targets = jax.nn.one_hot(targets, num_classes=output_size)
- loss = optax.softmax_cross_entropy(logits, one_hot_targets).mean()
-    return loss
+  logits = model.apply({'params': params}, batch)
+  one_hot_targets = jax.nn.one_hot(targets, num_classes=output_size)
+  loss = optax.softmax_cross_entropy(logits, one_hot_targets).mean()
+  return loss
 
 
 @jax.jit
 def train_step(state, batch, targets):
-    def loss_fn(params):
-        return compute_loss(params, batch, targets)
- grad_fn = jax.value_and_grad(loss_fn)
- loss, grads = grad_fn(state.params)
- state = state.apply_gradients(grads=grads)
-    return state, loss
+  def loss_fn(params):
+    return compute_loss(params, batch, targets)
+  grad_fn = jax.value_and_grad(loss_fn)
+  loss, grads = grad_fn(state.params)
+  state = state.apply_gradients(grads=grads)
+  return state, loss
 ```
 
 The training code is much shorter this time. We update the train state each step, it holds the parameters and the method to update them using the optimizer.
 
 ```py
 for step in range(steps + 1):
- key, _ = jax.random.split(key)
- ix = jax.random.randint(key, (batch_size,), 0, len(Xtr))
- Xb, Yb = Xtr[ix], Ytr[ix]
+  key, _ = jax.random.split(key)
+  ix = jax.random.randint(key, (batch_size,), 0, len(Xtr))
+  Xb, Yb = Xtr[ix], Ytr[ix]
 
- state, loss = train_step(state, Xb, Yb)
- lossi.append(loss)
+  state, loss = train_step(state, Xb, Yb)
+  lossi.append(loss)
 
-    if step % 500 == 0:
-        print(f"step {step}: loss={loss:.2f}")
+  if step % 500 == 0:
+    print(f"step {step}: loss={loss:.2f}")
 ```
 
 ![plot](https://github.com/stefanasandei/english-or-spanish/blob/main/plots/Figure_1_lstm.png?raw=true)
