@@ -10,62 +10,11 @@ import Layout from "../layouts/Layout.astro";
   <div>
     <h1>Projects</h1>
     <p>
-      These are some of my coding projects, developed by myself. Some of
-      them were awarded at the "InfoEducatie" competition, which represents a huge
-      opportunity for me to find time to work on stuff I actually enjoy!
+      In chronological order (newest -> oldest), which is also roughly the
+      ascending order of technical difficulty:
     </p>
   </div>
   <div>
-    <section
-      style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
-    >
-      <p style="margin-bottom: 0;">Started in May 2023</p>
-      <a href="https://helix-coding.vercel.app">
-        <h2 style="margin-top: 0; margin-bottom: 0; font-size: 2rem;">Helix</h2>
-      </a>
-      <p>
-        Helix is a modern social network for programmers. Users can read and
-        write articles, execute code in 10+ languages, solve practice problems
-        and participate in various coding contests hosted my the community.
-        Helix is a long passion project of mine, I got the opportunity to work
-        on it thanks to the InfoEducatie Contest, where I also got the first
-        place with this project. Website url: <a
-          href="https://helix-coding.vercel.app"
-          >https://helix-coding.vercel.app</a
-        >
-      </p>
-      <p>Links:</p>
-      <ul>
-        <li>
-          Frontend: <a href="https://github.com/stefanasandei/helix"
-            >https://github.com/stefanasandei/helix</a
-          >
-        </li>
-        <li>
-          Code Execution service: <a
-            href="https://github.com/stefanasandei/exec"
-            >https://github.com/stefanasandei/exec</a
-          >
-        </li>
-        <li>
-          Project documentation (RO): <a
-            href="https://github.com/stefanasandei/helix/blob/main/docs/DocumentatieNationala.pdf"
-            >https://github.com/stefanasandei/helix/blob/main/docs/DocumentatieNationala.pdf</a
-          >
-        </li>
-      </ul>
-      <p>
-        For the frontend I used TypeScript, React, Tailwind, Jotai, Cypress and
-        Storybook. It is served by a NextJS server, which also handles
-        serverless functions.
-      </p>
-      <p>
-        The backend is mainly composed by serverless functions, hosted on
-        Vercel, but the code execution is done by a separate microservice. It is
-        written in Rust and it uses a custom container technology to run the
-        code.
-      </p>
-    </section>
     <section
       style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
     >
@@ -114,6 +63,55 @@ import Layout from "../layouts/Layout.astro";
         which uses it to display the best route.
       </p>
     </section>
+    <section
+      style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
+    >
+      <p style="margin-bottom: 0;">May - July 2023</p>
+      <a href="https://helix-coding.vercel.app">
+        <h2 style="margin-top: 0; margin-bottom: 0; font-size: 2rem;">Helix</h2>
+      </a>
+      <p>
+        Helix is a modern social network for programmers. Users can read and
+        write articles, execute code in 10+ languages, solve practice problems
+        and participate in various coding contests hosted my the community.
+        Helix is a long passion project of mine, I got the opportunity to work
+        on it thanks to the InfoEducatie Contest, where I also got the first
+        place with this project. Website url: <a
+          href="https://helix-coding.vercel.app"
+          >https://helix-coding.vercel.app</a
+        >
+      </p>
+      <ul>
+        <li>
+          Frontend: <a href="https://github.com/stefanasandei/helix"
+            >https://github.com/stefanasandei/helix</a
+          >
+        </li>
+        <li>
+          Code Execution service: <a
+            href="https://github.com/stefanasandei/exec"
+            >https://github.com/stefanasandei/exec</a
+          >
+        </li>
+        <li>
+          Project documentation (RO): <a
+            href="https://github.com/stefanasandei/helix/blob/main/docs/DocumentatieNationala.pdf"
+            >https://github.com/stefanasandei/helix/blob/main/docs/DocumentatieNationala.pdf</a
+          >
+        </li>
+      </ul>
+      <p>
+        For the frontend I used TypeScript, React, Tailwind, Jotai, Cypress and
+        Storybook. It is served by a NextJS server, which also handles
+        serverless functions.
+      </p>
+      <p>
+        The backend is mainly composed by serverless functions, hosted on
+        Vercel, but the code execution is done by a separate microservice. It is
+        written in Rust and it uses a custom container technology to run the
+        code.
+      </p>
+    </section>
     <!-- <section
       style="top-bottom: 1rem; margin-top: 2rem; border-top: 4px dotted var(--lavender)"
     >
@@ -128,6 +126,30 @@ import Layout from "../layouts/Layout.astro";
         <a href="#">read more</a>
       </p>
     </section> -->
+  </div>
+  <hr />
+  <div>
+    <h1>Other projects</h1>
+    <p>Some smaller projects I did:</p>
+    <ul>
+      <li>
+        <b>Nutrivia</b>: track your eating habits, get food recommandations and
+        manage your health using an all-in-one web app; developed for FIICode
+        2024; github repo: <a href="https://github.com/stefanasandei/nutrivia"
+          >https://github.com/stefanasandei/nutrivia</a
+        >; April 2024
+      </li>
+      <br />
+      <li>
+        <b>Steer</b> (prototype): built a self-driving neural network using a state
+        space model (based on ViM - vision Mamba), trained on comma2k19; case study
+        to compare its performance and power consumption against transformers and
+        traditional models; github repo: <a
+          href="https://github.com/stefanasandei/steer"
+          >https://github.com/stefanasandei/steer</a
+        >; August-October 2024
+      </li>
+    </ul>
   </div>
 </Layout>
 
