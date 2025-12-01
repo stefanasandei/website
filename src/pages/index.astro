@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 
+import NavBar from "../components/NavBar.svelte";
 import ExperienceSection from "../components/ExperienceSection.svelte";
 ---
 
@@ -12,7 +13,9 @@ import ExperienceSection from "../components/ExperienceSection.svelte";
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
 	</head>
-	<body class="bg-background dark text-foreground p-8">
+	<body class="bg-background dark text-foreground p-2">
+		<NavBar client:load />
+
 		<main class="md:max-w-2xl md:mx-auto flex flex-col gap-12">
 			<div class="">
 				<h1 class="text-2xl font-bold uppercase">Your Name</h1>
