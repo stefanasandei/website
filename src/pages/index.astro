@@ -1,5 +1,7 @@
 ---
+import "../styles/global.css";
 
+import ExperienceSection from "../components/ExperienceSection.svelte";
 ---
 
 <html lang="en">
@@ -10,7 +12,29 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="bg-background dark text-foreground p-8">
+		<main class="md:max-w-2xl md:mx-auto flex flex-col gap-12">
+			<div class="">
+				<h1 class="text-2xl font-bold uppercase">Your Name</h1>
+				<h2 class="text-sm text-muted-foreground uppercase mt-1">
+					Your Title
+				</h2>
+				<p class="text-sm mt-6 leading-relaxed">
+					Brief description about yourself, your focus, and what you
+					do.
+				</p>
+			</div>
+
+			<ExperienceSection />
+
+			<div class="text-sm">
+				<p>
+					Get in touch: <a
+						href="mailto:contact@example.com"
+						class="underline hover:no-underline">email</a
+					>
+				</p>
+			</div>
+		</main>
 	</body>
 </html>
