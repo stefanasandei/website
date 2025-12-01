@@ -10,7 +10,7 @@ export default defineConfig({
   site: 'https://asandei.com',
   integrations: [
     // sitemap(),
-    AstroPWA(),
+    // AstroPWA(),
     lit(),
     mdx(),
   ],
