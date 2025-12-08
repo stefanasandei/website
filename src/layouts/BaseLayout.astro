@@ -1,0 +1,46 @@
+---
+import "../styles/global.css";
+import NavBar from "../components/NavBar.svelte";
+
+export interface Props {
+    title: string;
+    description?: string;
+}
+
+const { title, description = "Asandei Stefan-Alexandru" } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+    </head>
+    <body class="bg-background dark text-foreground">
+        <NavBar client:load />
+
+        <slot />
+
+        <footer
+            class="mt-6 py-6 border-t border-border text-xs text-muted-foreground"
+        >
+            <div
+                class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            >
+                <div class="">
+                    <div>
+                        Copyright {currentYear} Asandei Stefan-Alexandru
+                    </div>
+                </div>
+
+                <a href="#" class="hover:text-foreground transition-colors">
+                    ↑ Back to top
+                </a>
+            </div>
+        </footer>
+    </body>
+</html>

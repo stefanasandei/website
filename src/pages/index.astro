@@ -1,54 +1,28 @@
 ---
-import "../styles/global.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 
-import NavBar from "../components/NavBar.svelte";
 import ContactSection from "../components/ContactSection.svelte";
 import AwardsSection from "../components/AwardsSection.svelte";
 import IntroSection from "../components/IntroSection.svelte";
 import ProjectsSection from "../components/ProjectsSection.svelte";
 import BlogSection from "../components/BlogSection.svelte";
 
-const currentYear = new Date().getFullYear();
+const posts = await getCollection("blog");
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Asandei</title>
-	</head>
-	<body class="bg-background dark text-foreground">
-		<NavBar client:load />
-
-		<main
-			class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
-		>
-			<IntroSection />
-			<BlogSection />
-			<!-- todo: work experience, research -->
-			<ProjectsSection />
-			<AwardsSection />
-			<ContactSection />
-
-			<footer
-				class="mt-6 py-6 border-t border-border text-xs text-muted-foreground"
-			>
-				<div
-					class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-				>
-					<div class="">
-						<div>
-							Copyright {currentYear} Asandei Stefan-Alexandru
-						</div>
-					</div>
-
-					<a href="#" class="hover:text-foreground transition-colors">
-						↑ Back to top
-					</a>
-				</div>
-			</footer>
-		</main>
-	</body>
-</html>
+<BaseLayout
+	title="Asandei"
+	description="Personal website of Asandei Stefan-Alexandru"
+>
+	<main
+		class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+	>
+		<IntroSection />
+		<BlogSection {posts} />
+		<!-- todo: work experience, research -->
+		<ProjectsSection />
+		<AwardsSection />
+		<ContactSection />
+	</main>
+</BaseLayout>

@@ -1,0 +1,54 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionTitle from "../../components/SectionTitle.svelte";
+
+export async function getStaticPaths() {
+    const blogEntries = await getCollection("blog");
+    return blogEntries.map((entry) => ({
+        params: { slug: entry.id },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+    title={`${entry.data.title} - Asandei`}
+    description={entry.data.description || entry.data.title}
+>
+    <main
+        class="md:max-w-2xl px-2 lg:max-w-4xl mx-2 md:mx-auto flex flex-col gap-8 py-8"
+    >
+        <article class="prose prose-invert max-w-none">
+            <SectionTitle>{entry.data.title}</SectionTitle>
+
+            <div class="text-muted-foreground text-sm mb-8">
+                {
+                    entry.data.date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                    })
+                }
+            </div>
+
+            <div
+                class="prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
+            >
+                <Content />
+            </div>
+        </article>
+
+        <div class="border-t border-border pt-8">
+            <a
+                href="/"
+                class="text-primary hover:text-primary/80 transition-colors"
+            >
+                ← Back to home
+            </a>
+        </div>
+    </main>
+</BaseLayout>
