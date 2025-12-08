@@ -6,14 +6,18 @@
     };
 </script>
 
-<nav class="border-b border-foreground/20 mb-8 pb-2 font-mono text-sm">
-    <div class="md:max-w-2xl md:mx-auto flex items-center justify-between">
+<nav
+    class="border-b sticky top-0 bg-background border-foreground/20 mb-8 py-2 font-mono text-sm"
+>
+    <div
+        class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex items-center justify-between"
+    >
         <!-- Logo/Name -->
         <a
             href="/"
-            class="font-bold uppercase tracking-tight hover:bg-primary/20 px-2 py-1 transition-colors"
+            class="font-bold uppercase tracking-tight hover:bg-primary/20 px-2 py-2 transition-colors"
         >
-            Name
+            Stefan Asandei
         </a>
 
         <!-- Desktop Navigation -->

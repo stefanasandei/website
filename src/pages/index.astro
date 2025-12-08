@@ -2,7 +2,13 @@
 import "../styles/global.css";
 
 import NavBar from "../components/NavBar.svelte";
+import ContactSection from "../components/ContactSection.svelte";
 import ExperienceSection from "../components/ExperienceSection.svelte";
+import IntroSection from "../components/IntroSection.svelte";
+import ProjectsSection from "../components/ProjectsSection.svelte";
+import BlogSection from "../components/BlogSection.svelte";
+
+const currentYear = new Date().getFullYear();
 ---
 
 <html lang="en">
@@ -13,31 +19,35 @@ import ExperienceSection from "../components/ExperienceSection.svelte";
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
 	</head>
-	<body class="bg-background dark text-foreground p-2">
+	<body class="bg-background dark text-foreground">
 		<NavBar client:load />
 
-		<main class="md:max-w-2xl md:mx-auto flex flex-col gap-12">
-			<div class="">
-				<h1 class="text-2xl font-bold uppercase">Your Name</h1>
-				<h2 class="text-sm text-muted-foreground uppercase mt-1">
-					Your Title
-				</h2>
-				<p class="text-sm mt-6 leading-relaxed">
-					Brief description about yourself, your focus, and what you
-					do.
-				</p>
-			</div>
-
+		<main
+			class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+		>
+			<IntroSection />
+			<BlogSection />
+			<ProjectsSection />
 			<ExperienceSection />
+			<ContactSection />
 
-			<div class="text-sm">
-				<p>
-					Get in touch: <a
-						href="mailto:contact@example.com"
-						class="underline hover:no-underline">email</a
-					>
-				</p>
-			</div>
+			<footer
+				class="mt-6 pt-6 pb-4 border-t border-border text-xs text-muted-foreground"
+			>
+				<div
+					class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+				>
+					<div class="">
+						<div>
+							Copyright {currentYear} Asandei Stefan-Alexandru
+						</div>
+					</div>
+
+					<a href="#" class="hover:text-foreground transition-colors">
+						↑ Back to top
+					</a>
+				</div>
+			</footer>
 		</main>
 	</body>
 </html>
