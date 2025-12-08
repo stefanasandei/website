@@ -1,4 +1,5 @@
 <script>
+    import CoolLink from "./CoolLink.svelte";
     import ExperienceItem from "./ExperienceItem.svelte";
     import SectionTitle from "./SectionTitle.svelte";
 
@@ -12,6 +13,16 @@
             company: "National AI Olympiad",
             dates: "2025, Bucharest, Romania",
             status: "2nd Place and Gold Medal",
+        },
+        {
+            company: "Infomatrix Web Contest",
+            dates: "2024, Bucharest, Romania",
+            status: "Gold Medal",
+        },
+        {
+            company: "National CS Olympiad",
+            dates: "2024, Bucharest, Romania",
+            status: "Bronze Medal",
         },
         {
             company: "Infoeducatie Web Hackathon",
@@ -29,6 +40,10 @@
 <section>
     <SectionTitle>Awards</SectionTitle>
 
+    <p>
+        Relevant awards from high school competitions, mainly for emotional
+        value:
+    </p>
     <div class="space-y-1">
         <div
             class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold border-b"
@@ -41,4 +56,6 @@
             <ExperienceItem {...exp} />
         {/each}
     </div>
+
+    <CoolLink href="#">high school journey</CoolLink>
 </section>

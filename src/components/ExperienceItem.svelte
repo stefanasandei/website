@@ -10,15 +10,6 @@
     <div class="font-bold truncate">{company}</div>
     <div class="text-sm">{dates}</div>
     <div class="text-right">
-        {#if status == "Active"}
-            <span
-                class="px-2 py-0.5 text-xs border-primary bg-primary text-primary-foreground whitespace-nowrap"
-                >{status}</span
-            >
-        {:else}
-            <span class="px-2 py-0.5 text-xs border whitespace-nowrap"
-                >{status}</span
-            >
-        {/if}
+        <span class="px-2 py-0.5 text-xs">{status}</span>
     </div>
 </div>

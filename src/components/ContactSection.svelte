@@ -43,6 +43,17 @@
             </a>
         </div>
         <div>
+            <span class="text-muted-foreground">orcid:</span>
+            <a
+                href="https://orcid.org/0009-0000-4691-3903"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-foreground hover:text-muted-foreground transition-colors"
+            >
+                https://orcid.org/0009-0000-4691-3903
+            </a>
+        </div>
+        <div>
             <span class="text-muted-foreground">discord:</span>
             <span class="text-foreground">stefan_asandei</span>
         </div>

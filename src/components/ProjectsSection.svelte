@@ -1,9 +1,10 @@
 <script>
+    import CoolLink from "./CoolLink.svelte";
     import SectionTitle from "./SectionTitle.svelte";
 
     const projects = [
         {
-            name: "AI Task Solutions",
+            name: "AI Tasks Solutions",
             role: "https://github.com/stefanasandei/roai-solved",
             description:
                 "TLDR: Solved and explained competitive AI tasks from IOAI, National Olympiads (Romania, Poland, Russia, etc.) and other contests.",
@@ -39,10 +40,5 @@
         {/each}
     </div>
 
-    <a
-        href="#"
-        class="text-primary hover:text-primary/80 transition-colors inline-block mt-4"
-    >
-        all projects ↗
-    </a>
+    <CoolLink href="#">all projects</CoolLink>
 </div>

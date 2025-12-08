@@ -1,4 +1,5 @@
 <script>
+    import CoolLink from "./CoolLink.svelte";
     import SectionTitle from "./SectionTitle.svelte";
 
     const posts = [
@@ -19,7 +20,10 @@
     <div class="space-y-3">
         {#each posts as post}
             <div class="flex justify-between items-start gap-4">
-                <a href="#" class="hover:text-primary transition-colors">
+                <a
+                    href="#"
+                    class="hover:text-primary transition-colors duration-100"
+                >
                     {post.title}
                 </a>
                 <span class="text-muted-foreground text-sm whitespace-nowrap">
@@ -29,10 +33,12 @@
         {/each}
     </div>
 
-    <a
-        href="#"
-        class="text-primary hover:text-primary/80 transition-colors inline-block mt-4"
-    >
-        all posts ↗
-    </a>
+    <div class="flex flex-roww justify-between">
+        <CoolLink href="#">all posts</CoolLink>
+
+        <div class="space-x-4">
+            <CoolLink href="#">IOAI prep. posts</CoolLink>
+            <!-- <CoolLink href="#">IOAI prep. posts</CoolLink> -->
+        </div>
+    </div>
 </div>
