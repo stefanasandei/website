@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import SectionTitle from "../../components/SectionTitle.svelte";
+import CoolLink from "../../components/CoolLink.svelte";
+
+// Get all blog posts sorted by date (newest first)
+const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout
+    title="Blog - Asandei"
+    description="Collection of articles and thoughts on machine learning, research, and technology"
+>
+    <div
+        class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+    >
+        <div class="space-y-6">
+            <SectionTitle>blog</SectionTitle>
+
+            <div>
+                {
+                    posts.map((post) => (
+                        <div class="flex justify-between items-start gap-4 py-3">
+                            <a
+                                href={`/blog/${post.id}`}
+                                class="hover:text-primary transition-colors duration-100"
+                            >
+                                {post.data.title}
+                            </a>
+                            <span class="text-muted-foreground text-sm whitespace-nowrap">
+                                {post.data.date.toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                })}
+                            </span>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </div>
+</BaseLayout>

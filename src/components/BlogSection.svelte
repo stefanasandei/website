@@ -29,7 +29,7 @@
     </div>
 
     <div class="flex flex-roww justify-between">
-        <CoolLink href="#">all posts</CoolLink>
+        <CoolLink href="/blog">all posts</CoolLink>
 
         <div class="space-x-4">
             <CoolLink href="#">IOAI prep. posts</CoolLink>
