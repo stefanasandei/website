@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionTitle from "../../components/SectionTitle.svelte";
+import ArticleTimeline from "../../components/ArticleTimeline.svelte";
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection("blog");
@@ -19,10 +20,8 @@ const { Content } = await render(entry);
     title={`${entry.data.title} - Asandei`}
     description={entry.data.description || entry.data.title}
 >
-    <main
-        class="md:max-w-2xl px-2 lg:max-w-4xl mx-2 md:mx-auto flex flex-col gap-8 py-8"
-    >
-        <article class="prose prose-invert max-w-none">
+    <main class="px-2 lg:px-0 lg:max-w-none flex flex-col gap-12">
+        <article class="prose prose-invert max-w-none lg:max-w-6xl lg:mx-auto">
             <SectionTitle>{entry.data.title}</SectionTitle>
 
             <div class="text-muted-foreground text-sm mb-8">
@@ -36,19 +35,25 @@ const { Content } = await render(entry);
             </div>
 
             <div
-                class="prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
+                class="prose-headings:text-foreground text-justify prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
             >
                 <Content />
             </div>
         </article>
 
-        <div class="border-t border-border pt-8">
+        <aside
+            class="hidden 2xl:block 2xl:w-64 2xl:fixed 2xl:right-12 2xl:top-20"
+        >
+            <ArticleTimeline client:load />
+        </aside>
+
+        <!-- <div class="border-t border-border pt-8 lg:max-w-6xl">
             <a
                 href="/"
                 class="text-primary hover:text-primary/80 transition-colors"
             >
                 ← Back to home
             </a>
-        </div>
+        </div> -->
     </main>
 </BaseLayout>

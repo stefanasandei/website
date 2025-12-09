@@ -3,7 +3,6 @@
     import SectionTitle from "./SectionTitle.svelte";
 
     export let posts;
-    console.log(posts);
 </script>
 
 <div class="space-y-6">
