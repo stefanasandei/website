@@ -3,9 +3,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import SectionTitle from "../../components/SectionTitle.svelte";
 import CoolLink from "../../components/CoolLink.svelte";
+import Tag from "../../components/Tag.svelte";
 
 // Get all blog posts sorted by date (newest first)
-const posts = (await getCollection("blog")).sort(
+const allPosts = (await getCollection("blog")).sort(
     (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 ---
@@ -15,28 +16,55 @@ const posts = (await getCollection("blog")).sort(
     description="Collection of articles and thoughts on machine learning, research, and technology"
 >
     <div
-        class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+        class="md:max-w-2xl h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
     >
         <div class="space-y-6">
-            <SectionTitle>blog</SectionTitle>
+            <div class="border-b border-border">
+                <div class="flex justify-between items-center">
+                    <SectionTitle haveBorder={false} large={true}
+                        >blog</SectionTitle
+                    >
+                    <div id="current-tag-container"></div>
+                </div>
+            </div>
 
-            <div>
+            <div id="posts-container">
                 {
-                    posts.map((post) => (
-                        <div class="flex justify-between items-start gap-4 py-3">
-                            <a
-                                href={`/blog/${post.id}`}
-                                class="hover:text-primary transition-colors duration-100"
-                            >
-                                {post.data.title}
-                            </a>
-                            <span class="text-muted-foreground text-sm whitespace-nowrap">
-                                {post.data.date.toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                })}
-                            </span>
+                    allPosts.map((post, index) => (
+                        <div
+                            class="py-4 post-item"
+                            data-tags={JSON.stringify(post.data.tags || [])}
+                        >
+                            <div class="mb-3">
+                                <a
+                                    href={`/blog/${post.id}`}
+                                    class="hover:text-primary transition-colors duration-100 text-lg font-medium"
+                                >
+                                    {post.data.title}
+                                </a>
+                            </div>
+                            <div class="flex justify-between items-center gap-4">
+                                <div class="flex flex-wrap gap-1">
+                                    {post.data.tags &&
+                                        post.data.tags.length > 0 &&
+                                        post.data.tags.map((tag) => (
+                                            <Tag
+                                                {tag}
+                                                href={`/blog?tag=${tag}`}
+                                            />
+                                        ))}
+                                </div>
+                                <span class="text-muted-foreground text-sm whitespace-nowrap shrink-0">
+                                    {post.data.date.toLocaleDateString(
+                                        "en-US",
+                                        {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        },
+                                    )}
+                                </span>
+                            </div>
                         </div>
                     ))
                 }
@@ -44,3 +72,67 @@ const posts = (await getCollection("blog")).sort(
         </div>
     </div>
 </BaseLayout>
+
+<script>
+    function filterPosts() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tag = urlParams.get("tag");
+
+        const postItems = document.querySelectorAll(".post-item");
+
+        // First, update visibility based on tag filter
+        postItems.forEach((item) => {
+            const element = item as HTMLElement;
+            const tags = JSON.parse(element.dataset.tags || "[]");
+            if (tag && !tags.includes(tag)) {
+                element.style.display = "none";
+            } else {
+                element.style.display = "block";
+            }
+        });
+
+        // Update border classes based on visible posts
+        const visiblePosts = Array.from(postItems).filter((item) => {
+            return (item as HTMLElement).style.display !== "none";
+        });
+
+        visiblePosts.forEach((item, index) => {
+            const element = item as HTMLElement;
+            if (index < visiblePosts.length - 1) {
+                element.classList.add("border-b", "border-border");
+            } else {
+                element.classList.remove("border-b", "border-border");
+            }
+        });
+
+        // Update the current tag display
+        const currentTagContainer = document.getElementById(
+            "current-tag-container",
+        ) as HTMLElement;
+        if (currentTagContainer) {
+            currentTagContainer.innerHTML = tag
+                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
+                : "";
+        }
+    }
+
+    // Filter on page load
+    filterPosts();
+
+    // Also filter when URL changes (for SPA-like behavior)
+    window.addEventListener("popstate", filterPosts);
+
+    // Handle tag link clicks
+    document.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.matches("a[href*='?tag=']")) {
+            e.preventDefault();
+            const href = target.getAttribute("href");
+            if (href) {
+                const url = new URL(href, window.location.origin);
+                window.history.pushState({}, "", url.toString());
+                filterPosts();
+            }
+        }
+    });
+</script>

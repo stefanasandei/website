@@ -22,7 +22,7 @@ const { Content } = await render(entry);
 >
     <main class="px-2 lg:px-0 lg:max-w-none flex flex-col gap-12">
         <article class="prose prose-invert max-w-none lg:max-w-6xl lg:mx-auto">
-            <SectionTitle>{entry.data.title}</SectionTitle>
+            <SectionTitle large={true}>{entry.data.title}</SectionTitle>
 
             <div class="text-muted-foreground text-sm mb-8">
                 {

@@ -18,7 +18,7 @@
     ];
 </script>
 
-<div class="space-y-6">
+<div>
     <SectionTitle>projects</SectionTitle>
 
     <div class="space-y-8">

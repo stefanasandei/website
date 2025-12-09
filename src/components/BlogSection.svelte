@@ -5,7 +5,7 @@
     export let posts;
 </script>
 
-<div class="space-y-6">
+<div>
     <SectionTitle>blog</SectionTitle>
 
     <div class="space-y-3">
@@ -28,11 +28,11 @@
         {/each}
     </div>
 
-    <div class="flex flex-roww justify-between">
+    <div class="flex flex-row justify-between">
         <CoolLink href="/blog">all posts</CoolLink>
 
         <div class="space-x-4">
-            <CoolLink href="#">IOAI prep. posts</CoolLink>
+            <CoolLink href="/blog?tag=ioai">IOAI prep. posts</CoolLink>
             <!-- <CoolLink href="#">IOAI prep. posts</CoolLink> -->
         </div>
     </div>
