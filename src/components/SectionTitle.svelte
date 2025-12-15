@@ -9,11 +9,9 @@
             class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
             >*</span
         >
-        <div
-            class={`lowercase inline-block ${large ? "text-4xl" : "text-2xl"}`}
-        >
+        <span class={`lowercase ${large ? "text-4xl" : "text-2xl"}`}>
             <slot />
-        </div>
+        </span>
     </h2>
 {:else}
     <h2 class="text-lg font-bold uppercase pb-2">
@@ -21,10 +19,8 @@
             class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
             >*</span
         >
-        <div
-            class={`lowercase inline-block ${large ? "text-4xl" : "text-2xl"}`}
-        >
+        <span class={`lowercase ${large ? "text-4xl" : "text-2xl"}`}>
             <slot />
-        </div>
+        </span>
     </h2>
 {/if}

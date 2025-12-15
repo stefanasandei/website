@@ -106,9 +106,6 @@
     <nav class="timeline" aria-label="Article sections">
         <div class="timeline-header">
             <span class="timeline-label">SECTIONS</span>
-            <div class="timeline-counter">
-                {getCurrentIndex() + 1}/{timelineItems.length}
-            </div>
         </div>
 
         <div class="timeline-items">

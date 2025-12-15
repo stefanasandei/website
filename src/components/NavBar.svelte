@@ -60,7 +60,7 @@
                 projects
             </a>
             <a
-                href="/cv"
+                href="/public/Asandei_CV.pdf"
                 class="px-3 py-1 hover:bg-primary/20 transition-colors"
             >
                 cv

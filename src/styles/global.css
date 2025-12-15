@@ -165,3 +165,9 @@
     --shadow-xl: var(--shadow-xl);
     --shadow-2xl: var(--shadow-2xl);
 }
+
+/* Fix list bullet colors */
+.prose ul li::marker,
+.prose ol li::marker {
+    color: white;
+}

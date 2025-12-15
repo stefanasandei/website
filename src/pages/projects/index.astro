@@ -15,7 +15,7 @@ const categories = [...new Set(allProjects.map((p) => p.data.category))];
   description="Collection of research projects, open source tools, and experiments"
 >
   <div
-    class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+    class="min-h-[85vh] md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
   >
     <!-- Header -->
     <div class="space-y-6">
@@ -47,11 +47,11 @@ const categories = [...new Set(allProjects.map((p) => p.data.category))];
     </div>
 
     <!-- Projects List -->
-    <div class="space-y-6">
+    <div id="projects-container">
       {allProjects.map((project) => {
         return (
           <div
-            class="project-item"
+            class="py-4 project-item"
             data-category={project.data.category}
           >
             <div class="space-y-3">
@@ -132,8 +132,6 @@ const categories = [...new Set(allProjects.map((p) => p.data.category))];
                 </a>
               </div>
             </div>
-
-            <div class="border-b border-border/30 mt-6"></div>
           </div>
         );
       })}
@@ -165,6 +163,22 @@ const categories = [...new Set(allProjects.map((p) => p.data.category))];
 </style>
 
 <script>
+  function updateProjectBorders() {
+    const projectItems = document.querySelectorAll(".project-item");
+    const visibleProjects = Array.from(projectItems).filter((item) => {
+      return (item as HTMLElement).style.display !== "none";
+    });
+
+    visibleProjects.forEach((item, index) => {
+      const element = item as HTMLElement;
+      if (index < visibleProjects.length - 1) {
+        element.classList.add("border-b", "border-border");
+      } else {
+        element.classList.remove("border-b", "border-border");
+      }
+    });
+  }
+
   function initProjectFilters() {
     const filterBtns = document.querySelectorAll(".filter-btn");
     const projectItems = document.querySelectorAll(".project-item");
@@ -191,6 +205,8 @@ const categories = [...new Set(allProjects.map((p) => p.data.category))];
           }
         });
 
+        updateProjectBorders();
+
         if (emptyState) {
           emptyState.style.display = visibleCount === 0 ? "block" : "none";
         }
@@ -199,5 +215,9 @@ const categories = [...new Set(allProjects.map((p) => p.data.category))];
   }
 
   initProjectFilters();
-  document.addEventListener("astro:after-swap", initProjectFilters);
+  updateProjectBorders(); // Initial border setup
+  document.addEventListener("astro:after-swap", () => {
+    initProjectFilters();
+    updateProjectBorders();
+  });
 </script>
