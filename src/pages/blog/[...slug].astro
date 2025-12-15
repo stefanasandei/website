@@ -35,7 +35,7 @@ const { Content } = await render(entry);
             </div>
 
             <div
-                class="prose-headings:text-foreground text-justify prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
+                class="prose-headings:text-foreground prose-headings:text-3xl prose-headings:border-b prose-headings:border-accent prose-headings:pb-2 text-justify prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
             >
                 <Content />
             </div>
@@ -57,3 +57,20 @@ const { Content } = await render(entry);
         </div> -->
     </main>
 </BaseLayout>
+
+<style>
+    article {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

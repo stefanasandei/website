@@ -1,0 +1,176 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionTitle from "../components/SectionTitle.svelte";
+
+// Webring members data
+const personalMembers = [
+  {
+    name: "Mihai Radu",
+    pfpUrl: "https://michaelradu.netlify.app/_next/image?url=%2Fimages%2Fpfp.gif&w=128&q=75",
+    description: "lorem ipsum",
+    websiteUrl: "https://michaelradu.netlify.app/"
+  },
+  {
+    name: "Paul Tal",
+    pfpUrl: "https://paultal.online/static/profile_picture.jpeg",
+    description: "lorem ipsum",
+    websiteUrl: "https://paultal.online/"
+  },
+  {
+    name: "Tudor Morariu",
+    pfpUrl: "https://placehold.co/40x40/",
+    description: "lorem ipsum",
+    websiteUrl: "https://MorariuT.github.io"
+  },
+  {
+    name: "Gior007",
+    pfpUrl: "https://placehold.co/40x40/",
+    description: "lorem ipsum",
+    websiteUrl: "https://MorariuT.github.io"
+  },
+  {
+    name: "Nikoloz Gegenava",
+    pfpUrl: "https://placehold.co/40x40/",
+    description: "lorem ipsum",
+    websiteUrl: "https://MorariuT.github.io"
+  },
+];
+
+const internetMembers = [
+    {
+    name: "Ostris",
+    pfpUrl: "https://avatars.githubusercontent.com/u/33983539?s=200&v=4",
+    description: "lorem ipsum",
+    websiteUrl: "https://github.com/ostris"
+  },
+  {
+    name: "Will Brown",
+    pfpUrl: "https://avatars.githubusercontent.com/u/9730447?v=4",
+    description: "lorem ipsum",
+    websiteUrl: "https://willcb.com/"
+  },
+  {
+    name: "Dominic Rampas",
+    pfpUrl: "https://avatars.githubusercontent.com/u/61938694?v=4",
+    description: "lorem ipsum",
+    websiteUrl: "https://www.youtube.com/@outliier/videos"
+  },
+  {
+    name: "Luke Smith",
+    pfpUrl: "https://lukesmith.xyz/pix/amanet.jpg",
+    description: "lorem ipsum",
+    websiteUrl: "https://lukesmith.xyz/"
+  }
+];
+---
+
+<BaseLayout
+    title="Asandei - Webring"
+    description="Explore my curated webring of talented developers, designers, and technologists"
+>
+    <div class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-8 md:gap-12">
+        <!-- Header Section -->
+        <div class="space-y-6">
+            <SectionTitle haveBorder={false} large={true}>
+                webring
+            </SectionTitle>
+            
+            <p class="text-base md:text-lg leading-relaxed text-muted-foreground max-w-4xl text-justify">
+                A curated collection of talented individuals in technology, design, and innovation. Explore their work and connect with inspiring creators.
+            </p>
+        </div>
+
+        <!-- Personal Connections Section -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-foreground border-b border-border/50 pb-2">
+                people i personally know
+            </h3>
+            <div class="grid grid-cols-3 gap-6 md:gap-8">
+                {personalMembers.map((member) => (
+                    <a href={member.websiteUrl} target="_blank" rel="noopener noreferrer" class="webring-card group">
+                        <div class="rounded-none border border-border/50 hover:border-border hover:bg-background/50 transition-all duration-300 p-6 h-full flex flex-col">
+                            <!-- Profile Section -->
+                            <div class="flex items-center gap-3 mb-6">
+                                <img
+                                src={member.pfpUrl}
+                                alt={member.name}
+                                style="width: 50px; height: 50px;"
+                                class="rounded-full object-cover"
+                                />
+                                <h3 class="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
+                                    {member.name}
+                                </h3>
+                            </div>
+
+                            <!-- Description -->
+                            <p class="text-sm text-muted-foreground leading-relaxed mb-6 flex-grow">
+                                {member.description}
+                            </p>
+
+                            <!-- Visit Link -->
+                            <div class="mt-auto">
+                                <span class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                                    visit website →
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+
+        <!-- Internet Connections Section -->
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-foreground border-b border-border/50 pb-2">
+                internet people
+            </h3>
+            <div class="grid grid-cols-3 gap-6 md:gap-8">
+                {internetMembers.map((member) => (
+                    <a href={member.websiteUrl} target="_blank" rel="noopener noreferrer" class="webring-card group">
+                        <div class="rounded-none border border-border/50 hover:border-border hover:bg-background/50 transition-all duration-300 p-6 h-full flex flex-col">
+                            <!-- Profile Section -->
+                            <div class="flex items-center gap-3 mb-6">
+                                <img
+                                src={member.pfpUrl}
+                                alt={member.name}
+                                style="width: 50px; height: 50px;"
+                                class="rounded-full object-cover"
+                                />
+                                <h3 class="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
+                                    {member.name}
+                                </h3>
+                            </div>
+
+                            <!-- Description -->
+                            <p class="text-sm text-muted-foreground leading-relaxed mb-6 flex-grow">
+                                {member.description}
+                            </p>
+
+                            <!-- Visit Link -->
+                            <div class="mt-auto">
+                                <span class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                                    visit website →
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </div>
+</BaseLayout>
+
+<style>
+    .webring-card {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>

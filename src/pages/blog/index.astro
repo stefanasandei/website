@@ -79,6 +79,23 @@ const allPosts = (await getCollection("blog")).sort(
     </div>
 </BaseLayout>
 
+<style>
+    .post-item {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
 <script>
     function filterPosts() {
         const urlParams = new URLSearchParams(window.location.search);

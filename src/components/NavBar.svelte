@@ -1,9 +1,17 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
+    export let links = [
+        { href: "/blog", text: "blog" },
+        { href: "/papers", text: "papers", disabled: true },
+        { href: "/projects", text: "projects" },
+        { href: "/public/Asandei_CV.pdf", text: "cv" },
+        { href: "/webring", text: "webring" },
+    ];
+
     let mobileMenuOpen = false;
     let menuButton: HTMLButtonElement;
-    let firstMenuItem: HTMLAnchorElement;
+    let firstMenuItem: HTMLAnchorElement | undefined;
 
     const toggleMenu = () => {
         mobileMenuOpen = !mobileMenuOpen;
@@ -41,30 +49,26 @@
         </a>
 
         <div class="hidden md:flex items-center gap-1">
-            <a
-                href="/blog"
-                class="px-3 py-1 hover:bg-primary/20 transition-colors"
-            >
-                blog
-            </a>
-            <!-- <a
-                href="/papers"
-                class="px-3 py-1 hover:bg-primary/20 transition-colors"
-            >
-                papers
-            </a> -->
-            <a
-                href="/projects"
-                class="px-3 py-1 hover:bg-primary/20 transition-colors"
-            >
-                projects
-            </a>
-            <a
-                href="/public/Asandei_CV.pdf"
-                class="px-3 py-1 hover:bg-primary/20 transition-colors"
-            >
-                cv
-            </a>
+            {#each links as link (link.href)}
+                {#if !link.disabled}
+                    {#if link.href === "/blog"}
+                        <a
+                            bind:this={firstMenuItem}
+                            href={link.href}
+                            class="px-3 py-1 hover:bg-primary/20 transition-colors"
+                        >
+                            {link.text}
+                        </a>
+                    {:else}
+                        <a
+                            href={link.href}
+                            class="px-3 py-1 hover:bg-primary/20 transition-colors"
+                        >
+                            {link.text}
+                        </a>
+                    {/if}
+                {/if}
+            {/each}
         </div>
 
         <button
@@ -84,31 +88,26 @@
             id="mobile-menu"
             class="md:hidden bg-accent/20 mt-4 pt-4 border-t border-foreground/20 flex flex-col gap-2"
         >
-            <a
-                bind:this={firstMenuItem}
-                href="/blog"
-                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
-            >
-                blog
-            </a>
-            <!-- <a
-                href="/papers"
-                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
-            >
-                papers
-            </a> -->
-            <a
-                href="/projects"
-                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
-            >
-                projects
-            </a>
-            <a
-                href="/cv"
-                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
-            >
-                cv
-            </a>
+            {#each links as link (link.href)}
+                {#if !link.disabled}
+                    {#if link.href === "/blog"}
+                        <a
+                            bind:this={firstMenuItem}
+                            href={link.href}
+                            class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
+                        >
+                            {link.text}
+                        </a>
+                    {:else}
+                        <a
+                            href={link.href}
+                            class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
+                        >
+                            {link.text}
+                        </a>
+                    {/if}
+                {/if}
+            {/each}
         </div>
     {/if}
 </nav>
