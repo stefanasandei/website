@@ -25,6 +25,15 @@ const allPosts = (await getCollection("blog")).sort(
                 <div id="current-tag-container"></div>
             </div>
 
+            <p
+                class="text-lg leading-relaxed text-justify text-muted-foreground"
+            >
+                Dive into my collection of articles on machine learning, AI
+                research, competitive programming, and emerging technologies. A
+                mix of technical deep dives, personal reflections, and practical
+                guides to fuel your journey in computer science.
+            </p>
+
             <div id="posts-container">
                 {
                     allPosts.map((post, index) => (

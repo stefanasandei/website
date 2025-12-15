@@ -40,9 +40,12 @@
 <section>
     <SectionTitle>Awards</SectionTitle>
 
-    <p>
-        Relevant awards from high school competitions, mainly for emotional
-        value:
+    <p class="mb-6">
+        A collection of awards and achievements from various competitions and
+        olympiads during my high school years. These accomplishments highlight
+        my passion for computer science, artificial intelligence, and robotics,
+        and hold significant emotional value as milestones in my educational
+        journey.
     </p>
     <div class="space-y-1">
         <div

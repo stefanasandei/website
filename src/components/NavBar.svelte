@@ -47,12 +47,12 @@
             >
                 blog
             </a>
-            <a
+            <!-- <a
                 href="/papers"
                 class="px-3 py-1 hover:bg-primary/20 transition-colors"
             >
                 papers
-            </a>
+            </a> -->
             <a
                 href="/projects"
                 class="px-3 py-1 hover:bg-primary/20 transition-colors"
@@ -91,12 +91,12 @@
             >
                 blog
             </a>
-            <a
+            <!-- <a
                 href="/papers"
                 class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
             >
                 papers
-            </a>
+            </a> -->
             <a
                 href="/projects"
                 class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"

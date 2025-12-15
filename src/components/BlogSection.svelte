@@ -8,6 +8,15 @@
 <div>
     <SectionTitle>blog</SectionTitle>
 
+    <p class="mb-6">
+        Explore my thoughts and insights on various topics in computer science,
+        AI, and technology through my blog posts.
+    </p>
+
+    <p class="text-sm text-muted-foreground mb-4">
+        {posts.length} total posts:
+    </p>
+
     <div class="space-y-3">
         {#each posts as post}
             <div class="flex justify-between items-start gap-4">
