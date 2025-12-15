@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite';
 import svelte from '@astrojs/svelte';
 import mdx from '@astrojs/mdx';
 
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -15,7 +18,9 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       theme: 'catppuccin-mocha'
-    }
+    },
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex]
   },
 
   integrations: [svelte(), mdx()]
