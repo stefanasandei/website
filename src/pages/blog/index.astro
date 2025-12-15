@@ -16,16 +16,13 @@ const allPosts = (await getCollection("blog")).sort(
     description="Collection of articles and thoughts on machine learning, research, and technology"
 >
     <div
-        class="md:max-w-2xl h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+        class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
     >
         <div class="space-y-6">
-            <div class="border-b border-border">
-                <div class="flex justify-between items-center">
-                    <SectionTitle haveBorder={false} large={true}
-                        >blog</SectionTitle
-                    >
-                    <div id="current-tag-container"></div>
-                </div>
+            <div class="flex justify-between items-center">
+                <SectionTitle haveBorder={false} large={true}>blog</SectionTitle
+                >
+                <div id="current-tag-container"></div>
             </div>
 
             <div id="posts-container">

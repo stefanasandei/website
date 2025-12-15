@@ -16,7 +16,7 @@
         </div>
     </h2>
 {:else}
-    <h2 class="text-lg font-bold uppercase mb-4 pb-2">
+    <h2 class="text-lg font-bold uppercase pb-2">
         <span
             class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
             >*</span

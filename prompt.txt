@@ -1,0 +1,1001 @@
+./src/components/ArticleTimeline.svelte
+---
+<script lang="ts">
+    import { onMount, onDestroy } from "svelte";
+
+    export let contentSelector = ".prose";
+
+    let timelineItems: Array<{
+        id: string;
+        text: string;
+        element: HTMLElement;
+    }> = [];
+    let activeItem = "";
+    let observer: IntersectionObserver;
+
+    onMount(() => {
+        // Find all H2 elements in the article content
+        const contentElement = document.querySelector(contentSelector);
+        if (!contentElement) return;
+
+        const h2Elements = contentElement.querySelectorAll("h2");
+        timelineItems = Array.from(h2Elements).map((h2, index) => {
+            const id = h2.id || `section-${index}`;
+            if (!h2.id) h2.id = id;
+
+            return {
+                id,
+                text: h2.textContent || "",
+                element: h2 as HTMLElement,
+            };
+        });
+
+        // Set up intersection observer for scroll detection
+        observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        activeItem = entry.target.id;
+                    }
+                });
+            },
+            {
+                rootMargin: "-20% 0px -70% 0px",
+                threshold: 0,
+            },
+        );
+
+        // Observe all H2 elements
+        timelineItems.forEach((item) => {
+            observer.observe(item.element);
+        });
+
+        // Set initial active item
+        if (timelineItems.length > 0) {
+            activeItem = timelineItems[0].id;
+        }
+    });
+
+    onDestroy(() => {
+        if (observer) {
+            observer.disconnect();
+        }
+    });
+
+    function scrollToSection(id: string) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            activeItem = id;
+        }
+    }
+</script>
+
+{#if timelineItems.length > 0}
+    <nav class="timeline-container" aria-label="Article sections">
+        <div class="timeline-header">
+            <span class="timeline-title">SECTIONS</span>
+        </div>
+
+        {#each timelineItems as item}
+            <button
+                class="timeline-item"
+                class:active={item.id === activeItem}
+                on:click={() => scrollToSection(item.id)}
+                aria-label={`Go to ${item.text}`}
+            >
+                <div class="timeline-connector"></div>
+                <div class="timeline-marker">
+                    <div class="timeline-dot"></div>
+                </div>
+                <span class="timeline-text">{item.text}</span>
+            </button>
+        {/each}
+    </nav>
+{/if}
+
+<style>
+    .timeline-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 0;
+        font-family: var(--font-mono);
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: none;
+        min-width: 200px;
+    }
+
+    .timeline-container::after {
+        content: "";
+        position: absolute;
+        left: 1rem;
+        top: 2.5rem;
+        bottom: 0.5rem;
+        width: 1px;
+        background: var(--border);
+        opacity: 0.5;
+    }
+
+    .timeline-header {
+        padding: 0.25rem 0.5rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+    }
+
+    .timeline-title {
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: var(--muted-foreground);
+        text-transform: uppercase;
+    }
+
+    .timeline-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+        opacity: 0.8;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        border-left: 2px solid transparent;
+    }
+
+    .timeline-item:hover {
+        opacity: 1;
+        background: var(--accent);
+        border-left-color: var(--primary);
+    }
+
+    .timeline-item.active {
+        opacity: 1;
+        background: var(--primary);
+        color: var(--primary-foreground);
+        border-left-color: var(--primary-foreground);
+    }
+
+    .timeline-item.active .timeline-text {
+        color: var(--primary-foreground);
+        font-weight: 600;
+    }
+
+    .timeline-item.active .timeline-dot {
+        background: var(--primary-foreground);
+        box-shadow: 0 0 6px var(--primary-foreground);
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1rem;
+        height: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .timeline-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--muted-foreground);
+        transition: all 0.2s ease;
+        border-radius: 50%;
+        transform: none;
+    }
+
+    .timeline-text {
+        color: var(--foreground);
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        transition: all 0.2s ease;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        flex: 1;
+        text-align: left;
+    }
+
+    /* Responsive design for smaller screens */
+    @media (max-width: 1280px) {
+        .timeline-container {
+            display: none;
+        }
+    }
+</style>
+
+
+---
+./src/components/AwardsSection.svelte
+---
+<script>
+    import CoolLink from "./CoolLink.svelte";
+    import ExperienceItem from "./ExperienceItem.svelte";
+    import SectionTitle from "./SectionTitle.svelte";
+
+    const experiences = [
+        {
+            company: "IOAI",
+            dates: "2025, Beijing, China",
+            status: "Bronze Medal",
+        },
+        {
+            company: "National AI Olympiad",
+            dates: "2025, Bucharest, Romania",
+            status: "2nd Place and Gold Medal",
+        },
+        {
+            company: "Infomatrix Web Contest",
+            dates: "2024, Bucharest, Romania",
+            status: "Gold Medal",
+        },
+        {
+            company: "National CS Olympiad",
+            dates: "2024, Bucharest, Romania",
+            status: "Bronze Medal",
+        },
+        {
+            company: "Infoeducatie Web Hackathon",
+            dates: "2023, Focsani, Romania",
+            status: "1st Place and Gold Medal",
+        },
+        {
+            company: "FIRST World Championship",
+            dates: "2023, Houston, USA",
+            status: "Motivate Award Finalist",
+        },
+    ];
+</script>
+
+<section>
+    <SectionTitle>Awards</SectionTitle>
+
+    <p>
+        Relevant awards from high school competitions, mainly for emotional
+        value:
+    </p>
+    <div class="space-y-1">
+        <div
+            class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold border-b"
+        >
+            <div>Contest</div>
+            <div>Date, Location</div>
+            <div class="text-right">Prize</div>
+        </div>
+        {#each experiences as exp (exp.company)}
+            <ExperienceItem {...exp} />
+        {/each}
+    </div>
+
+    <CoolLink href="#">high school journey</CoolLink>
+</section>
+
+
+---
+./src/components/BlogSection.svelte
+---
+<script>
+    import CoolLink from "./CoolLink.svelte";
+    import SectionTitle from "./SectionTitle.svelte";
+
+    export let posts;
+</script>
+
+<div>
+    <SectionTitle>blog</SectionTitle>
+
+    <div class="space-y-3">
+        {#each posts as post}
+            <div class="flex justify-between items-start gap-4">
+                <a
+                    href="/blog/{post.id}"
+                    class="hover:text-primary transition-colors duration-100"
+                >
+                    {post.data.title}
+                </a>
+                <span class="text-muted-foreground text-sm whitespace-nowrap">
+                    {post.data.date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                    })}
+                </span>
+            </div>
+        {/each}
+    </div>
+
+    <div class="flex flex-row justify-between">
+        <CoolLink href="/blog">all posts</CoolLink>
+
+        <div class="space-x-4">
+            <CoolLink href="/blog?tag=ioai">IOAI prep. posts</CoolLink>
+            <!-- <CoolLink href="#">IOAI prep. posts</CoolLink> -->
+        </div>
+    </div>
+</div>
+
+
+---
+./src/components/ContactSection.svelte
+---
+<script>
+    import SectionTitle from "./SectionTitle.svelte";
+</script>
+
+<section>
+    <SectionTitle>Contact</SectionTitle>
+
+    <p class="mb-6">
+        I prefer to be contacted by email. Feel free to connect with me on my
+        other socials as well.
+    </p>
+
+    <div class="space-y-2 text-sm mb-6 font-mono">
+        <div>
+            <span class="text-muted-foreground">email:</span>
+            <a
+                href="mailto:asandei.stefanel@gmail.com"
+                class="text-foreground hover:text-muted-foreground transition-colors"
+            >
+                asandei.stefanel@gmail.com
+            </a>
+        </div>
+        <div>
+            <span class="text-muted-foreground">github:</span>
+            <a
+                href="https://github.com/stefanasandei"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-foreground hover:text-muted-foreground transition-colors"
+            >
+                stefanasandei
+            </a>
+        </div>
+        <div>
+            <span class="text-muted-foreground">linkedin:</span>
+            <a
+                href="https://linkedin.com/in/stefan-asandei"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-foreground hover:text-muted-foreground transition-colors"
+            >
+                stefan-asandei
+            </a>
+        </div>
+        <div>
+            <span class="text-muted-foreground">orcid:</span>
+            <a
+                href="https://orcid.org/0009-0000-4691-3903"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-foreground hover:text-muted-foreground transition-colors"
+            >
+                https://orcid.org/0009-0000-4691-3903
+            </a>
+        </div>
+        <div>
+            <span class="text-muted-foreground">discord:</span>
+            <span class="text-foreground">stefan_asandei</span>
+        </div>
+    </div>
+</section>
+
+
+---
+./src/components/CoolLink.svelte
+---
+<script>
+    export let href;
+</script>
+
+<a
+    class="inline-flex items-center gap-1 mt-6 text-primary hover:text-primary/80 transition-colors group"
+    {href}
+>
+    <span class="group-hover:underline"><slot /></span>
+    <span
+        class="transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+        >↗</span
+    >
+</a>
+
+
+---
+./src/components/ExperienceItem.svelte
+---
+<script>
+    export let company;
+    export let dates;
+    export let status;
+</script>
+
+<div
+    class="grid grid-cols-3 gap-4 items-center px-2 py-2 hover:bg-muted/50 transition-[background-color] duration-250 hover:duration-0"
+>
+    <div class="font-bold truncate">{company}</div>
+    <div class="text-sm">{dates}</div>
+    <div class="text-right">
+        <span class="px-2 py-0.5 text-xs">{status}</span>
+    </div>
+</div>
+
+
+---
+./src/components/IntroSection.svelte
+---
+<script>
+    import NewsSection from "./NewsSection.svelte";
+</script>
+
+<div class="flex md:flex-row justify-between">
+    <div class="space-y-6 flex justify-between flex-col">
+        <div class="space-y-6">
+            <div>
+                <h1 class="text-3xl font-bold uppercase">Stefan Asandei</h1>
+                <h2 class="text-lg text-muted-foreground uppercase mt-1">
+                    Computer Science Student
+                </h2>
+            </div>
+
+            <p>I am interested in deep learning research.</p>
+        </div>
+
+        <NewsSection />
+    </div>
+
+    <img src="https://placehold.co/270x360" />
+</div>
+
+
+---
+./src/components/NavBar.svelte
+---
+<script lang="ts">
+    let mobileMenuOpen = false;
+
+    const toggleMenu = () => {
+        mobileMenuOpen = !mobileMenuOpen;
+    };
+</script>
+
+<nav
+    class="border-b sticky top-0 bg-background border-foreground/20 mb-8 py-2 font-mono text-sm"
+>
+    <div
+        class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex items-center justify-between"
+    >
+        <!-- Logo/Name -->
+        <a
+            href="/"
+            class="font-bold uppercase tracking-tight hover:bg-primary/20 px-2 py-2 transition-colors"
+        >
+            Stefan Asandei
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center gap-1">
+            <a
+                href="/blog"
+                class="px-3 py-1 hover:bg-primary/20 transition-colors"
+            >
+                blog
+            </a>
+            <a
+                href="/papers"
+                class="px-3 py-1 hover:bg-primary/20 transition-colors"
+            >
+                papers
+            </a>
+            <a
+                href="/projects"
+                class="px-3 py-1 hover:bg-primary/20 transition-colors"
+            >
+                projects
+            </a>
+            <a
+                href="/cv"
+                class="px-3 py-1 hover:bg-primary/20 transition-colors"
+            >
+                cv
+            </a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button
+            on:click={toggleMenu}
+            class="md:hidden px-2 py-1 border border-foreground hover:bg-primary/20 transition-colors"
+            aria-label="Toggle menu"
+        >
+            {mobileMenuOpen ? "X" : "≡"}
+        </button>
+    </div>
+
+    <!-- Mobile Navigation -->
+    {#if mobileMenuOpen}
+        <div
+            class="md:hidden bg-accent/20 mt-4 pt-4 border-t border-foreground/20 flex flex-col gap-2"
+        >
+            <a
+                href="/blog"
+                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
+            >
+                blog
+            </a>
+            <a
+                href="/papers"
+                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
+            >
+                papers
+            </a>
+            <a
+                href="/projects"
+                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
+            >
+                projects
+            </a>
+            <a
+                href="/cv"
+                class="px-2 py-1 hover:bg-primary/20 transition-colors w-full"
+            >
+                cv
+            </a>
+        </div>
+    {/if}
+</nav>
+
+
+---
+./src/components/NewsSection.svelte
+---
+<script>
+    const posts = [
+        {
+            title: "started the <a class='hover:text-primary transition-colors duration-100' href='https://ioai-community-contest.netlify.app/'>AI Community Contest</a>",
+            date: "oct 25, 2025",
+        },
+        { title: "bronze medal at IOAI '25", date: "aug 8, 2025" },
+    ];
+</script>
+
+<div class="space-y-3">
+    <p>Personal news:</p>
+    <div class="space-y-2">
+        {#each posts as post}
+            <div class="grid grid-cols-2 items-start gap-8">
+                <!-- <a
+                    href="#"
+                    class="hover:text-primary transition-colors duration-100"
+                >
+                    {post.title}
+                </a> -->
+                <span>{@html post.title}</span>
+                <span class="text-muted-foreground text-sm whitespace-nowrap">
+                    {post.date}
+                </span>
+            </div>
+        {/each}
+    </div>
+</div>
+
+
+---
+./src/components/ProjectsSection.svelte
+---
+<script>
+    import CoolLink from "./CoolLink.svelte";
+    import SectionTitle from "./SectionTitle.svelte";
+
+    const projects = [
+        {
+            name: "AI Tasks Solutions",
+            role: "https://github.com/stefanasandei/roai-solved",
+            description:
+                "TLDR: Solved and explained competitive AI tasks from IOAI, National Olympiads (Romania, Poland, Russia, etc.) and other contests.",
+        },
+        {
+            name: "Orion: an agent for personal knowledge base management",
+            role: "https://github.com/stefanasandei/orion",
+            description:
+                "TLDR: fullstack web application that uses vector RAG on personal documents to quickly answer & summarize content",
+        },
+    ];
+</script>
+
+<div>
+    <SectionTitle>projects</SectionTitle>
+
+    <div class="space-y-8">
+        {#each projects as project}
+            <div class="space-y-2">
+                <a
+                    href="#"
+                    class="text-base font-semibold hover:text-primary transition-colors"
+                >
+                    {project.name}
+                </a>
+                {#if project.role}
+                    <p class="text-sm text-muted-foreground">{project.role}</p>
+                {:else}
+                    <p class="py-1"></p>
+                {/if}
+                <p class="text-sm leading-relaxed">{project.description}</p>
+            </div>
+        {/each}
+    </div>
+
+    <CoolLink href="#">all projects</CoolLink>
+</div>
+
+
+---
+./src/components/SectionTitle.svelte
+---
+<script>
+    export let haveBorder = true;
+    export let large = false;
+</script>
+
+{#if haveBorder}
+    <h2 class="text-lg font-bold uppercase mb-4 pb-2 border-b border-border">
+        <span
+            class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
+            >*</span
+        >
+        <div
+            class={`lowercase inline-block ${large ? "text-4xl" : "text-2xl"}`}
+        >
+            <slot />
+        </div>
+    </h2>
+{:else}
+    <h2 class="text-lg font-bold uppercase mb-4 pb-2">
+        <span
+            class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
+            >*</span
+        >
+        <div
+            class={`lowercase inline-block ${large ? "text-4xl" : "text-2xl"}`}
+        >
+            <slot />
+        </div>
+    </h2>
+{/if}
+
+
+---
+./src/components/Tag.svelte
+---
+<script>
+    export let tag;
+    export let href = null;
+    export let clear = false;
+</script>
+
+{#if href}
+    <a
+        {href}
+        class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block"
+    >
+        #{tag}
+    </a>
+{:else if clear}
+    <button
+        on:click={() => window.history.pushState({}, "", "/blog")}
+        class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer"
+    >
+        #{tag}
+    </button>
+{:else}
+    <span
+        class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md inline-block"
+    >
+        #{tag}
+    </span>
+{/if}
+
+
+---
+./src/layouts/BaseLayout.astro
+---
+---
+import "../styles/global.css";
+import NavBar from "../components/NavBar.svelte";
+
+export interface Props {
+    title: string;
+    description?: string;
+}
+
+const { title, description = "Asandei Stefan-Alexandru" } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+    </head>
+    <body class="bg-background dark text-foreground">
+        <NavBar client:load />
+
+        <slot />
+
+        <footer
+            class="mt-6 py-6 border-t border-border text-xs text-muted-foreground"
+        >
+            <div
+                class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+            >
+                <div class="">
+                    <div>
+                        Copyright {currentYear} Asandei Stefan-Alexandru
+                    </div>
+                </div>
+
+                <a href="#" class="hover:text-foreground transition-colors">
+                    ↑ Back to top
+                </a>
+            </div>
+        </footer>
+    </body>
+</html>
+
+
+---
+./src/pages/index.astro
+---
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+import ContactSection from "../components/ContactSection.svelte";
+import AwardsSection from "../components/AwardsSection.svelte";
+import IntroSection from "../components/IntroSection.svelte";
+import ProjectsSection from "../components/ProjectsSection.svelte";
+import BlogSection from "../components/BlogSection.svelte";
+
+const posts = await getCollection("blog");
+---
+
+<BaseLayout
+	title="Asandei"
+	description="Personal website of Asandei Stefan-Alexandru"
+>
+	<main
+		class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-6"
+	>
+		<IntroSection />
+		<BlogSection {posts} />
+		<!-- todo: work experience, research -->
+		<ProjectsSection />
+		<AwardsSection />
+		<ContactSection />
+	</main>
+</BaseLayout>
+
+
+---
+./src/pages/blog/[...slug].astro
+---
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionTitle from "../../components/SectionTitle.svelte";
+import ArticleTimeline from "../../components/ArticleTimeline.svelte";
+
+export async function getStaticPaths() {
+    const blogEntries = await getCollection("blog");
+    return blogEntries.map((entry) => ({
+        params: { slug: entry.id },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+    title={`${entry.data.title} - Asandei`}
+    description={entry.data.description || entry.data.title}
+>
+    <main class="px-2 lg:px-0 lg:max-w-none flex flex-col gap-12">
+        <article class="prose prose-invert max-w-none lg:max-w-6xl lg:mx-auto">
+            <SectionTitle large={true}>{entry.data.title}</SectionTitle>
+
+            <div class="text-muted-foreground text-sm mb-8">
+                {
+                    entry.data.date.toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                    })
+                }
+            </div>
+
+            <div
+                class="prose-headings:text-foreground text-justify prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
+            >
+                <Content />
+            </div>
+        </article>
+
+        <aside
+            class="hidden 2xl:block 2xl:w-64 2xl:fixed 2xl:right-12 2xl:top-20"
+        >
+            <ArticleTimeline client:load />
+        </aside>
+
+        <!-- <div class="border-t border-border pt-8 lg:max-w-6xl">
+            <a
+                href="/"
+                class="text-primary hover:text-primary/80 transition-colors"
+            >
+                ← Back to home
+            </a>
+        </div> -->
+    </main>
+</BaseLayout>
+
+
+---
+./src/pages/blog/index.astro
+---
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import SectionTitle from "../../components/SectionTitle.svelte";
+import CoolLink from "../../components/CoolLink.svelte";
+import Tag from "../../components/Tag.svelte";
+
+// Get all blog posts sorted by date (newest first)
+const allPosts = (await getCollection("blog")).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+---
+
+<BaseLayout
+    title="Blog - Asandei"
+    description="Collection of articles and thoughts on machine learning, research, and technology"
+>
+    <div
+        class="md:max-w-2xl h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+    >
+        <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <SectionTitle haveBorder={false} large={true}>blog</SectionTitle
+                >
+                <div id="current-tag-container"></div>
+            </div>
+
+            <div id="posts-container">
+                {
+                    allPosts.map((post, index) => (
+                        <div
+                            class="py-4 post-item"
+                            data-tags={JSON.stringify(post.data.tags || [])}
+                        >
+                            <div class="mb-3">
+                                <a
+                                    href={`/blog/${post.id}`}
+                                    class="hover:text-primary transition-colors duration-100 text-lg font-medium"
+                                >
+                                    {post.data.title}
+                                </a>
+                            </div>
+                            <div class="flex justify-between items-center gap-4">
+                                <div class="flex flex-wrap gap-1">
+                                    {post.data.tags &&
+                                        post.data.tags.length > 0 &&
+                                        post.data.tags.map((tag) => (
+                                            <Tag
+                                                {tag}
+                                                href={`/blog?tag=${tag}`}
+                                            />
+                                        ))}
+                                </div>
+                                <span class="text-muted-foreground text-sm whitespace-nowrap shrink-0">
+                                    {post.data.date.toLocaleDateString(
+                                        "en-US",
+                                        {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        },
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </div>
+</BaseLayout>
+
+<script>
+    function filterPosts() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tag = urlParams.get("tag");
+
+        const postItems = document.querySelectorAll(".post-item");
+
+        // First, update visibility based on tag filter
+        postItems.forEach((item) => {
+            const element = item as HTMLElement;
+            const tags = JSON.parse(element.dataset.tags || "[]");
+            if (tag && !tags.includes(tag)) {
+                element.style.display = "none";
+            } else {
+                element.style.display = "block";
+            }
+        });
+
+        // Update border classes based on visible posts
+        const visiblePosts = Array.from(postItems).filter((item) => {
+            return (item as HTMLElement).style.display !== "none";
+        });
+
+        visiblePosts.forEach((item, index) => {
+            const element = item as HTMLElement;
+            if (index < visiblePosts.length - 1) {
+                element.classList.add("border-b", "border-border");
+            } else {
+                element.classList.remove("border-b", "border-border");
+            }
+        });
+
+        // Update the current tag display
+        const currentTagContainer = document.getElementById(
+            "current-tag-container",
+        ) as HTMLElement;
+        if (currentTagContainer) {
+            currentTagContainer.innerHTML = tag
+                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
+                : "";
+        }
+    }
+
+    // Filter on page load
+    filterPosts();
+
+    // Also filter when URL changes (for SPA-like behavior)
+    window.addEventListener("popstate", filterPosts);
+
+    // Handle tag link clicks
+    document.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.matches("a[href*='?tag=']")) {
+            e.preventDefault();
+            const href = target.getAttribute("href");
+            if (href) {
+                const url = new URL(href, window.location.origin);
+                window.history.pushState({}, "", url.toString());
+                filterPosts();
+            }
+        }
+    });
+</script>
+
+
+---

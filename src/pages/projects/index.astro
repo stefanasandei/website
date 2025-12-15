@@ -1,0 +1,203 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import SectionTitle from "../../components/SectionTitle.svelte";
+
+const allProjects = (await getCollection("project")).sort(
+  (a, b) => b.data.year - a.data.year
+);
+
+const categories = [...new Set(allProjects.map((p) => p.data.category))];
+---
+
+<BaseLayout
+  title="Projects - Asandei"
+  description="Collection of research projects, open source tools, and experiments"
+>
+  <div
+    class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+  >
+    <!-- Header -->
+    <div class="space-y-6">
+      <div class="flex justify-between items-center gap-4">
+        <SectionTitle haveBorder={false} large={true}>projects</SectionTitle>
+        <div class="flex gap-2 text-xs font-mono flex-wrap">
+          <button
+            class="filter-btn active px-2 py-1 border border-border hover:border-primary hover:text-primary transition-colors"
+            data-filter="all"
+          >
+            all
+          </button>
+          {
+            categories.map((cat) => (
+              <button
+                class="filter-btn px-2 py-1 border border-border hover:border-primary hover:text-primary transition-colors hidden sm:block"
+                data-filter={cat}
+              >
+                {cat}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <p class="text-muted-foreground max-w-2xl text-sm">
+        Research, open source, and experimental work.
+      </p>
+    </div>
+
+    <!-- Projects List -->
+    <div class="space-y-6">
+      {allProjects.map((project) => {
+        return (
+          <div
+            class="project-item"
+            data-category={project.data.category}
+          >
+            <div class="space-y-3">
+              <!-- Title and Year -->
+              <div class="flex items-baseline gap-3">
+                <a
+                  href={`/projects/${project.id}`}
+                  class="text-lg font-semibold hover:text-primary transition-colors"
+                >
+                  {project.data.title}
+                </a>
+                <span class="text-xs text-muted-foreground font-mono">
+                  {project.data.year}
+                </span>
+              </div>
+
+              <!-- Description -->
+              <p class="text-sm text-foreground leading-relaxed">
+                {project.data.description}
+              </p>
+
+              <!-- Tech Stack -->
+              <div class="flex flex-wrap gap-2 text-xs">
+                {project.data.tech.map((tech) => (
+                  <span class="px-2 py-1 text-muted-foreground font-mono">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+
+              <!-- Links -->
+              <div class="flex gap-3 text-xs font-mono pt-1 flex-wrap">
+                {project.data.links.github && (
+                  <a
+                    href={project.data.links.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    [github repo]
+                  </a>
+                )}
+                {project.data.links.demo && (
+                  <a
+                    href={project.data.links.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    [demo]
+                  </a>
+                )}
+                {project.data.links.paper && (
+                  <a
+                    href={project.data.links.paper}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    [paper]
+                  </a>
+                )}
+                {project.data.links.docs && (
+                  <a
+                    href={project.data.links.docs}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    [docs]
+                  </a>
+                )}
+                <a
+                  href={`/projects/${project.id}`}
+                  class="text-primary hover:text-primary/80 transition-colors ml-auto"
+                >
+                  [read more →]
+                </a>
+              </div>
+            </div>
+
+            <div class="border-b border-border/30 mt-6"></div>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- Empty State -->
+    <div
+      id="empty-state"
+      class="hidden text-center py-12 text-muted-foreground text-sm"
+    >
+      <p>no projects found in this category</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .filter-btn {
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn.active {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .project-item {
+    transition: opacity 0.3s ease;
+  }
+</style>
+
+<script>
+  function initProjectFilters() {
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const projectItems = document.querySelectorAll(".project-item");
+    const emptyState = document.getElementById("empty-state");
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const filter = btn.getAttribute("data-filter");
+
+        filterBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        let visibleCount = 0;
+
+        projectItems.forEach((item) => {
+          const category = item.getAttribute("data-category");
+          const shouldShow = filter === "all" || category === filter;
+
+          if (shouldShow) {
+            (item as HTMLElement).style.display = "";
+            visibleCount++;
+          } else {
+            (item as HTMLElement).style.display = "none";
+          }
+        });
+
+        if (emptyState) {
+          emptyState.style.display = visibleCount === 0 ? "block" : "none";
+        }
+      });
+    });
+  }
+
+  initProjectFilters();
+  document.addEventListener("astro:after-swap", initProjectFilters);
+</script>

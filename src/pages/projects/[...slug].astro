@@ -1,0 +1,169 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionTitle from "../../components/SectionTitle.svelte";
+
+export async function getStaticPaths() {
+    const projectEntries = await getCollection("project");
+    return projectEntries.map((entry) => ({
+        params: { slug: entry.id },
+        props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const statusColors = {
+    active: "bg-green-500/20 text-green-400 border-green-500/30",
+    maintained: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    archived: "bg-muted text-muted-foreground border-border",
+};
+---
+
+<BaseLayout
+    title={`${entry.data.title} - Projects - Asandei`}
+    description={entry.data.description}
+>
+    <main
+        class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+    >
+        <article class="space-y-8">
+            <!-- Header -->
+            <div class="space-y-4">
+                <SectionTitle large={true}>{entry.data.title}</SectionTitle>
+
+                <div
+                    class="flex flex-wrap items-center gap-4 text-sm font-mono text-muted-foreground"
+                >
+                    <span class="uppercase">{entry.data.category}</span>
+                </div>
+
+                <p class="text-lg text-muted-foreground leading-relaxed">
+                    {entry.data.description}
+                </p>
+            </div>
+
+            <!-- Links and Tech -->
+            <div
+                class="grid md:grid-cols-2 gap-6 p-6 bg-muted/30 border border-border"
+            >
+                <div class="space-y-3">
+                    <h3
+                        class="text-xs font-mono font-bold tracking-wider uppercase text-muted-foreground"
+                    >
+                        Links
+                    </h3>
+                    <div class="space-y-2 font-mono text-sm">
+                        {
+                            entry.data.links.github && (
+                                <div>
+                                    <span class="text-muted-foreground">
+                                        github:
+                                    </span>
+                                    <a
+                                        href={entry.data.links.github}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="ml-2 hover:text-primary transition-colors"
+                                    >
+                                        repository ↗
+                                    </a>
+                                </div>
+                            )
+                        }
+                        {
+                            entry.data.links.demo && (
+                                <div>
+                                    <span class="text-muted-foreground">
+                                        demo:
+                                    </span>
+                                    <a
+                                        href={entry.data.links.demo}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="ml-2 hover:text-primary transition-colors"
+                                    >
+                                        live site ↗
+                                    </a>
+                                </div>
+                            )
+                        }
+                        {
+                            entry.data.links.paper && (
+                                <div>
+                                    <span class="text-muted-foreground">
+                                        paper:
+                                    </span>
+                                    <a
+                                        href={entry.data.links.paper}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="ml-2 hover:text-primary transition-colors"
+                                    >
+                                        read paper ↗
+                                    </a>
+                                </div>
+                            )
+                        }
+                        {
+                            entry.data.links.docs && (
+                                <div>
+                                    <span class="text-muted-foreground">
+                                        docs:
+                                    </span>
+                                    <a
+                                        href={entry.data.links.docs}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="ml-2 hover:text-primary transition-colors"
+                                    >
+                                        documentation ↗
+                                    </a>
+                                </div>
+                            )
+                        }
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3
+                        class="text-xs font-mono font-bold tracking-wider uppercase text-muted-foreground"
+                    >
+                        Tech Stack
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        {
+                            entry.data.tech.map((tech: any) => (
+                                <span class="px-2 py-1 text-sm bg-secondary font-mono">
+                                    {tech}
+                                </span>
+                            ))
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div
+                class="prose prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-blockquote:border-l-primary"
+            >
+                <Content />
+            </div>
+
+            <!-- Back Link -->
+            <div class="border-t border-border pt-8">
+                <a
+                    href="/projects"
+                    class="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors group"
+                >
+                    <span
+                        class="group-hover:translate-x-[-4px] transition-transform"
+                        >←</span
+                    >
+                    <span class="group-hover:underline">Back to projects</span>
+                </a>
+            </div>
+        </article>
+    </main>
+</BaseLayout>

@@ -16,11 +16,10 @@ const posts = await getCollection("blog");
 	description="Personal website of Asandei Stefan-Alexandru"
 >
 	<main
-		class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-6"
+		class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-8 md:gap-12"
 	>
 		<IntroSection />
 		<BlogSection {posts} />
-		<!-- todo: work experience, research -->
 		<ProjectsSection />
 		<AwardsSection />
 		<ContactSection />

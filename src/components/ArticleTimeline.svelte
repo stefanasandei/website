@@ -1,133 +1,160 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
 
+    // Configuration
     export let contentSelector = ".prose";
+    export let headingLevel: 1 | 2 | 3 | 4 | 5 | 6 = 2;
+    export let rootMargin = "-20% 0px -70% 0px";
+    export let scrollDuration = 1000;
+    export let threshold = 0;
 
-    let timelineItems: Array<{
+    interface TimelineItem {
         id: string;
         text: string;
         element: HTMLElement;
-    }> = [];
+    }
+
+    let timelineItems: TimelineItem[] = [];
     let activeItem = "";
-    let observer: IntersectionObserver;
+    let observer: IntersectionObserver | null = null;
+    let isScrolling = false;
 
     onMount(() => {
-        // Find all H2 elements in the article content
-        const contentElement = document.querySelector(contentSelector);
-        if (!contentElement) return;
-
-        const h2Elements = contentElement.querySelectorAll("h2");
-        timelineItems = Array.from(h2Elements).map((h2, index) => {
-            const id = h2.id || `section-${index}`;
-            if (!h2.id) h2.id = id;
-
-            return {
-                id,
-                text: h2.textContent || "",
-                element: h2 as HTMLElement,
-            };
-        });
-
-        // Set up intersection observer for scroll detection
-        observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        activeItem = entry.target.id;
-                    }
-                });
-            },
-            {
-                rootMargin: "-20% 0px -70% 0px",
-                threshold: 0,
-            },
-        );
-
-        // Observe all H2 elements
-        timelineItems.forEach((item) => {
-            observer.observe(item.element);
-        });
-
-        // Set initial active item
-        if (timelineItems.length > 0) {
-            activeItem = timelineItems[0].id;
-        }
+        initializeTimeline();
     });
 
     onDestroy(() => {
-        if (observer) {
-            observer.disconnect();
-        }
+        observer?.disconnect();
     });
 
-    function scrollToSection(id: string) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-            activeItem = id;
+    function initializeTimeline(): void {
+        const contentElement = document.querySelector(contentSelector);
+        if (!contentElement) return;
+
+        const headingSelector = `h${headingLevel}`;
+        const headingElements =
+            contentElement.querySelectorAll(headingSelector);
+
+        timelineItems = Array.from(headingElements).map((heading, index) => {
+            const h = heading as HTMLElement;
+            const id = h.id || `section-${index}`;
+
+            if (!h.id) {
+                h.id = id;
+            }
+
+            const text = sanitizeHeadingText(h.textContent || "");
+
+            return { id, text, element: h };
+        });
+
+        setupObserver();
+
+        if (timelineItems.length > 0) {
+            activeItem = timelineItems[0].id;
         }
+    }
+
+    function sanitizeHeadingText(text: string): string {
+        return text.replace(/^\*\s+/, "").trim();
+    }
+
+    function setupObserver(): void {
+        observer = new IntersectionObserver(
+            (entries) => {
+                if (isScrolling) return;
+
+                let mostVisibleEntry = entries.reduce((best, current) => {
+                    if (!current.isIntersecting) return best;
+                    return current.intersectionRatio >
+                        (best?.intersectionRatio ?? 0)
+                        ? current
+                        : best;
+                });
+
+                if (mostVisibleEntry?.isIntersecting) {
+                    activeItem = mostVisibleEntry.target.id;
+                }
+            },
+            { rootMargin, threshold },
+        );
+
+        timelineItems.forEach((item) => observer?.observe(item.element));
+    }
+
+    function scrollToSection(id: string): void {
+        const element = document.getElementById(id);
+        if (!element) return;
+
+        activeItem = id;
+        isScrolling = true;
+
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        setTimeout(() => {
+            isScrolling = false;
+        }, scrollDuration);
+    }
+
+    function getCurrentIndex(): number {
+        const index = timelineItems.findIndex((item) => item.id === activeItem);
+        return Math.max(0, index);
     }
 </script>
 
 {#if timelineItems.length > 0}
-    <nav class="timeline-container" aria-label="Article sections">
+    <nav class="timeline" aria-label="Article sections">
         <div class="timeline-header">
-            <span class="timeline-title">SECTIONS</span>
+            <span class="timeline-label">SECTIONS</span>
+            <div class="timeline-counter">
+                {getCurrentIndex() + 1}/{timelineItems.length}
+            </div>
         </div>
 
-        {#each timelineItems as item}
-            <button
-                class="timeline-item"
-                class:active={item.id === activeItem}
-                on:click={() => scrollToSection(item.id)}
-                aria-label={`Go to ${item.text}`}
-            >
-                <div class="timeline-connector"></div>
-                <div class="timeline-marker">
-                    <div class="timeline-dot"></div>
-                </div>
-                <span class="timeline-text">{item.text}</span>
-            </button>
-        {/each}
+        <div class="timeline-items">
+            {#each timelineItems as item, index (item.id)}
+                <button
+                    class="timeline-item"
+                    class:active={item.id === activeItem}
+                    on:click={() => scrollToSection(item.id)}
+                    aria-label={`Go to ${item.text}`}
+                    aria-current={item.id === activeItem ? "page" : undefined}
+                >
+                    <span class="item-index">
+                        {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span class="item-text">{item.text}</span>
+                </button>
+            {/each}
+        </div>
     </nav>
 {/if}
 
 <style>
-    .timeline-container {
-        position: relative;
+    .timeline {
+        position: sticky;
+        top: 5rem;
         width: 100%;
+        max-height: calc(100vh - 8rem);
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
-        padding: 0.5rem;
-        background: var(--card);
+        background: var(--background);
         border: 1px solid var(--border);
-        border-radius: 0;
         font-family: var(--font-mono);
-        box-shadow: var(--shadow-sm);
-        backdrop-filter: none;
-        min-width: 200px;
-    }
-
-    .timeline-container::after {
-        content: "";
-        position: absolute;
-        left: 1rem;
-        top: 2.5rem;
-        bottom: 0.5rem;
-        width: 1px;
-        background: var(--border);
-        opacity: 0.5;
+        font-size: 0.75rem;
+        overflow: hidden;
     }
 
     .timeline-header {
-        padding: 0.25rem 0.5rem;
-        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border);
-        text-align: center;
+        background: var(--muted);
     }
 
-    .timeline-title {
+    .timeline-label {
         font-size: 0.625rem;
         font-weight: 700;
         letter-spacing: 0.15em;
@@ -135,84 +162,84 @@
         text-transform: uppercase;
     }
 
-    .timeline-item {
-        position: relative;
+    .timeline-counter {
+        font-size: 0.625rem;
+        font-weight: 600;
+        color: var(--foreground);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .timeline-items {
         display: flex;
-        align-items: center;
-        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        flex-direction: column;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+
+    .timeline-items::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .timeline-items::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .timeline-items::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 2px;
+    }
+
+    .timeline-item {
+        display: grid;
+        grid-template-columns: 2.5rem 1fr;
+        align-items: start;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
         background: none;
         border: none;
+        border-bottom: 1px solid var(--border);
         cursor: pointer;
         text-align: left;
-        transition: all 0.2s ease;
-        opacity: 0.8;
-        font-size: 0.8125rem;
-        line-height: 1.4;
-        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        color: var(--foreground);
+    }
+
+    .timeline-item:last-child {
+        border-bottom: none;
     }
 
     .timeline-item:hover {
-        opacity: 1;
-        background: var(--accent);
-        border-left-color: var(--primary);
+        background: var(--muted);
     }
 
     .timeline-item.active {
-        opacity: 1;
         background: var(--primary);
         color: var(--primary-foreground);
-        border-left-color: var(--primary-foreground);
     }
 
-    .timeline-item.active .timeline-text {
-        color: var(--primary-foreground);
-        font-weight: 600;
-    }
-
-    .timeline-item.active .timeline-dot {
-        background: var(--primary-foreground);
-        box-shadow: 0 0 6px var(--primary-foreground);
-    }
-
-    .timeline-marker {
-        position: absolute;
-        left: 0.5rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 1rem;
-        height: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .item-index {
+        font-weight: 700;
+        color: var(--muted-foreground);
+        font-variant-numeric: tabular-nums;
         flex-shrink: 0;
     }
 
-    .timeline-dot {
-        width: 6px;
-        height: 6px;
-        background: var(--muted-foreground);
-        transition: all 0.2s ease;
-        border-radius: 50%;
-        transform: none;
+    .timeline-item.active .item-index {
+        color: var(--primary-foreground);
     }
 
-    .timeline-text {
-        color: var(--foreground);
-        font-size: 0.8125rem;
+    .item-text {
         line-height: 1.4;
-        transition: all 0.2s ease;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
-        flex: 1;
-        text-align: left;
     }
 
-    /* Responsive design for smaller screens */
-    @media (max-width: 1280px) {
-        .timeline-container {
+    @media (max-width: 1536px) {
+        .timeline {
             display: none;
         }
     }
