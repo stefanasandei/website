@@ -16,8 +16,6 @@ const project = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string(),
-        year: z.number(),
-        status: z.enum(["active", "archived", "maintained"]),
         featured: z.boolean().default(false),
         tech: z.array(z.string()),
         links: z.object({
@@ -26,6 +24,7 @@ const project = defineCollection({
             paper: z.string().optional(),
             docs: z.string().optional(),
         }),
+        achievements: z.array(z.string()),
         category: z.string(),
     }),
 });

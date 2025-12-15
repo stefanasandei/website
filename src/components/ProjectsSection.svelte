@@ -2,22 +2,7 @@
     import CoolLink from "./CoolLink.svelte";
     import SectionTitle from "./SectionTitle.svelte";
 
-    const projects = [
-        {
-            name: "AI Tasks Solutions",
-            slug: "ai-tasks-solutions",
-            github: "https://github.com/stefanasandei/roai-solved",
-            description:
-                "TLDR: Solved and explained competitive AI tasks from IOAI, National Olympiads (Romania, Poland, Russia, etc.) and other contests.",
-        },
-        {
-            name: "Orion: an agent for personal knowledge base management",
-            slug: "orion",
-            github: "https://github.com/stefanasandei/orion",
-            description:
-                "TLDR: fullstack web application that uses vector RAG on personal documents to quickly answer & summarize content",
-        },
-    ];
+    export let projects;
 </script>
 
 <div>
@@ -32,21 +17,23 @@
         {#each projects as project}
             <div class="space-y-2">
                 <a
-                    href="/projects/{project.slug}"
+                    href="/projects/{project.id}"
                     class="text-base font-semibold hover:text-primary transition-colors"
                 >
-                    {project.name}
+                    {project.data.title}
                 </a>
-                {#if project.github}
+                {#if project.data.links.github}
                     <a
-                        href={project.github}
+                        href={project.data.links.github}
                         class="text-sm text-muted-foreground hover:text-primary transition-colors"
-                        >{project.github}</a
+                        >{project.data.links.github}</a
                     >
                 {:else}
                     <p class="py-1"></p>
                 {/if}
-                <p class="text-sm leading-relaxed">{project.description}</p>
+                <p class="text-sm leading-relaxed">
+                    {project.data.description}
+                </p>
             </div>
         {/each}
     </div>

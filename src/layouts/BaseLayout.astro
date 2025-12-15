@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import NavBar from "../components/NavBar.svelte";
+import { ClientRouter } from "astro:transitions";
 
 export interface Props {
     title: string;
@@ -19,6 +20,7 @@ const currentYear = new Date().getFullYear();
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
         <meta name="description" content={description} />
+        <!-- <ClientRouter /> -->
     </head>
     <body class="bg-background dark text-foreground">
         <NavBar client:load />

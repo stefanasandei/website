@@ -14,7 +14,7 @@
     </p>
 
     <p class="text-sm text-muted-foreground mb-4">
-        {posts.length} total posts:
+        {posts.length} posts:
     </p>
 
     <div class="space-y-3">
