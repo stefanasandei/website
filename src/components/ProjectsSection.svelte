@@ -8,10 +8,7 @@
 <div>
     <SectionTitle>projects</SectionTitle>
 
-    <p class="mb-6">
-        Discover the projects I've worked on, showcasing my skills in software
-        development, AI, and innovative solutions.
-    </p>
+    <p class="mb-6">There are the most relevant projects I've worked on.</p>
 
     <div class="space-y-8">
         {#each projects as project}

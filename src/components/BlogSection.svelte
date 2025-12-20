@@ -9,8 +9,8 @@
     <SectionTitle>blog</SectionTitle>
 
     <p class="mb-6">
-        Explore my thoughts and insights on various topics in computer science,
-        AI, and technology through my blog posts.
+        Explore my thoughts and insights on various topics in computer science
+        and deep learning through my blog posts.
     </p>
 
     <p class="text-sm text-muted-foreground mb-4">

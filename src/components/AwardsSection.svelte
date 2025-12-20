@@ -5,7 +5,7 @@
 
     const experiences = [
         {
-            company: "IOAI",
+            company: "International Olympiad in AI",
             dates: "2025, Beijing, China",
             status: "Bronze Medal",
         },
@@ -42,10 +42,7 @@
 
     <p class="mb-6">
         A collection of awards and achievements from various competitions and
-        olympiads during my high school years. These accomplishments highlight
-        my passion for computer science, artificial intelligence, and robotics,
-        and hold significant emotional value as milestones in my educational
-        journey.
+        olympiads during my high school years (to be continued).
     </p>
     <div class="space-y-1">
         <div

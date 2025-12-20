@@ -15,11 +15,7 @@
             </div>
 
             <p class="text-base leading-relaxed text-justify">
-                As a passionate computer science student, I am deeply interested
-                in deep learning research, exploring the frontiers of artificial
-                intelligence to solve complex problems and advance technology.
-                My journey involves competitive programming, innovative
-                projects, and sharing knowledge through writing.
+                I am interested in deep learning.
             </p>
         </div>
 
@@ -27,5 +23,5 @@
     </div>
 
     <!-- <img src="https://placehold.co/270x360" /> -->
-    <img src="/public/pfp.jpg" class="w-[270px]" />
+    <img src="/public/pfp.jpg" alt="profile" class="w-[270px]" />
 </div>

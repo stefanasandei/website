@@ -3,7 +3,7 @@
 </script>
 
 <a
-    class="inline-flex items-center gap-1 mt-6 text-primary hover:text-primary/80 transition-colors group"
+    class="inline-flex items-center gap-1 mt-6 text-primary hover:text-primary transition-colors group"
     {href}
 >
     <span class="group-hover:underline"><slot /></span>
