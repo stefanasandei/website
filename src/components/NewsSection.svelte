@@ -7,7 +7,7 @@
             date: "oct 25, 2025",
         },
         {
-            title: `bronze medal at <a ${linkStyles} href='https://ioai-official.org/'>IOAI</a> '25`,
+            title: `bronze medal at <a ${linkStyles} href='https://ioai-official.org/'>International Olympiad in AI (IOAI)</a> '25`,
             date: "aug 8, 2025",
         },
     ];

@@ -57,5 +57,5 @@
         {/each}
     </div>
 
-    <CoolLink href="#">high school journey</CoolLink>
+    <CoolLink href="/blog/high-school">high school journey</CoolLink>
 </section>

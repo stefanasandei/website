@@ -1,7 +1,4 @@
 <script>
-    export let bio =
-        "I am a Computer Science student passionate about deep learning and artificial intelligence. Currently exploring the intersection of machine learning systems and cognitive architecture. I believe in building systems that not only perform well but also provide insights into the nature of intelligence itself. My work spans from theoretical foundations to practical implementations, always aiming to push the boundaries of what's possible with modern AI.";
-
     const researchInterests = [
         "Deep Learning",
         "Computer Vision",
@@ -30,7 +27,10 @@
                 <p
                     class="text-lg md:text-xl text-muted-foreground font-medium mt-1.5"
                 >
-                    Math & CS undergrad at École Polytechnique
+                    Math & CS undergrad at <span
+                        class="font-semibold text-primary"
+                        >École Polytechnique</span
+                    >
                 </p>
             </div>
 
@@ -52,11 +52,46 @@
     </div>
 
     <!-- Full-width Bio Section -->
-    <div class="pt-2">
+    <div class="space-y-4">
         <p
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
-            {bio}
+            Hello, I'm an undergrad student at École Polytechnique, passionate
+            about mathematics, deep learning and astronomy. If you want to
+            collaborate on a project, feel free to <a
+                href="mailto:asandei.stefanel@gmail.com"
+                class="text-primary hover:text-primary/70 transition-colors underline"
+            >
+                contact
+            </a>.
+        </p>
+        <p
+            class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
+        >
+            I am a very ambitious, hard-working and driven person. I'm motivated
+            by my curiosity to learn and understand as much as I can. Something
+            cool I built:
+            <a
+                href="https://github.com/stefanasandei/patheon"
+                class="text-primary hover:text-primary/70 transition-colors underline"
+                target="_blank"
+            >
+                github.com/stefanasandei/patheon
+            </a>
+        </p>
+        <p
+            class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
+        >
+            I'm an IOAI medalist and I'm actively contributing to this
+            community. I am a problem setter for multiple competitions (AICC
+            Rounds, Algolymp contests and more) and I publish my <a
+                href="https://github.com/stefanasandei/roai-solved"
+                target="_blank"
+                class="text-primary hover:text-primary/70 transition-colors underline"
+            >
+                code solutions
+            </a> to tasks from various competitions (NEOAI, IOAI, National AI Olympiads
+            from Romania, Poland and Georgia, etc.).
         </p>
     </div>
 </section>
