@@ -2,155 +2,112 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import SectionTitle from "../../components/SectionTitle.svelte";
+import Tag from "../../components/Tag.svelte";
 
 const allProjects = (await getCollection("project")).sort(
-  (a, b) => b.data.year - a.data.year
+  (a, b) => b.data.year - a.data.year,
 );
 
-const categories = [
-  ...new Set(allProjects.map((p) => p.data.category)),
-];
+const categories = [...new Set(allProjects.map((p) => p.data.category))];
 ---
 
 <BaseLayout
   title="Projects - Asandei"
   description="Collection of research projects, open source tools, and experiments"
 >
-  <div class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12">
-    <!-- Header -->
+  <div
+    class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+  >
     <div class="space-y-6">
-      <!-- Title and Filters Row -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <SectionTitle haveBorder={false} large={true}>
-          projects
-        </SectionTitle>
-        <div class="flex gap-2 flex-wrap">
-          <button class="filter-btn active px-3 py-1.5 text-sm rounded-none border border-border hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200" data-filter="all">
-            all
-          </button>
-          {
-            categories.map((cat) => (
-              <button class="filter-btn px-3 py-1.5 text-sm rounded-none border border-border hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-200 hidden sm:block" data-filter={cat}>
-                {cat}
-              </button>
-            ))
-          }
-        </div>
+      <div class="flex justify-between items-center">
+        <SectionTitle haveBorder={false} large={true}>projects</SectionTitle>
+        <div id="current-category-container"></div>
       </div>
 
-      <!-- Description -->
-      <p class="text-base md:text-lg leading-relaxed text-muted-foreground max-w-4xl text-justify">
-        A collection of research projects, open source tools, and experimental work.
+      <p class="text-lg leading-relaxed text-justify text-muted-foreground">
+        A collection of research projects, open source tools, and experimental
+        work spanning machine learning, systems programming, and beyond.
       </p>
-    </div>
 
-    <!-- Projects Grid -->
-    <div id="projects-container" class="space-y-8">
-      {
-        allProjects.map((project) => (
-          <div class="project-item group rounded-none border border-border/50 hover:border-border hover:bg-background/50 transition-all duration-300 p-3 md:p-4" data-category={project.data.category}>
-            <!-- Header Section -->
-            <div class="space-y-2 mb-6">
-              <div class="flex items-baseline gap-3">
-                <a href={`/projects/${project.id}`} class="text-xl md:text-2xl font-bold hover:text-primary transition-colors">
+      <div id="projects-container">
+        {
+          allProjects.map((project) => (
+            <div
+              class="py-5 project-item"
+              data-category={project.data.category}
+            >
+              <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4 mb-2">
+                <a
+                  href={`/projects/${project.id}`}
+                  class="hover:text-primary transition-colors duration-100 text-lg font-medium"
+                >
                   {project.data.title}
                 </a>
-                <span class="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                <span class="text-muted-foreground text-sm whitespace-nowrap shrink-0">
                   {project.data.year}
                 </span>
               </div>
-              <p class="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">
-                {project.data.category}
+
+              <p class="text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2">
+                {project.data.description}
               </p>
-            </div>
 
-            <!-- Description -->
-            <p class="text-sm md:text-base text-foreground leading-relaxed mb-6 text-justify">
-              {project.data.description}
-            </p>
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <Tag
+                  tag={project.data.category}
+                  href={`/projects?category=${project.data.category}`}
+                />
 
-            <!-- Achievements -->
-            {project.data.achievements && (
-              <div class="mb-6 space-y-3">
-                <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Achievements
-                </h4>
-                <ul class="space-y-2">
-                  {project.data.achievements.map((achievement) => (
-                    <li class="text-sm text-foreground flex gap-2">
-                      <span class="text-primary/70 flex-shrink-0">→</span>
-                      <span>{achievement}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                {project.data.tech && project.data.tech.length > 0 && (
+                  <span class="text-xs text-muted-foreground font-mono">
+                    {project.data.tech.slice(0, 3).join(" · ")}
+                    {project.data.tech.length > 3 &&
+                      ` +${project.data.tech.length - 3}`}
+                  </span>
+                )}
 
-            <!-- Technologies -->
-            {project.data.tech && project.data.tech.length > 0 && (
-              <div class="mb-6 space-y-3">
-                <h4 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Technologies
-                </h4>
-                <div class="flex flex-wrap gap-2">
-                  {project.data.tech.map((tech) => (
-                    <div class="px-3 py-1.5 rounded-none text-xs font-medium bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 text-foreground hover:border-primary/40 hover:bg-primary/15 transition-all duration-200 cursor-default">
-                      {tech}
-                    </div>
-                  ))}
+                <div class="flex gap-3 ml-auto">
+                  {project.data.links.github && (
+                    <a
+                      href={project.data.links.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-xs text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      github
+                    </a>
+                  )}
+                  {project.data.links.demo && (
+                    <a
+                      href={project.data.links.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-xs text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      demo
+                    </a>
+                  )}
+                  {project.data.links.paper && (
+                    <a
+                      href={project.data.links.paper}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-xs text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      paper
+                    </a>
+                  )}
                 </div>
               </div>
-            )}
-
-            <!-- Links -->
-            <div class="flex gap-4 text-xs font-mono pt-2 flex-wrap">
-              {project.data.links.github && (
-                <a href={project.data.links.github} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-primary transition-colors">
-                  github
-                </a>
-              )}
-              {project.data.links.demo && (
-                <a href={project.data.links.demo} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-primary transition-colors">
-                  demo
-                </a>
-              )}
-              {project.data.links.paper && (
-                <a href={project.data.links.paper} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-primary transition-colors">
-                  paper
-                </a>
-              )}
-              {project.data.links.docs && (
-                <a href={project.data.links.docs} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-primary transition-colors">
-                  docs
-                </a>
-              )}
-              <a href={`/projects/${project.id}`} class="text-primary hover:text-primary/80 transition-colors ml-auto">
-                read more →
-              </a>
             </div>
-          </div>
-        ))
-      }
-    </div>
-
-    <!-- Empty State -->
-    <div id="empty-state" class="hidden text-center py-16 text-muted-foreground">
-      <p class="text-sm md:text-base">no projects found in this category</p>
+          ))
+        }
+      </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
-  .filter-btn {
-    transition: all 0.2s ease;
-  }
-
-  .filter-btn.active {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: var(--primary-foreground);
-  }
-
   .project-item {
     animation: fadeIn 0.3s ease;
   }
@@ -168,42 +125,59 @@ const categories = [
 </style>
 
 <script>
-  function initProjectFilters() {
-    const filterBtns = document.querySelectorAll(".filter-btn");
+  function filterProjects() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get("category");
+
     const projectItems = document.querySelectorAll(".project-item");
-    const emptyState = document.getElementById("empty-state");
 
-    filterBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const filter = btn.getAttribute("data-filter");
-
-        filterBtns.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        let visibleCount = 0;
-
-        projectItems.forEach((item) => {
-          const category = item.getAttribute("data-category");
-          const shouldShow = filter === "all" || category === filter;
-
-          if (shouldShow) {
-            (item as HTMLElement).style.display = "";
-            visibleCount++;
-          } else {
-            (item as HTMLElement).style.display = "none";
-          }
-        });
-
-        if (emptyState) {
-          emptyState.style.display =
-            visibleCount === 0 ? "block" : "none";
-        }
-      });
+    projectItems.forEach((item) => {
+      const element = item as HTMLElement;
+      const itemCategory = element.dataset.category;
+      if (category && itemCategory !== category) {
+        element.style.display = "none";
+      } else {
+        element.style.display = "block";
+      }
     });
+
+    const visibleProjects = Array.from(projectItems).filter((item) => {
+      return (item as HTMLElement).style.display !== "none";
+    });
+
+    visibleProjects.forEach((item, index) => {
+      const element = item as HTMLElement;
+      if (index < visibleProjects.length - 1) {
+        element.classList.add("border-b", "border-border");
+      } else {
+        element.classList.remove("border-b", "border-border");
+      }
+    });
+
+    const currentCategoryContainer = document.getElementById(
+      "current-category-container",
+    ) as HTMLElement;
+    if (currentCategoryContainer) {
+      currentCategoryContainer.innerHTML = category
+        ? `<button onclick="window.history.pushState({}, '', '/projects'); filterProjects();" class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">${category}</button>`
+        : "";
+    }
   }
 
-  initProjectFilters();
-  document.addEventListener("astro:after-swap", () => {
-    initProjectFilters();
+  filterProjects();
+
+  window.addEventListener("popstate", filterProjects);
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target.matches("a[href*='?category=']")) {
+      e.preventDefault();
+      const href = target.getAttribute("href");
+      if (href) {
+        const url = new URL(href, window.location.origin);
+        window.history.pushState({}, "", url.toString());
+        filterProjects();
+      }
+    }
   });
 </script>

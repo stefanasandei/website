@@ -26,6 +26,7 @@ const project = defineCollection({
         }),
         achievements: z.array(z.string()),
         category: z.string(),
+        year: z.number()
     }),
 });
 
