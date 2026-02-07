@@ -18,6 +18,7 @@ const project = defineCollection({
         description: z.string(),
         featured: z.boolean().default(false),
         tech: z.array(z.string()),
+        tags: z.array(z.string()).optional(),
         links: z.object({
             github: z.string().optional(),
             demo: z.string().optional(),

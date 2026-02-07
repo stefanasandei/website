@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SectionTitle from "../../components/SectionTitle.svelte";
+import CoolLink from "../../components/CoolLink.svelte";
 
 export async function getStaticPaths() {
     const projectEntries = await getCollection("project");
@@ -15,83 +16,48 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const allProjects = await getCollection("project");
-const relatedProjects = allProjects
-    .filter((p) => p.data.category === entry.data.category && p.id !== entry.id)
-    .slice(0, 2);
+const otherProjects = allProjects.filter((p) => p.id !== entry.id).slice(0, 3);
+
+// Icons for links
+const linkIcons = {
+    github: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>`,
+    demo: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+    paper: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+    docs: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`,
+};
 ---
 
 <BaseLayout
     title={`${entry.data.title} - Projects - Asandei`}
     description={entry.data.description}
 >
-    <main class="md:max-w-2xl px-2 lg:max-w-4xl mx-2 md:mx-auto">
-        <!-- Breadcrumb -->
-        <nav class="mb-8 text-sm text-muted-foreground">
-            <a href="/projects" class="hover:text-primary transition-colors"
-                >Projects</a
+    <main class="px-2 lg:px-0 lg:max-w-none flex flex-col gap-6">
+        <!-- Hero Section -->
+        <article class="lg:max-w-6xl lg:mx-auto w-full">
+            <!-- Title Row with Links -->
+            <div
+                class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4"
             >
-            <span class="mx-2">/</span>
-            <span class="text-foreground">{entry.data.title}</span>
-        </nav>
-
-        <article class="space-y-8">
-            <!-- Header -->
-            <header class="space-y-6 pb-8 border-b border-border">
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3 text-xs font-mono">
-                        <span
-                            class="uppercase tracking-widest text-muted-foreground px-2 py-1 border border-border"
-                        >
-                            {entry.data.category}
-                        </span>
-                        <span class="text-muted-foreground">•</span>
-                        <span class="text-muted-foreground"
-                            >{entry.data.year}</span
-                        >
-                    </div>
-
-                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
-                        {entry.data.title}
-                    </h1>
-
-                    <p
-                        class="text-lg text-muted-foreground leading-relaxed max-w-2xl"
+                <div class="flex-1">
+                    <SectionTitle haveBorder={true} large={true}
+                        >{entry.data.title}</SectionTitle
                     >
-                        {entry.data.description}
-                    </p>
                 </div>
-
-                <!-- Quick Links -->
-                <div class="flex flex-wrap gap-3">
+                <!-- Links on the right -->
+                <div class="flex flex-wrap items-center gap-2 sm:shrink-0">
                     {
                         entry.data.links.github && (
                             <a
                                 href={entry.data.links.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm border border-border hover:border-primary hover:text-primary transition-all"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card hover:bg-primary/10 text-foreground transition-all duration-200 group text-sm"
                             >
-                                <svg
-                                    class="w-4 h-4"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                Source Code
-                            </a>
-                        )
-                    }
-                    {
-                        entry.data.links.demo && (
-                            <a
-                                href={entry.data.links.demo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
-                            >
-                                Live Demo
-                                <span>↗</span>
+                                <span
+                                    class="text-muted-foreground group-hover:text-primary transition-colors"
+                                    set:html={linkIcons.github}
+                                />
+                                <span>Source</span>
                             </a>
                         )
                     }
@@ -101,191 +67,140 @@ const relatedProjects = allProjects
                                 href={entry.data.links.paper}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm border border-border hover:border-primary hover:text-primary transition-all"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card hover:bg-primary/10 text-foreground border border-border hover:border-primary/50 transition-all duration-200 group text-sm"
                             >
-                                <svg
-                                    class="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                    />
-                                </svg>
-                                Read Paper
-                            </a>
-                        )
-                    }
-                    {
-                        entry.data.links.docs && (
-                            <a
-                                href={entry.data.links.docs}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm border border-border hover:border-primary hover:text-primary transition-all"
-                            >
-                                Documentation
+                                <span
+                                    class="text-muted-foreground group-hover:text-primary transition-colors"
+                                    set:html={linkIcons.paper}
+                                />
+                                <span>Paper</span>
                             </a>
                         )
                     }
                 </div>
-            </header>
-
-            <!-- Sidebar Info + Content Layout -->
-            <div class="lg:grid lg:grid-cols-[1fr_240px] lg:gap-12">
-                <!-- Main Content -->
-                <div
-                    class="prose prose-invert max-w-none
-            prose-headings:font-semibold prose-headings:tracking-tight
-            prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border
-            prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
-            prose-p:text-foreground/90 prose-p:leading-relaxed
-            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-            prose-code:text-primary prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-            prose-pre:bg-muted prose-pre:border prose-pre:border-border
-            prose-blockquote:border-l-2 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground
-            prose-li:text-foreground/90
-            prose-strong:text-foreground"
-                >
-                    <Content />
-                </div>
-
-                <!-- Sidebar -->
-                <aside class="hidden lg:block space-y-8 text-sm">
-                    <div class="sticky top-8 space-y-8">
-                        <!-- Tech Stack -->
-                        {
-                            entry.data.tech && entry.data.tech.length > 0 && (
-                                <div class="space-y-3">
-                                    <h4 class="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                                        Technologies
-                                    </h4>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        {entry.data.tech.map((tech: string) => (
-                                            <span class="px-2 py-1 bg-muted text-foreground font-mono text-xs">
-                                                {tech}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )
-                        }
-
-                        <!-- Achievements -->
-                        {
-                            entry.data.achievements &&
-                                entry.data.achievements.length > 0 && (
-                                    <div class="space-y-3">
-                                        <h4 class="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                                            Achievements
-                                        </h4>
-                                        <ul class="space-y-2">
-                                            {entry.data.achievements.map(
-                                                (achievement: string) => (
-                                                    <li class="flex gap-2 text-foreground/80">
-                                                        <span class="text-primary shrink-0">
-                                                            →
-                                                        </span>
-                                                        <span>
-                                                            {achievement}
-                                                        </span>
-                                                    </li>
-                                                ),
-                                            )}
-                                        </ul>
-                                    </div>
-                                )
-                        }
-                    </div>
-                </aside>
             </div>
 
-            <!-- Mobile: Tech & Achievements -->
-            <div class="lg:hidden space-y-6 pt-6 border-t border-border">
+            <!-- Meta info row: year, category, tech stack -->
+            <div
+                class="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm text-muted-foreground mb-6"
+            >
+                <span
+                    class="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md text-xs"
+                >
+                    {entry.data.year}
+                </span>
+                <a
+                    href={`/projects?tag=${entry.data.category}`}
+                    class="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer"
+                >
+                    #{entry.data.category}
+                </a>
+                <!-- <span class="text-foreground/80">{entry.data.category}</span> -->
                 {
-                    entry.data.tech && entry.data.tech.length > 0 && (
-                        <div class="space-y-3">
-                            <h4 class="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                                Technologies
-                            </h4>
-                            <div class="flex flex-wrap gap-1.5">
-                                {entry.data.tech.map((tech: string) => (
-                                    <span class="px-2 py-1 bg-muted text-foreground font-mono text-xs">
-                                        {tech}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
+                    entry.data.tech.length > 0 && (
+                        <span class="text-foreground/60">
+                            {entry.data.tech.join(" • ")}
+                        </span>
                     )
                 }
-
-                {
-                    entry.data.achievements &&
-                        entry.data.achievements.length > 0 && (
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                                    Achievements
-                                </h4>
-                                <ul class="space-y-2 text-sm">
-                                    {entry.data.achievements.map(
-                                        (achievement: string) => (
-                                            <li class="flex gap-2 text-foreground/80">
-                                                <span class="text-primary shrink-0">
-                                                    →
-                                                </span>
-                                                <span>{achievement}</span>
-                                            </li>
-                                        ),
-                                    )}
-                                </ul>
-                            </div>
-                        )
-                }
             </div>
 
-            <!-- Related Projects -->
             {
-                relatedProjects.length > 0 && (
-                    <section class="pt-8 border-t border-border space-y-4">
-                        <h3 class="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-                            Related Projects
-                        </h3>
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            {relatedProjects.map((project) => (
-                                <a
-                                    href={`/projects/${project.id}`}
-                                    class="group p-4 border border-border hover:border-primary/50 transition-all"
-                                >
-                                    <h4 class="font-semibold group-hover:text-primary transition-colors">
-                                        {project.data.title}
-                                    </h4>
-                                    <p class="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                        {project.data.description}
-                                    </p>
-                                </a>
-                            ))}
-                        </div>
-                    </section>
-                )
+                entry.data.achievements &&
+                    entry.data.achievements.length > 0 && (
+                        <section class="lg:max-w-6xl lg:mx-auto w-full flex flex-col gap-4">
+                            <h3 class="text-sm font-semibold text-muted-foreground tracking-wider">
+                                Achievements:
+                            </h3>
+                            <div class="flex flex-col gap-3">
+                                {entry.data.achievements.map((achievement) => (
+                                    <div class="flex items-center gap-3 text-foreground/90">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1" />
+                                        <span class="leading-relaxed">
+                                            {achievement}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )
             }
-
-            <!-- Back Navigation -->
-            <nav class="pt-8 border-t border-border">
-                <a
-                    href="/projects"
-                    class="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
-                >
-                    <span
-                        class="group-hover:-translate-x-1 transition-transform duration-200"
-                        >←</span
-                    >
-                    <span>Back to all projects</span>
-                </a>
-            </nav>
         </article>
+
+        <!-- Main Content -->
+        <article class="prose w-full prose-invert lg:max-w-6xl lg:mx-auto">
+            <div
+                class="prose-headings:text-foreground prose-headings:text-2xl prose-headings:border-b prose-headings:border-accent prose-headings:pb-2 prose-headings:mb-4 text-justify prose-p:text-foreground/90 prose-strong:text-foreground prose-code:text-primary prose-h3:border-b-0 prose-h3:text-xl prose-strong:font-bold prose-a:text-primary prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary prose-li:text-foreground/90"
+            >
+                <Content />
+            </div>
+        </article>
+
+        <!-- Other Projects Section -->
+        {
+            otherProjects.length > 0 && (
+                <section class="lg:max-w-6xl lg:mx-auto w-full border-t border-border pt-8">
+                    <h3 class="text-lg font-semibold mb-6 text-muted-foreground">
+                        Other Projects
+                    </h3>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {otherProjects.map((project) => (
+                            <a
+                                href={`/projects/${project.id}`}
+                                class="group p-4 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 transition-all duration-200"
+                            >
+                                <div class="flex flex-col gap-2">
+                                    <span class="font-semibold text-foreground group-hover:text-primary transition-colors">
+                                        {project.data.title}
+                                    </span>
+                                    <span class="text-sm text-muted-foreground line-clamp-2">
+                                        {project.data.description}
+                                    </span>
+                                    <div class="flex flex-wrap gap-1.5 mt-1">
+                                        {project.data.tech
+                                            .slice(0, 3)
+                                            .map((tech) => (
+                                                <span class="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                    </div>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+
+                    <nav class="pt-4">
+                        <CoolLink href="/projects">all projects</CoolLink>
+                    </nav>
+                </section>
+            )
+        }
     </main>
 </BaseLayout>
+
+<style>
+    section,
+    article {
+        animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Line clamp utility */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>

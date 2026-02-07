@@ -38,7 +38,7 @@
 </script>
 
 <section>
-    <SectionTitle>Awards</SectionTitle>
+    <SectionTitle>awards</SectionTitle>
 
     <p class="mb-6">
         A collection of awards and achievements from various competitions and

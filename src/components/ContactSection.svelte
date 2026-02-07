@@ -3,7 +3,7 @@
 </script>
 
 <section>
-    <SectionTitle>Contact</SectionTitle>
+    <SectionTitle>contact</SectionTitle>
 
     <p class="mb-6">
         I prefer to be contacted by email. Feel free to connect with me on my
