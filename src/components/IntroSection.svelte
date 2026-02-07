@@ -56,13 +56,13 @@
         <p
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
-            Hello, I'm an undergrad student at École Polytechnique, passionate
-            about mathematics, deep learning and astronomy. If you want to
-            collaborate on a project, feel free to <a
+            Hello, I'm an undergrad student at École Polytechnique, in Paris,
+            passionate about mathematics, deep learning and astronomy. If you
+            want to collaborate on a project, feel free to <a
                 href="mailto:asandei.stefanel@gmail.com"
                 class="text-primary hover:text-primary/70 transition-colors underline"
             >
-                contact
+                reach me
             </a>.
         </p>
         <p
