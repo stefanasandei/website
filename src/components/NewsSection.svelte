@@ -1,29 +1,31 @@
 <script>
+    const linkStyles =
+        "class='hover:text-primary transition-colors duration-100 underline decoration-muted-foreground/40 hover:decoration-primary' target='_blank'";
     const posts = [
         {
-            title: "started the <a class='hover:text-primary transition-colors duration-100' href='https://ioai-community-contest.netlify.app/'>AI Community Contest</a>",
+            title: `started the <a ${linkStyles} href='https://ioai-community-contest.netlify.app/'>AI Community Contest</a>`,
             date: "oct 25, 2025",
         },
-        { title: "bronze medal at IOAI '25", date: "aug 8, 2025" },
+        {
+            title: `bronze medal at <a ${linkStyles} href='https://ioai-official.org/'>IOAI</a> '25`,
+            date: "aug 8, 2025",
+        },
     ];
 </script>
 
-<div class="space-y-3">
-    <p>Personal news:</p>
-    <div class="space-y-2">
+<section class="space-y-4">
+    <h3 class="text-lg font-semibold tracking-tight">personal news</h3>
+    <div class="space-y-3">
         {#each posts as post}
-            <div class="grid grid-cols-2 items-start gap-8">
-                <!-- <a
-                    href="#"
-                    class="hover:text-primary transition-colors duration-100"
+            <div
+                class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4"
+            >
+                <span
+                    class="text-muted-foreground text-sm whitespace-nowrap min-w-[80px]"
+                    >{post.date}</span
                 >
-                    {post.title}
-                </a> -->
-                <span>{@html post.title}</span>
-                <span class="text-muted-foreground text-sm whitespace-nowrap">
-                    {post.date}
-                </span>
+                <span class="text-foreground">{@html post.title}</span>
             </div>
         {/each}
     </div>
-</div>
+</section>

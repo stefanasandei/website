@@ -5,6 +5,7 @@ import { getCollection } from "astro:content";
 import ContactSection from "../components/ContactSection.svelte";
 import AwardsSection from "../components/AwardsSection.svelte";
 import IntroSection from "../components/IntroSection.svelte";
+import NewsSection from "../components/NewsSection.svelte";
 import ProjectsSection from "../components/ProjectsSection.svelte";
 import BlogSection from "../components/BlogSection.svelte";
 
@@ -20,6 +21,7 @@ const projects = await getCollection("project");
 		class="md:max-w-2xl px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-8 md:gap-12"
 	>
 		<IntroSection />
+		<NewsSection />
 		<BlogSection {posts} />
 		<ProjectsSection {projects} />
 		<AwardsSection />
