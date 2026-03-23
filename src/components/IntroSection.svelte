@@ -27,19 +27,21 @@
                 <p
                     class="text-lg md:text-xl text-muted-foreground font-medium mt-1.5"
                 >
-                    Math & CS undergrad at <span
-                        class="font-semibold text-primary"
-                        >École Polytechnique</span
+                    Math & CS undergrad at <a
+                        href="https://programmes.polytechnique.edu/en/bachelor/about-the-bachelor/bachelor-of-science"
+                        target="_blank"
+                        class="font-semibold text-primary hover:underline hover:cursor-pointer"
+                        >École Polytechnique</a
                     >
                 </p>
             </div>
 
             <!-- Research Interests Pills -->
             <div class="flex flex-wrap items-center gap-2.5 mt-4">
-                <span
+                <!-- <span
                     class="text-sm text-muted-foreground/80 font-normal shrink-0"
                     >Research interests:</span
-                >
+                > -->
                 {#each researchInterests as interest}
                     <span
                         class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-secondary/60 text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200 cursor-default border border-border/40 hover:border-primary/50"
@@ -83,15 +85,15 @@
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
             I'm an IOAI medalist and I'm actively contributing to this
-            community. I am a problem setter for multiple competitions (AICC
-            Rounds, Algolymp contests and more) and I publish my <a
+            community. I am a problem setter for many competitions and I
+            maintain a repository with <a
                 href="https://github.com/stefanasandei/roai-solved"
                 target="_blank"
                 class="text-primary hover:text-primary/70 transition-colors underline"
             >
                 code solutions
-            </a> to tasks from various competitions (NEOAI, IOAI, National AI Olympiads
-            from Romania, Poland and Georgia, etc.).
+            </a>
+            to competitive AI tasks. I also write about AI on my blog.
         </p>
     </div>
 </section>

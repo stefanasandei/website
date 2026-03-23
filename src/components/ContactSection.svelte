@@ -17,7 +17,7 @@
                 href="mailto:asandei.stefanel@gmail.com"
                 class="text-foreground hover:text-muted-foreground transition-colors"
             >
-                asandei.stefanel@gmail.com
+                asandei.stefanel [at] gmail.com
             </a>
         </div>
         <div>
