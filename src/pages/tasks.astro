@@ -1,0 +1,18 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionTitle from "../components/SectionTitle.svelte";
+import TaskList from "../components/TaskList.svelte";
+---
+
+<BaseLayout
+    title="Asandei - Webring"
+    description="Explore my curated webring of talented developers, designers, and technologists"
+>
+    <div
+        class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col"
+    >
+        <SectionTitle haveBorder={false} large={true}>AI Tasks</SectionTitle>
+
+        <TaskList />
+    </div>
+</BaseLayout>

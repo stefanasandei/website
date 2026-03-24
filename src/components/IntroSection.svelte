@@ -37,18 +37,20 @@
             </div>
 
             <!-- Research Interests Pills -->
-            <div class="flex flex-wrap items-center gap-2.5 mt-4">
-                <!-- <span
-                    class="text-sm text-muted-foreground/80 font-normal shrink-0"
-                    >Research interests:</span
-                > -->
-                {#each researchInterests as interest}
-                    <span
-                        class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-secondary/60 text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200 cursor-default border border-border/40 hover:border-primary/50"
-                    >
-                        {interest}
-                    </span>
-                {/each}
+            <div class="mt-4 flex flex-col">
+                <span
+                    class="text-sm mb-1 text-muted-foreground/80 font-normal shrink-0"
+                    >Interests:</span
+                >
+                <div class="flex flex-wrap items-center gap-2.5">
+                    {#each researchInterests as interest}
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-secondary/60 text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200 cursor-default border border-border/40 hover:border-primary/50"
+                        >
+                            {interest}
+                        </span>
+                    {/each}
+                </div>
             </div>
         </div>
     </div>
@@ -67,7 +69,7 @@
                 reach me
             </a>.
         </p>
-        <p
+        <!-- <p
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
             I am a very ambitious, hard-working and driven person. I'm motivated
@@ -80,7 +82,7 @@
             >
                 github.com/stefanasandei/patheon
             </a>
-        </p>
+        </p> -->
         <p
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >

@@ -38,23 +38,26 @@
 </script>
 
 <section>
-    <SectionTitle>awards</SectionTitle>
+    <SectionTitle>Awards</SectionTitle>
 
     <p class="mb-6">
         A collection of awards and achievements from various competitions and
         olympiads during my high school years (to be continued).
     </p>
-    <div class="space-y-1">
-        <div
-            class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold border-b"
-        >
-            <div>Contest</div>
-            <div>Date, Location</div>
-            <div class="text-right">Prize</div>
+    <div class="overflow-x-auto">
+        <div class="min-w-[480px]">
+            <div
+                class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold border-border border-b-2"
+            >
+                <div>Contest</div>
+                <div>Date, Location</div>
+                <div class="text-right">Prize</div>
+            </div>
+
+            {#each experiences as exp (exp.company)}
+                <ExperienceItem {...exp} />
+            {/each}
         </div>
-        {#each experiences as exp (exp.company)}
-            <ExperienceItem {...exp} />
-        {/each}
     </div>
 
     <CoolLink href="/blog/high-school">high school journey</CoolLink>

@@ -3,7 +3,7 @@
 </script>
 
 <section>
-    <SectionTitle>contact</SectionTitle>
+    <SectionTitle>Contact</SectionTitle>
 
     <p class="mb-6">
         I prefer to be contacted by email. Feel free to connect with me on my
@@ -17,7 +17,7 @@
                 href="mailto:asandei.stefanel@gmail.com"
                 class="text-foreground hover:text-muted-foreground transition-colors"
             >
-                asandei.stefanel [at] gmail.com
+                asandei.stefanel@gmail.com
             </a>
         </div>
         <div>

@@ -14,7 +14,7 @@
 </script>
 
 <section class="space-y-4">
-    <h3 class="text-lg font-semibold tracking-tight">personal news</h3>
+    <p class="text-lg font-semibold tracking-tight">personal news:</p>
     <div class="space-y-3">
         {#each posts as post}
             <div

@@ -6,7 +6,7 @@
 </script>
 
 <div>
-    <SectionTitle>blog</SectionTitle>
+    <SectionTitle>Blog</SectionTitle>
 
     <p class="mb-6">
         Explore my thoughts and insights on various topics in computer science
