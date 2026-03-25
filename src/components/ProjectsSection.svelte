@@ -40,7 +40,7 @@
 
     <CoolLink href="/projects">all projects</CoolLink>
 
-    <div class="border-2 border-dashed p-4 border-border rounded-lg mt-8">
+    <div class="border border-dashed p-4 border-border rounded-lg mt-8">
         <TaskList />
     </div>
 </div>
