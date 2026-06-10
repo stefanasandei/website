@@ -3,7 +3,7 @@
         "class='hover:text-primary transition-colors duration-100 underline decoration-muted-foreground/40 hover:decoration-primary' target='_blank'";
     const posts = [
         {
-            title: `started the <a ${linkStyles} href='https://ioai-community-contest.netlify.app/'>AI Community Contest</a>`,
+            title: `started the <a ${linkStyles} href='https://aicc-official.org/'>AI Community Contest (AICC)</a>`,
             date: "oct 25, 2025",
         },
         {

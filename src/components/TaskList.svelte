@@ -1,4 +1,6 @@
 <script>
+    const { fullPage } = $props();
+
     const tasks = [
         {
             contest: "AICC Round 5",
@@ -8,14 +10,14 @@
             difficulty: "medium",
         },
         {
-            contest: "PreONIA 11-12, by Algolymp",
+            contest: "PreONIA Algolymp 11-12",
             title: "Markov Maze",
             link: "todo",
             type: "RL",
             difficulty: "easy",
         },
         {
-            contest: "PreONIA 9-10, by Algolymp",
+            contest: "PreONIA Algolymp 9-10",
             title: "RNA Profile",
             link: "todo",
             type: "NLP",
@@ -29,7 +31,7 @@
             difficulty: "hard",
         },
         {
-            contest: "PreOJIA 11-12, by Algolymp",
+            contest: "PreOJIA Algolymp 11-12",
             title: "Lunar Craters",
             link: "https://judge.nitro-ai.org/competitions/algolymp/algolymp-preojia-xi-xii/1/view",
             type: "CV",
@@ -73,7 +75,7 @@
     <p>
         Complete
         <a class={linkClasses} href="/tasks">list</a>
-        of my AI tasks published in contests:
+        of my competitive AI tasks published in contests:
     </p>
 
     <ul class="list list-inside list-disc mt-4">
@@ -94,13 +96,16 @@
         <a
             class={linkClasses}
             target="_blank"
-            href="https://ioai-community-contest.netlify.app/contests"
+            href="https://aicc-official.org/contests"
         >
             "AI Community Contest"
-        </a>, a practice monthly contest for IOAI.
-        <br /><br />
-        Rated difficulties are relative to IOAI, where easy tasks can be solved with
-        classic approaches, and medium/hard tasks require deeper thinking or sometimes
-        using ideas from newer research papers.
+        </a>, a practice monthly contest for international AI olympiads.
+
+        {#if fullPage}
+            <br /><br />
+            Rated difficulties are relative to IOAI, where easy tasks can be solved
+            with classic approaches, and medium/hard tasks require deeper thinking
+            or sometimes using ideas from newer research papers.
+        {/if}
     </p>
 </div>

@@ -60,9 +60,9 @@
         <p
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
-            Hello, I'm an undergrad student at École Polytechnique, in Paris,
-            passionate about mathematics, deep learning and astronomy. If you
-            want to collaborate on a project, feel free to <a
+            Hello, I'm an undergrad student at École Polytechnique, passionate
+            about mathematics, deep learning and astronomy. If you want to
+            collaborate on a project, feel free to <a
                 href="mailto:asandei.stefanel@gmail.com"
                 class="text-primary hover:text-primary/70 transition-colors underline"
             >
@@ -87,15 +87,21 @@
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
             I'm an IOAI medalist and I'm actively contributing to this
-            community. I am a problem setter for many competitions and I
-            maintain a repository with <a
+            community. I am a <a
+                href="/tasks"
+                class="text-primary hover:text-primary/70 transition-colors underline"
+            >
+                problem setter
+            </a>
+            for many competitions and I maintain a repository with
+            <a
                 href="https://github.com/stefanasandei/roai-solved"
                 target="_blank"
                 class="text-primary hover:text-primary/70 transition-colors underline"
             >
                 code solutions
             </a>
-            to competitive AI tasks. I also write about AI on my blog.
+            to competitive AI tasks.
         </p>
     </div>
 </section>

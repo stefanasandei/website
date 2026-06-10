@@ -6,7 +6,7 @@
         { href: "/papers", text: "papers", disabled: true },
         { href: "/projects", text: "projects" },
         { href: "/public/Asandei_CV.pdf", text: "cv" },
-        { href: "/webring", text: "webring" },
+        // { href: "/webring", text: "webring" },
     ];
 
     let mobileMenuOpen = false;
@@ -43,7 +43,7 @@
     >
         <a
             href="/"
-            class="font-bold uppercase tracking-tight hover:bg-primary/20 px-2 py-2 transition-colors"
+            class="font-bold text-lg tracking-tight hover:bg-primary/20 px-2 py-1 transition-colors"
         >
             Stefan Asandei
         </a>

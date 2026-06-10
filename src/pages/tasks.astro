@@ -11,8 +11,10 @@ import TaskList from "../components/TaskList.svelte";
     <div
         class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col"
     >
-        <SectionTitle haveBorder={false} large={true}>AI Tasks</SectionTitle>
+        <SectionTitle haveBorder={false} large={true}
+            >Competitive AI Tasks</SectionTitle
+        >
 
-        <TaskList />
+        <TaskList fullPage={true} />
     </div>
 </BaseLayout>

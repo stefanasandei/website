@@ -9,9 +9,9 @@
 <div>
     <SectionTitle>Projects</SectionTitle>
 
-    <p class="mb-6">
+    <!-- <p class="mb-6">
         There are the most relevant coding projects I've worked on.
-    </p>
+    </p> -->
 
     <div class="space-y-8">
         {#each projects as project}
@@ -40,7 +40,8 @@
 
     <CoolLink href="/projects">all projects</CoolLink>
 
-    <div class="border border-dashed p-4 border-border rounded-lg mt-8">
-        <TaskList />
-    </div>
+    <!-- <div class="border-2 border-dashed p-4 border-border rounded-lg mt-8"> -->
+    <!-- <div class="mt-8">
+        <TaskList fullPage={false} />
+    </div> -->
 </div>

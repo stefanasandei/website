@@ -8,14 +8,14 @@
 <div>
     <SectionTitle>Blog</SectionTitle>
 
-    <p class="mb-6">
+    <!-- <p class="mb-6">
         Explore my thoughts and insights on various topics in computer science
         and deep learning through my blog posts.
-    </p>
+    </p> -->
 
-    <p class="text-sm text-muted-foreground mb-4">
+    <!-- <p class="text-sm text-muted-foreground mb-4">
         {posts.length} posts:
-    </p>
+    </p> -->
 
     <div class="space-y-3">
         {#each posts as post}

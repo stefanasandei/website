@@ -5,6 +5,11 @@
 
     const experiences = [
         {
+            company: "Nitro NLP Hackathon",
+            dates: "2026, International",
+            status: "1st Place",
+        },
+        {
             company: "International Olympiad in AI",
             dates: "2025, Beijing, China",
             status: "Bronze Medal",
@@ -14,21 +19,7 @@
             dates: "2025, Bucharest, Romania",
             status: "2nd Place and Gold Medal",
         },
-        {
-            company: "Infomatrix Web Contest",
-            dates: "2024, Bucharest, Romania",
-            status: "Gold Medal",
-        },
-        {
-            company: "National CS Olympiad",
-            dates: "2024, Bucharest, Romania",
-            status: "Bronze Medal",
-        },
-        {
-            company: "Infoeducatie Web Hackathon",
-            dates: "2023, Focsani, Romania",
-            status: "1st Place and Gold Medal",
-        },
+
         {
             company: "FIRST World Championship",
             dates: "2023, Houston, USA",
