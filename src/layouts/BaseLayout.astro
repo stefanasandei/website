@@ -12,7 +12,7 @@ const { title, description = "Asandei Stefan-Alexandru" } = Astro.props;
 const currentYear = new Date().getFullYear();
 ---
 
-<html lang="en">
+<html lang="en" class="dark">
     <head>
         <meta charset="utf-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -20,24 +20,38 @@ const currentYear = new Date().getFullYear();
         <meta name="generator" content={Astro.generator} />
         <title>{title}</title>
         <meta name="description" content={description} />
+        <script is:inline>
+            // Apply the saved theme before first paint to avoid a flash.
+            // Defaults to dark (the site's primary aesthetic).
+            (function () {
+                var stored = null;
+                try {
+                    stored = localStorage.getItem("theme");
+                } catch (_) {}
+                if (
+                    stored === "light" ||
+                    (!stored &&
+                        !window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches)
+                ) {
+                    document.documentElement.classList.remove("dark");
+                }
+            })();
+        </script>
         <!-- <ClientRouter /> -->
     </head>
-    <body class="bg-background dark text-foreground">
+    <body class="bg-background text-foreground">
         <NavBar client:load />
 
         <slot />
 
         <footer
-            class="mt-6 py-6 border-t border-border text-xs text-muted-foreground"
+            class="mt-6 py-6 border-t border-border text-sm text-muted-foreground"
         >
             <div
                 class="md:max-w-2xl lg:max-w-6xl mx-2 md:mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
             >
-                <div class="">
-                    <div>
-                        Copyright {currentYear} Asandei Stefan-Alexandru
-                    </div>
-                </div>
+                <div>Copyright {currentYear} Asandei Stefan-Alexandru</div>
 
                 <a href="#" class="hover:text-foreground transition-colors">
                     ↑ Back to top

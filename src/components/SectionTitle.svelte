@@ -3,24 +3,11 @@
     export let large = false;
 </script>
 
-{#if haveBorder}
-    <h2 class="text-lg font-bold mb-4 pb-2 border-b border-border">
-        <span
-            class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
-            >*</span
-        >
-        <span class={`${large ? "text-4xl" : "text-2xl"}`}>
-            <slot />
-        </span>
-    </h2>
-{:else}
-    <h2 class="text-lg font-bold pb-2">
-        <span
-            class={`text-primary font-extrabold ${large ? "text-4xl" : "text-2xl"}`}
-            >*</span
-        >
-        <span class={`${large ? "text-4xl" : "text-2xl"}`}>
-            <slot />
-        </span>
-    </h2>
-{/if}
+<h2
+    class={`flex items-center gap-3 font-bold tracking-tight ${
+        large ? "text-4xl md:text-5xl" : "text-2xl md:text-3xl"
+    } ${haveBorder ? "mb-6 border-b border-border pb-1" : "pb-1"}`}
+>
+    <span class="text-primary font-extrabold"><sup>*</sup></span>
+    <slot />
+</h2>

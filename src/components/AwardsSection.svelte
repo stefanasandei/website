@@ -5,24 +5,29 @@
 
     const experiences = [
         {
+            company: "European Olympiad in AI",
+            dates: "2026, 🇷🇴 Romania",
+            status: "🥈 Silver Medal",
+        },
+        {
             company: "Nitro NLP Hackathon",
-            dates: "2026, International",
-            status: "1st Place",
+            dates: "2026, 🌍 Online",
+            status: "🥇 1st Place",
         },
         {
             company: "International Olympiad in AI",
-            dates: "2025, Beijing, China",
-            status: "Bronze Medal",
+            dates: "2025, Beijing, 🇨🇳 China",
+            status: "🥉 Bronze Medal",
         },
         {
             company: "National AI Olympiad",
-            dates: "2025, Bucharest, Romania",
-            status: "2nd Place and Gold Medal",
+            dates: "2025, Bucharest, 🇷🇴 Romania",
+            status: "2nd Place and 🥇 Gold Medal",
         },
 
         {
             company: "FIRST World Championship",
-            dates: "2023, Houston, USA",
+            dates: "2023, Houston, 🇺🇸 USA",
             status: "Motivate Award Finalist",
         },
     ];
@@ -38,7 +43,7 @@
     <div class="overflow-x-auto">
         <div class="min-w-[480px]">
             <div
-                class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold border-border border-b-2"
+                class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold !text-foreground border-border border-b-2"
             >
                 <div>Contest</div>
                 <div>Date, Location</div>

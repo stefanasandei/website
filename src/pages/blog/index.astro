@@ -4,11 +4,15 @@ import { getCollection } from "astro:content";
 import SectionTitle from "../../components/SectionTitle.svelte";
 import CoolLink from "../../components/CoolLink.svelte";
 import Tag from "../../components/Tag.svelte";
+import { readingTime } from "../../lib/reading-time";
 
 // Get all blog posts sorted by date (newest first)
-const allPosts = (await getCollection("blog")).sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
+const allPosts = (await getCollection("blog"))
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+    .map((post) => ({ ...post, minutes: readingTime(post.body) }));
+
+// Group by year, preserving the date sort (an academic archive feel)
+const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
 ---
 
 <BaseLayout
@@ -20,7 +24,7 @@ const allPosts = (await getCollection("blog")).sort(
     >
         <div class="space-y-6">
             <div class="flex justify-between items-center">
-                <SectionTitle haveBorder={false} large={true}>blog</SectionTitle
+                <SectionTitle haveBorder={false} large={true}>Blog</SectionTitle
                 >
                 <div id="current-tag-container"></div>
             </div>
@@ -32,44 +36,83 @@ const allPosts = (await getCollection("blog")).sort(
                 science and deep learning through my blog posts.
             </p>
 
-            <div id="posts-container">
+            <div id="posts-container" class="space-y-10">
                 {
-                    allPosts.map((post, index) => (
-                        <div
-                            class="py-4 post-item"
-                            data-tags={JSON.stringify(post.data.tags || [])}
-                        >
-                            <div class="mb-3">
-                                <a
-                                    href={`/blog/${post.id}`}
-                                    class="hover:text-primary transition-colors duration-100 text-lg font-medium"
-                                >
-                                    {post.data.title}
-                                </a>
-                            </div>
-                            <div class="flex justify-between items-center gap-4">
-                                <div class="flex flex-wrap gap-1">
-                                    {post.data.tags &&
-                                        post.data.tags.length > 0 &&
-                                        post.data.tags.map((tag) => (
-                                            <Tag
-                                                {tag}
-                                                href={`/blog?tag=${tag}`}
-                                            />
-                                        ))}
-                                </div>
-                                <span class="text-muted-foreground text-sm whitespace-nowrap shrink-0">
-                                    {post.data.date.toLocaleDateString(
-                                        "en-US",
-                                        {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                        },
-                                    )}
+                    years.map((year) => (
+                        <section class="year-group">
+                            <div class="flex items-baseline gap-3 border-b border-border pb-2">
+                                <span class="text-primary font-extrabold text-xl">
+                                    <sup>*</sup>
+                                </span>
+                                <h2 class="text-xl font-bold tracking-tight">
+                                    {year}
+                                </h2>
+                                <span class="text-sm text-muted-foreground">
+                                    {
+                                        allPosts.filter(
+                                            (p) =>
+                                                p.data.date.getFullYear() ===
+                                                year,
+                                        ).length
+                                    }{" "}
+                                    posts
                                 </span>
                             </div>
-                        </div>
+
+                            <div>
+                                {allPosts
+                                    .filter(
+                                        (p) =>
+                                            p.data.date.getFullYear() === year,
+                                    )
+                                    .map((post) => (
+                                        <div
+                                            class="py-4 post-item border-b border-border"
+                                            data-tags={JSON.stringify(
+                                                post.data.tags || [],
+                                            )}
+                                        >
+                                            <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4 mb-2">
+                                                <a
+                                                    href={`/blog/${post.id}`}
+                                                    class="hover:text-primary transition-colors duration-100 text-lg font-medium"
+                                                >
+                                                    {post.data.title}
+                                                </a>
+                                                <span class="text-muted-foreground text-sm whitespace-nowrap shrink-0">
+                                                    {post.data.date.toLocaleDateString(
+                                                        "en-US",
+                                                        {
+                                                            year: "numeric",
+                                                            month: "short",
+                                                            day: "numeric",
+                                                        },
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                                <span class="text-sm text-muted-foreground">
+                                                    {post.minutes} min read
+                                                </span>
+                                                {post.data.tags &&
+                                                    post.data.tags.length >
+                                                        0 && (
+                                                        <div class="flex flex-wrap gap-1">
+                                                            {post.data.tags.map(
+                                                                (tag) => (
+                                                                    <Tag
+                                                                        {tag}
+                                                                        href={`/blog?tag=${tag}`}
+                                                                    />
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    )}
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
+                        </section>
                     ))
                 }
             </div>
@@ -112,18 +155,26 @@ const allPosts = (await getCollection("blog")).sort(
             }
         });
 
-        // Update border classes based on visible posts
-        const visiblePosts = Array.from(postItems).filter((item) => {
-            return (item as HTMLElement).style.display !== "none";
-        });
+        // Update border classes based on visible posts within each year
+        const yearGroups = document.querySelectorAll(".year-group");
+        yearGroups.forEach((group) => {
+            const visiblePosts = Array.from(
+                group.querySelectorAll(".post-item"),
+            ).filter(
+                (item) => (item as HTMLElement).style.display !== "none",
+            ) as HTMLElement[];
 
-        visiblePosts.forEach((item, index) => {
-            const element = item as HTMLElement;
-            if (index < visiblePosts.length - 1) {
-                element.classList.add("border-b", "border-border");
-            } else {
-                element.classList.remove("border-b", "border-border");
-            }
+            // hide the whole year section if nothing is visible
+            (group as HTMLElement).style.display =
+                visiblePosts.length === 0 ? "none" : "block";
+
+            visiblePosts.forEach((item, index) => {
+                if (index < visiblePosts.length - 1) {
+                    item.classList.add("border-b", "border-border");
+                } else {
+                    item.classList.remove("border-b", "border-border");
+                }
+            });
         });
 
         // Update the current tag display
@@ -132,7 +183,7 @@ const allPosts = (await getCollection("blog")).sort(
         ) as HTMLElement;
         if (currentTagContainer) {
             currentTagContainer.innerHTML = tag
-                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
+                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
                 : "";
         }
     }

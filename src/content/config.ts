@@ -25,7 +25,6 @@ const project = defineCollection({
             paper: z.string().optional(),
             docs: z.string().optional(),
         }),
-        achievements: z.array(z.string()),
         category: z.string(),
         year: z.number()
     }),

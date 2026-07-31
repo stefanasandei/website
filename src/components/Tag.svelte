@@ -7,20 +7,20 @@
 {#if href}
     <a
         {href}
-        class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block"
+        class="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block"
     >
         #{tag}
     </a>
 {:else if clear}
     <button
         on:click={() => window.history.pushState({}, "", "/blog")}
-        class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer"
+        class="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer"
     >
         #{tag}
     </button>
 {:else}
     <span
-        class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md inline-block"
+        class="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-md inline-block"
     >
         #{tag}
     </span>

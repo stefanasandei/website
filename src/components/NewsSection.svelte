@@ -1,27 +1,33 @@
 <script>
+    import SectionTitle from "./SectionTitle.svelte";
+
     const linkStyles =
-        "class='hover:text-primary transition-colors duration-100 underline decoration-muted-foreground/40 hover:decoration-primary' target='_blank'";
+        "class='text-primary hover:text-primary/70 font-bold transition-colors underline' target='_blank'";
     const posts = [
+        {
+            title: `🥈 silver medal at the <a ${linkStyles} href='https://euroai-official.org/2026'>European Olympiad in AI (EUROAI)</a>`,
+            date: "jul 19, 2026",
+        },
         {
             title: `started the <a ${linkStyles} href='https://aicc-official.org/'>AI Community Contest (AICC)</a>`,
             date: "oct 25, 2025",
         },
         {
-            title: `bronze medal at <a ${linkStyles} href='https://ioai-official.org/'>International Olympiad in AI (IOAI)</a> '25`,
+            title: `🥉 bronze medal at <a ${linkStyles} href='https://ioai-official.org/china-2025/'>International Olympiad in AI (IOAI)</a>`,
             date: "aug 8, 2025",
         },
     ];
 </script>
 
 <section class="space-y-4">
-    <p class="text-lg font-semibold tracking-tight">personal news:</p>
+    <SectionTitle>News</SectionTitle>
     <div class="space-y-3">
         {#each posts as post}
             <div
                 class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4"
             >
                 <span
-                    class="text-muted-foreground text-sm whitespace-nowrap min-w-[80px]"
+                    class="text-muted-foreground text-sm whitespace-nowrap min-w-20"
                     >{post.date}</span
                 >
                 <span class="text-foreground">{@html post.title}</span>

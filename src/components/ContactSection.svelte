@@ -5,17 +5,12 @@
 <section>
     <SectionTitle>Contact</SectionTitle>
 
-    <p class="mb-6">
-        I prefer to be contacted by email. Feel free to connect with me on my
-        other socials as well.
-    </p>
-
-    <div class="space-y-2 text-sm mb-6 font-mono">
+    <div class="space-y-3 text-base">
         <div>
             <span class="text-muted-foreground">email:</span>
             <a
                 href="mailto:asandei.stefanel@gmail.com"
-                class="text-foreground hover:text-muted-foreground transition-colors"
+                class="break-all text-foreground hover:text-primary hover:underline transition-colors"
             >
                 asandei.stefanel@gmail.com
             </a>
@@ -26,7 +21,7 @@
                 href="https://github.com/stefanasandei"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-foreground hover:text-muted-foreground transition-colors"
+                class="text-foreground hover:text-primary hover:underline transition-colors"
             >
                 stefanasandei
             </a>
@@ -37,7 +32,7 @@
                 href="https://linkedin.com/in/stefan-asandei"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-foreground hover:text-muted-foreground transition-colors"
+                class="text-foreground hover:text-primary hover:underline transition-colors"
             >
                 stefan-asandei
             </a>
@@ -48,9 +43,9 @@
                 href="https://orcid.org/0009-0000-4691-3903"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-foreground hover:text-muted-foreground transition-colors"
+                class="text-foreground hover:text-primary hover:underline transition-colors"
             >
-                https://orcid.org/0009-0000-4691-3903
+                0009-0000-4691-3903
             </a>
         </div>
         <div>

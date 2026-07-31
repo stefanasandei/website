@@ -1,0 +1,35 @@
+---
+interface Props {
+    title: string;
+    description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<header class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+        <span class="text-primary font-extrabold mr-2"
+            ><sup>*</sup></span
+        >{title}
+    </h1>
+
+    <div
+        class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground"
+    >
+        <slot name="meta" />
+    </div>
+</header>
+
+{
+    description && (
+        <div class="mb-8 border-l-2 border-primary bg-muted/40 px-4 py-3">
+            <p class="text-sm font-bold tracking-[0.15em] uppercase text-muted-foreground mb-1.5">
+                abstract
+            </p>
+            <p class="text-lg text-foreground/90 leading-relaxed">
+                {description}
+            </p>
+        </div>
+    )
+}

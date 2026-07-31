@@ -1,8 +1,13 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import SectionTitle from "../../components/SectionTitle.svelte";
-import ArticleTimeline from "../../components/ArticleTimeline.svelte";
+import ArticleBody from "../../components/ArticleBody.astro";
+import SlugHeader from "../../components/SlugHeader.astro";
+import Tag from "../../components/Tag.svelte";
+import TableOfContents from "../../components/TableOfContents.svelte";
+import ReadingProgress from "../../components/ReadingProgress.svelte";
+import Citation from "../../components/Citation.svelte";
+import { wordCount, readingTime } from "../../lib/reading-time";
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection("blog");
@@ -13,64 +18,133 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+
+const minutes = readingTime(entry.body);
+const words = wordCount(entry.body);
+
+// prev / next navigation (sorted newest first)
+const allPosts = (await getCollection("blog")).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const index = allPosts.findIndex((p) => p.id === entry.id);
+const newerPost = index > 0 ? allPosts[index - 1] : null;
+const olderPost =
+    index >= 0 && index < allPosts.length - 1 ? allPosts[index + 1] : null;
 ---
 
 <BaseLayout
     title={`${entry.data.title} - Asandei`}
     description={entry.data.description || entry.data.title}
 >
-    <main class="px-2 lg:px-0 lg:max-w-none flex flex-col gap-12">
-        <article class="prose prose-invert max-w-none lg:max-w-6xl lg:mx-auto">
-            <SectionTitle large={true}>{entry.data.title}</SectionTitle>
+    <ReadingProgress client:load />
 
-            <div class="text-muted-foreground text-sm mb-8">
-                {
-                    entry.data.date.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                    })
-                }
-            </div>
+    <main class="px-2 lg:px-0 lg:max-w-6xl lg:mx-auto w-full">
+        <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-12">
+            <article class="slug-article w-full min-w-0">
+                <SlugHeader
+                    title={entry.data.title}
+                    description={entry.data.description}
+                >
+                    <Fragment slot="meta">
+                        <time datetime={entry.data.date.toISOString()}>
+                            {
+                                entry.data.date.toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                })
+                            }
+                        </time>
+                        <span aria-hidden="true">·</span>
+                        <span>{minutes} min read</span>
+                        <span aria-hidden="true">·</span>
+                        <span>{words} words</span>
+                        {
+                            entry.data.tags && entry.data.tags.length > 0 && (
+                                <>
+                                    <span aria-hidden="true">·</span>
+                                    <span class="flex flex-wrap gap-1">
+                                        {entry.data.tags.map((tag) => (
+                                            <Tag
+                                                {tag}
+                                                href={`/blog?tag=${tag}`}
+                                            />
+                                        ))}
+                                    </span>
+                                </>
+                            )
+                        }
+                    </Fragment>
+                </SlugHeader>
 
-            <div
-                class="prose-headings:text-foreground prose-headings:text-3xl prose-headings:border-b prose-headings:border-accent prose-headings:pb-2 text-justify prose-p:text-foreground prose-strong:text-foreground prose-code:text-primary prose-h3:border-b-0 prose-h3:text-2xl prose-strong:font-bold prose-a:text-primary prose-pre:bg-muted prose-pre:border-none prose-blockquote:border-l-primary"
-            >
-                <Content />
-            </div>
-        </article>
+                <!-- Collapsible contents on small screens -->
+                <div class="lg:hidden mb-8">
+                    <TableOfContents {headings} variant="inline" client:load />
+                </div>
 
-        <aside
-            class="hidden 2xl:block 2xl:w-64 2xl:fixed 2xl:right-12 2xl:top-20"
-        >
-            <!-- <ArticleTimeline client:load /> -->
-        </aside>
+                <ArticleBody>
+                    <Content />
+                </ArticleBody>
 
-        <!-- <div class="border-t border-border pt-8 lg:max-w-6xl">
-            <a
-                href="/"
-                class="text-primary hover:text-primary/80 transition-colors"
-            >
-                ← Back to home
-            </a>
-        </div> -->
+                <!-- Citation -->
+                <div class="mt-12">
+                    <Citation
+                        title={entry.data.title}
+                        date={entry.data.date}
+                        path={`/blog/${entry.id}`}
+                        client:load
+                    />
+                </div>
+
+                <!-- Prev / next -->
+                <nav
+                    class="mt-8 flex items-start justify-between gap-4 border-t border-border pt-6 text-sm"
+                    aria-label="More posts"
+                >
+                    <div class="min-w-0">
+                        {
+                            newerPost && (
+                                <a
+                                    href={`/blog/${newerPost.id}`}
+                                    class="group inline-flex flex-col"
+                                >
+                                    <span class="text-sm text-muted-foreground">
+                                        newer
+                                    </span>
+                                    <span class="text-primary group-hover:underline truncate">
+                                        {newerPost.data.title}
+                                    </span>
+                                </a>
+                            )
+                        }
+                    </div>
+                    <div class="min-w-0 text-right">
+                        {
+                            olderPost && (
+                                <a
+                                    href={`/blog/${olderPost.id}`}
+                                    class="group inline-flex flex-col"
+                                >
+                                    <span class="text-sm text-muted-foreground">
+                                        older
+                                    </span>
+                                    <span class="text-primary group-hover:underline truncate">
+                                        {olderPost.data.title}
+                                    </span>
+                                </a>
+                            )
+                        }
+                    </div>
+                </nav>
+            </article>
+
+            <!-- Sticky chapter sidebar -->
+            <aside class="hidden lg:block min-w-0">
+                <div class="sticky top-20">
+                    <TableOfContents {headings} variant="sidebar" client:load />
+                </div>
+            </aside>
+        </div>
     </main>
 </BaseLayout>
-
-<style>
-    article {
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(4px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
