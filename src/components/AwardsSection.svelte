@@ -6,28 +6,28 @@
     const experiences = [
         {
             company: "European Olympiad in AI",
-            dates: "2026, 🇷🇴 Romania",
+            details: "2026, 🇷🇴 Romania",
             status: "🥈 Silver Medal",
         },
         {
             company: "Nitro NLP Hackathon",
-            dates: "2026, 🌍 Online",
+            details: "2026, 🌍 Online",
             status: "🥇 1st Place",
         },
         {
             company: "International Olympiad in AI",
-            dates: "2025, Beijing, 🇨🇳 China",
+            details: "2025, Beijing, 🇨🇳 China",
             status: "🥉 Bronze Medal",
         },
         {
             company: "National AI Olympiad",
-            dates: "2025, Bucharest, 🇷🇴 Romania",
+            details: "2025, Bucharest, 🇷🇴 Romania",
             status: "2nd Place and 🥇 Gold Medal",
         },
 
         {
             company: "FIRST World Championship",
-            dates: "2023, Houston, 🇺🇸 USA",
+            details: "2023, Houston, 🇺🇸 USA",
             status: "Motivate Award Finalist",
         },
     ];
@@ -41,12 +41,12 @@
         olympiads during my high school years (to be continued).
     </p>
     <div class="overflow-x-auto">
-        <div class="min-w-[480px]">
+        <div class="min-w-0 sm:min-w-[480px]">
             <div
-                class="grid grid-cols-3 gap-4 px-2 py-2 text-sm font-semibold !text-foreground border-border border-b-2"
+                class="grid grid-cols-2 sm:grid-cols-3 gap-4 px-2 py-2 text-xs font-semibold uppercase tracking-wider !text-muted-foreground border-border border-b-2"
             >
-                <div>Contest</div>
-                <div>Date, Location</div>
+                <div class="!text-left">Contest</div>
+                <div class="hidden sm:block">Date, Location</div>
                 <div class="text-right">Prize</div>
             </div>
 
@@ -56,5 +56,5 @@
         </div>
     </div>
 
-    <CoolLink href="/blog/high-school">high school journey</CoolLink>
+    <CoolLink href="/blog/high-school">all high school results</CoolLink>
 </section>

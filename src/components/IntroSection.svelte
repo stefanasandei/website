@@ -2,7 +2,7 @@
     const researchInterests = [
         "Deep Learning",
         "Computer Vision",
-        "Self Supervised Learning",
+        "Diffusion models",
     ];
 </script>
 

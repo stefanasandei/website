@@ -5,7 +5,7 @@
 <section>
     <SectionTitle>Contact</SectionTitle>
 
-    <div class="space-y-3 text-base">
+    <div class="space-y-3 text-base grid md:grid-cols-2">
         <div>
             <span class="text-muted-foreground">email:</span>
             <a
@@ -37,7 +37,7 @@
                 stefan-asandei
             </a>
         </div>
-        <div>
+        <!-- <div>
             <span class="text-muted-foreground">orcid:</span>
             <a
                 href="https://orcid.org/0009-0000-4691-3903"
@@ -47,7 +47,7 @@
             >
                 0009-0000-4691-3903
             </a>
-        </div>
+        </div> -->
         <div>
             <span class="text-muted-foreground">discord:</span>
             <span class="text-foreground">stefan_asandei</span>

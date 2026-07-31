@@ -1,0 +1,264 @@
+[
+  {
+    "year": "2025",
+    "contests": [
+      {
+        "company": "Cloudflight Coding Contest",
+        "subject": "🤖 AI",
+        "details": "2025, International",
+        "status": "🥈 2nd locally · 12th globally"
+      },
+      {
+        "company": "InfoEducatie National Olympiad",
+        "subject": "💻 Computer Science",
+        "details": "2025, Web category",
+        "status": "🥈 3rd Place and Silver Medal"
+      },
+      {
+        "company": "International Olympiad in Artificial Intelligence",
+        "subject": "🤖 AI",
+        "details": "2025, Beijing, China",
+        "status": "🥉 Bronze Medal"
+      },
+      {
+        "company": "National Selection Camp for International AI Contests",
+        "subject": "🤖 AI",
+        "details": "2025, Romania",
+        "status": "🥉 3rd Place"
+      },
+      {
+        "company": "National Olympiad of Artificial Intelligence",
+        "subject": "🤖 AI",
+        "details": "2025, Romania",
+        "status": "🥇 2nd Place and Gold Medal"
+      },
+      {
+        "company": "Informatics Olympiad",
+        "subject": "💻 Computer Science",
+        "details": "2025, National phase",
+        "status": "✅ Qualified"
+      },
+      {
+        "company": "Applied Informatics Olympiad (Acadnet)",
+        "subject": "💻 Computer Science",
+        "details": "2025, Linux section",
+        "status": "✅ Qualified for national phase"
+      }
+    ]
+  },
+  {
+    "year": "2024",
+    "contests": [
+      {
+        "company": "International Infomatrix Contest",
+        "subject": "💻 Computer Science",
+        "details": "2024, Web category",
+        "status": "🥇 Gold Medal"
+      },
+      {
+        "company": "National Olympiad of Information Technology",
+        "subject": "💻 Computer Science",
+        "details": "2024, C#",
+        "status": "🥉 Bronze Medal"
+      },
+      {
+        "company": "Romanian CanSat and Rocketry Championship",
+        "subject": "⚙️ Engineering",
+        "details": "2024, Romania",
+        "status": "🥉 3rd Place"
+      },
+      {
+        "company": "National Olympiad of Informatics",
+        "subject": "💻 Computer Science",
+        "details": "2024, Romania",
+        "status": "🥉 Bronze Medal · 46th/~1300"
+      },
+      {
+        "company": "FIICode Contest",
+        "subject": "💻 Computer Science",
+        "details": "2024, Web category",
+        "status": "🥉 3rd Place"
+      },
+      {
+        "company": "Informatics Olympiad for Teams (IIOT)",
+        "subject": "💻 Computer Science",
+        "details": "2024, National phase",
+        "status": "🥉 Bronze Medal"
+      }
+    ]
+  },
+  {
+    "year": "2023",
+    "contests": [
+      {
+        "company": "InfoEducatie National Olympiad",
+        "subject": "💻 Computer Science",
+        "details": "2023, Romania",
+        "status": "🥇 1st Place and Gold Medal"
+      },
+      {
+        "company": "InfoEducatie Olympiad",
+        "subject": "💻 Computer Science",
+        "details": "2023, City phase",
+        "status": "🥇 1st Place · Qualified for nationals"
+      },
+      {
+        "company": "FIRST World Championship",
+        "subject": "⚙️ Engineering",
+        "details": "2023, Houston, USA",
+        "status": "🥈 Motivate Award · 2nd Place"
+      },
+      {
+        "company": "Romanian National Olympiad",
+        "subject": "⚙️ Engineering",
+        "details": "2023, Romania",
+        "status": "🥈 Inspire Award · 2nd Place"
+      },
+      {
+        "company": "Olympiad of Informatics",
+        "subject": "💻 Computer Science",
+        "details": "2023, Romania",
+        "status": "🏅 110th in national leaderboard"
+      }
+    ]
+  },
+  {
+    "year": "2022",
+    "contests": [
+      {
+        "company": "Peppers++",
+        "subject": "💻 Computer Science",
+        "details": "2022, Romania",
+        "status": "🎖️ Honourable Mention"
+      },
+      {
+        "company": "National exam",
+        "subject": "📐 Mathematics",
+        "details": "2022, Romania",
+        "status": "💯 Maximum grade: 10.00"
+      },
+      {
+        "company": "Peppers robotics club",
+        "subject": "⚙️ Engineering",
+        "details": "2022, Iasi, Romania",
+        "status": "🤖 Joined as programmer"
+      }
+    ]
+  },
+  {
+    "year": "2021",
+    "contests": [
+      {
+        "company": "Physics Olympiad",
+        "subject": "⚛️ Physics",
+        "details": "2021, Romania",
+        "status": "🏅 163rd in national ranking"
+      },
+      {
+        "company": "Computer Science Olympiad",
+        "subject": "💻 Computer Science",
+        "details": "2021, Romania",
+        "status": "🏅 86th in national ranking"
+      }
+    ]
+  },
+  {
+    "year": "2020",
+    "contests": [
+      {
+        "company": "Physics Olympiad",
+        "subject": "⚛️ Physics",
+        "details": "2020, Romania",
+        "status": "🎖️ Honourable Mention"
+      },
+      {
+        "company": "Computer Science Olympiad",
+        "subject": "💻 Computer Science",
+        "details": "2020, Romania",
+        "status": "🏅 105th in national ranking"
+      },
+      {
+        "company": "Urmasii lui Moisil",
+        "subject": "💻 Computer Science",
+        "details": "2020, Romania",
+        "status": "✅ Attended"
+      },
+      {
+        "company": "Infogim 2",
+        "subject": "💻 Computer Science",
+        "details": "2020, Romania",
+        "status": "🏅 12th Place"
+      },
+      {
+        "company": "Infogim finals",
+        "subject": "💻 Computer Science",
+        "details": "2020, Romania",
+        "status": "🏅 12th Place"
+      },
+      {
+        "company": "Center of Excellence in Programming",
+        "subject": "💻 Computer Science",
+        "details": "2020–2021, Romania",
+        "status": "✅ Admitted"
+      },
+      {
+        "company": "Infogim 1",
+        "subject": "💻 Computer Science",
+        "details": "2020, Romania",
+        "status": "🏅 27th Place"
+      }
+    ]
+  },
+  {
+    "year": "2019",
+    "contests": [
+      {
+        "company": "Micii Matematicieni",
+        "subject": "📐 Mathematics",
+        "details": "2019, Harlau, Romania",
+        "status": "🥈 2nd Place"
+      },
+      {
+        "company": "Mathematics Olympiad",
+        "subject": "📐 Mathematics",
+        "details": "2019, Romania",
+        "status": "🏅 391st in national ranking"
+      },
+      {
+        "company": "Center of Excellence in Programming",
+        "subject": "💻 Computer Science",
+        "details": "2019–2020, Romania",
+        "status": "✅ Admitted"
+      },
+      {
+        "company": "Infogim 1",
+        "subject": "💻 Computer Science",
+        "details": "2019, Romania",
+        "status": "🏅 4th Place"
+      }
+    ]
+  },
+  {
+    "year": "2018",
+    "contests": [
+      {
+        "company": "Myller",
+        "subject": "📐 Mathematics",
+        "details": "2018, Romania",
+        "status": "🥈 Second Prize"
+      },
+      {
+        "company": "Mate3",
+        "subject": "📐 Mathematics",
+        "details": "2018, Suceava, Romania",
+        "status": "🎖️ Honourable Mention"
+      },
+      {
+        "company": "Center of Excellence in Mathematics",
+        "subject": "📐 Mathematics",
+        "details": "2018–2019, Romania",
+        "status": "✅ Admitted"
+      }
+    ]
+  }
+]
