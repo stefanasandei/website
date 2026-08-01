@@ -39,6 +39,34 @@ const currentYear = new Date().getFullYear();
             })();
         </script>
         <!-- <ClientRouter /> -->
+        <script>
+            // Copy-to-clipboard for code blocks (event delegation, site-wide).
+            document.addEventListener("click", async (event) => {
+                if (!(event.target instanceof Element)) return;
+                const button = event.target.closest("[data-copy-code]");
+                if (!(button instanceof HTMLButtonElement)) return;
+                const pre = button
+                    .closest("[data-code-block]")
+                    ?.querySelector("pre");
+                if (!pre) return;
+
+                const code = pre.innerText.replace(/\n+$/, "");
+                try {
+                    await navigator.clipboard.writeText(code);
+                } catch (_) {
+                    // fallback for older browsers
+                    const ta = document.createElement("textarea");
+                    ta.value = code;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand("copy");
+                    ta.remove();
+                }
+
+                button.dataset.copied = "true";
+                setTimeout(() => delete button.dataset.copied, 1500);
+            });
+        </script>
     </head>
     <body class="bg-background text-foreground">
         <NavBar client:load />

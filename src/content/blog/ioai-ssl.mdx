@@ -1,0 +1,124 @@
+---
+title: "How to approach SSL tasks in competitive AI"
+date: 2026-08-20
+tags: ["ioai"]
+---
+
+## Context on Self Supervised Learning
+
+my results and in what areas
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam a magna mollis orci fringilla suscipit et eget quam. Sed in cursus diam. Nunc molestie rhoncus consequat. Suspendisse eget purus quis nibh interdum viverra at a nisl. Suspendisse potenti. Proin volutpat, turpis sit amet pharetra vulputate, nisi augue commodo mauris, consequat malesuada quam erat at orci. Ut sit amet quam auctor, fringilla sapien vitae, efficitur mauris. Cras finibus purus non mollis ultricies. Nullam hendrerit sagittis odio, vitae faucibus sapien facilisis eget. Cras quis lectus hendrerit, volutpat odio sed, elementum arcu. Phasellus laoreet eleifend malesuada. Donec bibendum augue sagittis accumsan auctor. Mauris varius commodo euismod. Cras ut dui vitae elit laoreet egestas a at justo. Sed ac odio sapien. Etiam diam purus, volutpat ut dolor ac, pellentesque euismod nunc.
+
+## Avoid "Contrastive" methods
+
+Etiam malesuada, leo eget iaculis elementum, orci leo vestibulum diam, placerat volutpat est erat a leo. Pellentesque imperdiet tellus tellus, in malesuada ligula ullamcorper eu. In hac habitasse platea dictumst. Etiam vel ullamcorper purus, vel auctor orci. Aliquam id sem porta velit accumsan sollicitudin.
+
+## Self-Distillation methods
+
+more camps, international contests (go for experiences and memories) + less project-based contests, only objective ones
+
+### BYOL
+
+text here
+
+### SimSiam
+
+text here
+
+## Regularization methods
+
+Donec a mauris elementum, hendrerit diam ut, volutpat nulla. Phasellus eleifend orci porttitor lorem tempor volutpat. Cras metus dolor, tincidunt vitae molestie non, volutpat eget erat. Maecenas bibendum ex sit amet massa interdum, sed viverra elit ultricies. Proin enim turpis, finibus quis suscipit at, ornare sed lorem. Sed bibendum nunc ut lectus dignissim eleifend. Aliquam ullamcorper ut purus at tempus. Nullam arcu est, euismod in eros nec, sodales euismod sem. Nullam quis aliquam tortor, sit amet commodo sapien. Proin viverra elit eu molestie interdum. Etiam placerat vel arcu id malesuada. Maecenas euismod quam in leo finibus, vitae maximus lectus aliquet. Quisque vitae risus nunc. Donec maximus lobortis sollicitudin. Etiam orci augue, finibus in lorem eget, fermentum varius neque. Duis ac odio ut felis porttitor mollis.
+
+### VICReg
+
+```py title="VICReg loss"
+def VICReg(z1, z2, sim_weight=25, var_weight=25, cov_weight=1):
+    # invariance loss
+    sim_loss = (z1 - z2).square().mean()
+
+    # variance loss
+    std1 = torch.sqrt(z1.var(dim=0) + 1e-4)
+    std2 = torch.sqrt(z2.var(dim=0) + 1e-4)
+    var_loss = (F.relu(1 - std1).mean() + F.relu(1 - std2).mean()) / 2
+
+    # covariance loss
+    batch_size, dim = z1.shape
+    z1 = z1 - z1.mean(dim=0)
+    z2 = z2 - z2.mean(dim=0)
+
+    cov1 = z1.T @ z1 / (batch_size - 1)
+    cov2 = z2.T @ z2 / (batch_size - 1)
+
+    cov_loss = (
+        cov1.square().sum() - cov1.diagonal().square().sum()
+        + cov2.square().sum() - cov2.diagonal().square().sum()
+    ) / dim
+
+    return sim_weight * sim_loss + var_weight * var_loss + cov_weight * cov_loss
+```
+
+text here
+
+### SIGReg
+
+```py
+def SIGReg(x, global_step, num_slices=256):
+    # slice sampling -- synced across devices --
+    dev = dict(device=x.device)
+    g = torch.Generator(**dev)
+    g.manual_seed(global_step)
+    proj_shape = (x.size(1), num_slices)
+    A = torch.randn(proj_shape, generator=g, **dev)
+    A /= A.norm(p=2, dim=0)
+
+    # Epps–Pulley stat. see Sec. 4.3 for alt. --
+    # integration points
+    t = torch.linspace(-5, 5, 17, **dev)
+
+    # theoretical CF for N(0, 1) and Gauss. window
+    exp_f = torch.exp(-0.5 * t**2)
+
+    # empirical CF -- gathered across devices
+    x_t = (x @ A).unsqueeze(2) * t  # (N, M, T)
+    ecf = (1j * x_t).exp().mean(0)
+    ecf = all_reduce(ecf, op="AVG")
+
+    # weighted L2 distance
+    err = (ecf - exp_f).abs().square().mul(exp_f)
+    N = x.size(0) * world_size
+    T = torch.trapz(err, t, dim=1) * N
+    return T
+```
+
+### LeJEPA
+
+text here
+
+```py
+def LeJEPA(global_views: list[torch.Tensor], all_views: list[torch.Tensor], lambd: float):
+    # embedding of global views
+    g_emb = forward(torch.cat(global_views))
+
+    # embedding of local views
+    # if resnet: skip with a_emb = g_emb
+    a_emb = forward(torch.cat(all_views))
+
+    # LeJEPA loss
+    centers = g_emb.view(-1, bs, K).mean(0)
+    a_emb = a_emb.view(-1, bs, K)
+    sim = (centers - a_emb).square().mean()
+    sigreg = mean(SIGReg(emb, global_step) for emb in a_emb)
+    return (1 - lambd) * sim + lambd * sigreg
+```
+
+## Conclusion
+
+Donec a mauris elementum, hendrerit diam ut, volutpat nulla. Phasellus eleifend orci porttitor lorem tempor volutpat. Cras metus dolor, tincidunt vitae molestie non, volutpat eget erat. Maecenas bibendum ex sit amet massa interdum, sed viverra elit ultricies.
+
+Practice tasks (easiest -> hardest):
+- "Find Brain Tumors": [Kaggle link](https://www.kaggle.com/competitions/aicc-round-0-brain-tumor) (AICC Round 0)
+- "Toilet Sign Matching": [MLC link](https://platform.olimpiada-ai.ro/en/problems/73) (IOAI 2025 day 2)
+- "Broken": [Nitro Judge link](https://judge.nitro-ai.org/competitions/cram-school/preonia-2026/2/view) (CramSchool preONIA 2026)
+
+Good luck and have fun!

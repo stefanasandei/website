@@ -64,7 +64,7 @@
             about mathematics, deep learning and astronomy. If you want to
             collaborate on a project, feel free to <a
                 href="mailto:asandei.stefanel@gmail.com"
-                class="text-primary hover:text-primary/70 transition-colors underline"
+                class="text-primary transition-colors hover:underline"
             >
                 reach me
             </a>.
@@ -77,7 +77,7 @@
             cool I built:
             <a
                 href="https://github.com/stefanasandei/patheon"
-                class="text-primary hover:text-primary/70 transition-colors underline"
+                class="text-primary  transition-colors underline"
                 target="_blank"
             >
                 github.com/stefanasandei/patheon
@@ -89,7 +89,7 @@
             I'm an IOAI medalist and I'm actively contributing to this
             community. I am a <a
                 href="/tasks"
-                class="text-primary hover:text-primary/70 transition-colors underline"
+                class="text-primary transition-colors hover:underline"
             >
                 problem setter
             </a>
@@ -97,7 +97,7 @@
             <a
                 href="https://github.com/stefanasandei/roai-solved"
                 target="_blank"
-                class="text-primary hover:text-primary/70 transition-colors underline"
+                class="text-primary transition-colors hover:underline"
             >
                 code solutions
             </a>

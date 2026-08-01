@@ -214,6 +214,116 @@ body {
     scroll-margin-top: 4.5rem;
 }
 
+/* ------------------------------------------------------------------
+   Code blocks: panel with a language header and a copy button.
+   Mirrors the "cite this post" panel: muted header bar, card body,
+   sharp corners, secondary -> primary button hover.
+------------------------------------------------------------------ */
+.code-block {
+    margin: 1.75rem 0;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-2xs);
+}
+
+.code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background-color: color-mix(in oklch, var(--muted) 50%, transparent);
+}
+
+.code-block-lang {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--muted-foreground);
+    user-select: none;
+}
+
+.code-block-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-md);
+    border: none;
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    font-family: inherit;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.code-block-copy:hover {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.code-block-copy:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 1px;
+}
+
+.code-block-copy svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* swap copy -> check icon + label once copied */
+.code-block-copy .icon-check,
+.code-block-copy .label-copied,
+.code-block-copy[data-copied] .icon-copy,
+.code-block-copy[data-copied] .label-copy {
+    display: none;
+}
+
+.code-block-copy[data-copied] .icon-check,
+.code-block-copy[data-copied] .label-copied {
+    display: inline;
+}
+
+.code-block pre.astro-code {
+    margin: 0;
+    padding: 0.875rem 1rem;
+    border: none;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.code-block pre::-webkit-scrollbar {
+    height: 0.5rem;
+}
+
+.code-block pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.code-block pre::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 999px;
+}
+
+/* Shiki dual themes: light colors are inline by default,
+   switch to the dark CSS variables in dark mode.
+   The block background comes from the theme itself so tokens
+   and body always match; spans only swap their text color. */
+.dark .astro-code {
+    background-color: var(--shiki-dark-bg) !important;
+}
+
+.dark .astro-code,
+.dark .astro-code span {
+    color: var(--shiki-dark) !important;
+}
+
 .slug-article {
     animation: fadeIn 0.3s ease;
 }

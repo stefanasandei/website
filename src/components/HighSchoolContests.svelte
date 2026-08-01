@@ -1,32 +1,56 @@
 <script>
     import CollapsibleSection from "./CollapsibleSection.svelte";
-    import ExperienceItem from "./ExperienceItem.svelte";
-    import contestYears from "../data/high-school-contests.json";
+    import contests from "../data/high-school-contests.json";
+
+    const contestYears = contests.reduce((years, contest) => {
+        let year = years[years.length - 1];
+
+        if (!year || year.year !== contest.year) {
+            year = { year: contest.year, contests: [] };
+            years.push(year);
+        }
+
+        year.contests.push(contest);
+        return years;
+    }, []);
+
+    contestYears.sort((a, b) => b.year - a.year);
 </script>
 
 <CollapsibleSection title="Show all contests" open>
-    <div class="overflow-x-auto">
-        <div class="min-w-0 sm:min-w-[760px]">
-            <div
-                class="grid grid-cols-2 sm:grid-cols-4 gap-4 px-2 py-2 text-xs font-semibold uppercase tracking-wider !text-muted-foreground border-border border-b-2"
-            >
-                <div class="!text-left">Contest</div>
-                <div class="hidden sm:block">Subject</div>
-                <div class="hidden sm:block">Details</div>
-                <div class="text-right">Prize</div>
-            </div>
-
-            {#each contestYears as year, yearIndex}
-                {#if yearIndex > 0}
-                    <div
-                        class="col-span-2 sm:col-span-4 border-t border-border/70"
-                        aria-hidden="true"
-                    ></div>
-                {/if}
-                {#each year.contests as contest}
-                    <ExperienceItem {...contest} showSubject={true} />
-                {/each}
-            {/each}
-        </div>
+    <div class="space-y-8 p-4">
+        {#each contestYears as year}
+            <section>
+                <h3
+                    class="mb-3 border-b border-border pb-2 text-lg font-semibold !text-foreground"
+                >
+                    {year.year}
+                </h3>
+                <div class="list-none space-y-3 p-0">
+                    {#each year.contests as contest}
+                        <div>
+                            <p
+                                class="!text-left text-sm leading-relaxed !text-foreground/90"
+                            >
+                                <span class="font-semibold text-primary"
+                                    >{contest.subject}</span
+                                >: {contest.title}
+                                <!-- <a
+                                    href={contest.source}
+                                    target={contest.source === "#"
+                                        ? undefined
+                                        : "_blank"}
+                                    rel={contest.source === "#"
+                                        ? undefined
+                                        : "noopener noreferrer"}
+                                    class="ml-2 whitespace-nowrap text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary"
+                                    >Source</a
+                                > -->
+                            </p>
+                        </div>
+                    {/each}
+                </div>
+            </section>
+        {/each}
     </div>
 </CollapsibleSection>

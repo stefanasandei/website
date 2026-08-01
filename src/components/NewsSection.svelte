@@ -2,7 +2,7 @@
     import SectionTitle from "./SectionTitle.svelte";
 
     const linkStyles =
-        "class='text-primary hover:text-primary/70 font-bold transition-colors underline' target='_blank'";
+        "class='text-primary  font-bold transition-colors hover:underline' target='_blank'";
     const posts = [
         {
             title: `🥈 silver medal at the <a ${linkStyles} href='https://euroai-official.org/2026'>European Olympiad in AI (EUROAI)</a>`,
