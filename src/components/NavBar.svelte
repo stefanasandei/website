@@ -66,28 +66,15 @@
         <div class="hidden md:flex items-center gap-1">
             {#each links as link (link.href)}
                 {#if !link.disabled}
-                    {#if link.href === "/blog"}
-                        <a
-                            bind:this={firstMenuItem}
-                            href={link.href}
-                            class={linkClass(link.href, "px-3 py-1")}
-                            aria-current={isActive(link.href)
-                                ? "page"
-                                : undefined}
-                        >
-                            {link.text}
-                        </a>
-                    {:else}
-                        <a
-                            href={link.href}
-                            class={linkClass(link.href, "px-3 py-1")}
-                            aria-current={isActive(link.href)
-                                ? "page"
-                                : undefined}
-                        >
-                            {link.text}
-                        </a>
-                    {/if}
+                    <a
+                        href={link.href}
+                        class={linkClass(link.href, "px-3 py-1")}
+                        aria-current={isActive(link.href)
+                            ? "page"
+                            : undefined}
+                    >
+                        {link.text}
+                    </a>
                 {/if}
             {/each}
             <ThemeToggle />

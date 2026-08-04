@@ -5,6 +5,7 @@ import SectionTitle from "../../components/SectionTitle.svelte";
 import CoolLink from "../../components/CoolLink.svelte";
 import Tag from "../../components/Tag.svelte";
 import { readingTime } from "../../lib/reading-time";
+import { tagColorIndex } from "../../lib/tags";
 
 // Get all blog posts sorted by date (newest first)
 const allPosts = (await getCollection("blog"))
@@ -103,6 +104,9 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
                                                                     <Tag
                                                                         {tag}
                                                                         href={`/blog?tag=${tag}`}
+                                                                        colorIndex={tagColorIndex(
+                                                                            tag,
+                                                                        )}
                                                                     />
                                                                 ),
                                                             )}
@@ -138,6 +142,12 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
 </style>
 
 <script>
+    import { tagColors, tagColorIndex } from "../../lib/tags";
+
+    function colorClassFor(tag: string) {
+        return tagColors[tagColorIndex(tag)];
+    }
+
     function filterPosts() {
         const urlParams = new URLSearchParams(window.location.search);
         const tag = urlParams.get("tag");
@@ -183,7 +193,7 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
         ) as HTMLElement;
         if (currentTagContainer) {
             currentTagContainer.innerHTML = tag
-                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
+                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-sm ${colorClassFor(tag)} px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
                 : "";
         }
     }

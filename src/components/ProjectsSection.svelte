@@ -1,8 +1,14 @@
 <script>
     import CoolLink from "./CoolLink.svelte";
     import SectionTitle from "./SectionTitle.svelte";
+    import { tagColorIndex, tagColors } from "../lib/tags";
 
     export let projects;
+
+    projects = projects
+        .slice()
+        .sort((a, b) => b.data.year - a.data.year)
+        .slice(0, 2);
 </script>
 
 <div>
@@ -32,9 +38,20 @@
                     {project.data.description}
                 </p>
                 {#if project.data.tech && project.data.tech.length > 0}
-                    <p class="mt-auto pt-4 text-sm text-muted-foreground/80">
-                        {project.data.tech.slice(0, 3).join(" · ")}
-                    </p>
+                    <div class="mt-auto flex flex-wrap items-center gap-1 pt-4">
+                        {#each project.data.tech.slice(0, 3) as tech}
+                            <span
+                                class={`text-sm ${tagColors[tagColorIndex(tech)]} px-2 py-1 rounded-md inline-block`}
+                            >
+                                {tech}
+                            </span>
+                        {/each}
+                        {#if project.data.tech.length > 3}
+                            <span class="text-sm text-muted-foreground/80">
+                                +{project.data.tech.length - 3}
+                            </span>
+                        {/if}
+                    </div>
                 {/if}
             </a>
         {/each}

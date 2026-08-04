@@ -2,11 +2,12 @@
 title: "How to approach SSL tasks in competitive AI"
 date: 2026-08-20
 tags: ["ioai"]
+description: "SSL techniques in the context of fast-paced context, with at most 6 to 24 hours."
 ---
 
 ## Context on Self Supervised Learning
 
-my results and in what areas
+context on embeddings, what SSL is
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam a magna mollis orci fringilla suscipit et eget quam. Sed in cursus diam. Nunc molestie rhoncus consequat. Suspendisse eget purus quis nibh interdum viverra at a nisl. Suspendisse potenti. Proin volutpat, turpis sit amet pharetra vulputate, nisi augue commodo mauris, consequat malesuada quam erat at orci. Ut sit amet quam auctor, fringilla sapien vitae, efficitur mauris. Cras finibus purus non mollis ultricies. Nullam hendrerit sagittis odio, vitae faucibus sapien facilisis eget. Cras quis lectus hendrerit, volutpat odio sed, elementum arcu. Phasellus laoreet eleifend malesuada. Donec bibendum augue sagittis accumsan auctor. Mauris varius commodo euismod. Cras ut dui vitae elit laoreet egestas a at justo. Sed ac odio sapien. Etiam diam purus, volutpat ut dolor ac, pellentesque euismod nunc.
 
@@ -18,19 +19,21 @@ Etiam malesuada, leo eget iaculis elementum, orci leo vestibulum diam, placerat 
 
 more camps, international contests (go for experiences and memories) + less project-based contests, only objective ones
 
-### BYOL
+### [BYOL](https://arxiv.org/abs/2006.07733)
 
 text here
 
-### SimSiam
+### [SimSiam](https://arxiv.org/abs/2011.10566)
 
 text here
+
+Self-distillation is also used to train the [DINO](https://arxiv.org/abs/2104.14294) models, among a lot of other techniques and heuristics.
 
 ## Regularization methods
 
 Donec a mauris elementum, hendrerit diam ut, volutpat nulla. Phasellus eleifend orci porttitor lorem tempor volutpat. Cras metus dolor, tincidunt vitae molestie non, volutpat eget erat. Maecenas bibendum ex sit amet massa interdum, sed viverra elit ultricies. Proin enim turpis, finibus quis suscipit at, ornare sed lorem. Sed bibendum nunc ut lectus dignissim eleifend. Aliquam ullamcorper ut purus at tempus. Nullam arcu est, euismod in eros nec, sodales euismod sem. Nullam quis aliquam tortor, sit amet commodo sapien. Proin viverra elit eu molestie interdum. Etiam placerat vel arcu id malesuada. Maecenas euismod quam in leo finibus, vitae maximus lectus aliquet. Quisque vitae risus nunc. Donec maximus lobortis sollicitudin. Etiam orci augue, finibus in lorem eget, fermentum varius neque. Duis ac odio ut felis porttitor mollis.
 
-### VICReg
+### [VICReg](https://arxiv.org/abs/2105.04906)
 
 ```py title="VICReg loss"
 def VICReg(z1, z2, sim_weight=25, var_weight=25, cov_weight=1):
@@ -60,7 +63,9 @@ def VICReg(z1, z2, sim_weight=25, var_weight=25, cov_weight=1):
 
 text here
 
-### SIGReg
+### [SIGReg](https://arxiv.org/abs/2511.08544)
+
+now as for newer methods, however with diminishing returns for contests (too much code, not huge improvement) - kept as reference to be aware of SOTA
 
 ```py
 def SIGReg(x, global_step, num_slices=256):
@@ -91,7 +96,7 @@ def SIGReg(x, global_step, num_slices=256):
     return T
 ```
 
-### LeJEPA
+### [LeJEPA](https://arxiv.org/abs/2511.08544)
 
 text here
 

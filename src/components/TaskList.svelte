@@ -3,6 +3,27 @@
 
     const tasks = [
         {
+            contest: "AICC Round 8",
+            title: "Pixel Quest",
+            link: "todo",
+            type: "RL",
+            difficulty: "hard",
+        },
+        {
+            contest: "AICC Round 7",
+            title: "Scientific Facts",
+            link: "todo",
+            type: "NLP",
+            difficulty: "medium",
+        },
+        {
+            contest: "AICC Round 6",
+            title: "Nuclei Reconstruction",
+            link: "todo",
+            type: "CV",
+            difficulty: "hard",
+        },
+        {
             contest: "AICC Round 5",
             title: "Watermark Removal",
             link: "todo",

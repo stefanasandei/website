@@ -4,6 +4,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @plugin "@tailwindcss/typography";
 
 /* Light theme: matte white, cool ink, a single blue accent */

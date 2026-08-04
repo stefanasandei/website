@@ -8,6 +8,7 @@ import TableOfContents from "../../components/TableOfContents.svelte";
 import ReadingProgress from "../../components/ReadingProgress.svelte";
 import Citation from "../../components/Citation.svelte";
 import { wordCount, readingTime } from "../../lib/reading-time";
+import { tagColorIndex } from "../../lib/tags";
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection("blog");
@@ -69,6 +70,7 @@ const olderPost =
                                             <Tag
                                                 {tag}
                                                 href={`/blog?tag=${tag}`}
+                                                colorIndex={tagColorIndex(tag)}
                                             />
                                         ))}
                                     </span>

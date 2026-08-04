@@ -9,7 +9,11 @@
             date: "jul 19, 2026",
         },
         {
-            title: `started the <a ${linkStyles} href='https://aicc-official.org/'>AI Community Contest (AICC)</a>`,
+            title: `🥇 gold medal at the <a ${linkStyles} href='https://www.kaggle.com/competitions/neoai-2026'>Northern Eurasia Olympiad in AI (NEOAI)</a>`,
+            date: "may 4, 2026",
+        },
+        {
+            title: `started the <a ${linkStyles} href='https://aicc-official.org/'>AI Community Contest (AICC)</a> (600+ members)`,
             date: "oct 25, 2025",
         },
         {

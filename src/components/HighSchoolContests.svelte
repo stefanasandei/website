@@ -18,11 +18,11 @@
 </script>
 
 <CollapsibleSection title="Show all contests" open>
-    <div class="space-y-8 p-4">
+    <div class="space-y-6 px-4 pt-2 pb-4">
         {#each contestYears as year}
             <section>
                 <h3
-                    class="mb-3 border-b border-border pb-2 text-lg font-semibold !text-foreground"
+                    class="!mt-0 mb-3 border-b border-border pb-2 text-lg font-semibold !text-foreground"
                 >
                     {year.year}
                 </h3>

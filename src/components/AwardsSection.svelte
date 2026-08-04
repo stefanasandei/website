@@ -10,6 +10,11 @@
             status: "🥈 Silver Medal",
         },
         {
+            company: " Northern Eurasia OAI",
+            details: "2026, 🌍 Online",
+            status: "🥇 Gold Medal",
+        },
+        {
             company: "Nitro NLP Hackathon",
             details: "2026, 🌍 Online",
             status: "🥇 1st Place",
@@ -38,7 +43,7 @@
 
     <p class="mb-6">
         A collection of awards and achievements from various competitions and
-        olympiads during my high school years (to be continued).
+        olympiads during my high school years.
     </p>
     <div class="overflow-x-auto">
         <div class="min-w-0 sm:min-w-[480px]">

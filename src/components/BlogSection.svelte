@@ -3,6 +3,11 @@
     import SectionTitle from "./SectionTitle.svelte";
 
     export let posts;
+
+    posts = posts
+        .slice()
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+        .slice(0, 3);
 </script>
 
 <div>
