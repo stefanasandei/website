@@ -19,9 +19,9 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const allProjects = (await getCollection("project")).sort(
-    (a, b) => b.data.year - a.data.year,
-);
+const allProjects = (await getCollection("project"))
+    .filter((project) => !project.data.hidden)
+    .sort((a, b) => b.data.year - a.data.year);
 const index = allProjects.findIndex((p) => p.id === entry.id);
 const newerProject = index > 0 ? allProjects[index - 1] : null;
 const olderProject =

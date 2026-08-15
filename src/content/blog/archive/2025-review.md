@@ -1,0 +1,27 @@
+---
+title: "2025 was a good year"
+date: 2025-12-31
+description: "a lot of articles in 2025, huh?" # 👏 year review 👏
+tags: []
+is_archive: true
+---
+
+## Summary of 2025
+
+This year I'm going to write a shorter article for the end of year review. I only aim to archive memories with this. As for the goals, just do good in university admissions and hopefully IOAI qualification with a better medal, but mainly I want to go to a good university.
+
+The first 3 months of the year were pretty uneventful. I guess the first contest I went to was "Constructor Open Cup", because back then I wanted to go to Constructor University and that looked like a fairly good way to get early admissions. After that the next big thing I went to was the National Olympiad in Informatics, which this year was in Ploiesti! Horrible location, had a not so great time overall, also I was like ~40 points short of a bronze medal. There was no interesting side activity. Because of this I decided to stop going to NOI in 2026.
+
+Sidenote, but in august I also went to Infoeducatie web. Had a good time, mainly because I met again with Paul Tal. The hackathon was _not_ a good experience at all. The theme was basically to rebuild AWS from scratch, with 10 target microservices, each worth 10 points (Lambda, S3, EC2, etc.). It was just a vibe coding contest, requiring 0 technical skill. This made me want to fully give up on web development as an industry. I got 3rd place and Paul Tal got 2nd place, however Paul _fully_ deserved 1st Place.
+
+At the same time (january - april), I started to go, for the first serious time, to Acadnet. I got 1st place for per city phase and also the 1st place per county for the county phase. I went to the computers sections, which is basically GNU/Linux knowledge (commands, os architecture and shell scripting). I found this syllabus _really_ fun. I didn't have enough time to practice, but hopefully in 2026, if I am done with university admissions in time, I can practice a bit more. The national Acadnet phase was the UPB and I had a great time! I enjoyed the workshops, where I went to an embedded systems lecture and I also learned about UPB's Formula Student team, very cool. Another great activity was the pop quiz night, mainly because of the vibes. Also because it was an applied informatics Olympiad, I met cool people from my city, I'd even say the best quality of people from my city from any other Olympiad. I ended up not getting a Bronze medal, I got a sub 20th place (16th?), but not enough for Bronze. Overall I still enjoyed and hopefully I can go again next year.
+
+However, the focus of 2025 was my activy in Competitive Artifficial Intelligence. In 2025 there was the 2nd edition of the International Olympiad in Artifficial Intelligence, with the 1st edition of the National selection Olympiad in Romania. I got 1st place per county in the County Phase, 6th place per country in the National Phase and 3rd place for the IOAI selection camp, placing me in the 1st team for IOAI. Needless to say, everything was awesome! I am very thankful for the organizers, who put in so much effort to create a syllabus, create practice tasks, develop an online judge and everything else for the olympiad. Namely, whom I got to meet, I'd like thank Mihai, Miruna, Chris and Carla (only first names). Regarding activities, I enjoyed the Bitdefender talk from the national phase, where I learned about the origins of this bussines at the University of Bucharest in the 90's. At the selection camp I liked the workshops a lot. For the selection camp exams I mainly prepped by doing the NEOAI 2025 tasks. I am also _extremely_ thanks for Radu and Stefano, for their time to discuss some questions of mine, it really meant a lot to me.
+
+I was qualified to IOAI '25, 2nd edition of the olympiad, in the 1st team of Romania. I went to Beijing, China from 2nd to 9th August. Absolutely phenomenal experience, I am so grateful for everything! In the months before IOAI we had 3 at-home tasks, and I cracked the hell out of them. Daily, 12 hours a day, I was only in notebooks. Task 1 was Radar, fairly easy and mostly everyone had a close to perfect score. I spent, by far, most time on the 2nd task. It was weather prediction, also UNet based. I tried so many things, from hyperparameter tuning, FiLM conditioning, ASPP modules, Squeeze and Excitation, Attention gates, etc. It was fun but also insanely tireding. The 3rd task was mainly prompt engineering, I remember besides that I used Qwen3 0.6b, quite a good embeddings model.
+
+Now for the Beijing experience, it was awesome. China was very clean, civilized and welcoming. We stayed at a high school, it was absolutely huge. We visited the Summer Palace, very beautiful scenary. More details in the photos from my personal archive. In the last day, we visited a robotics conference, I was mind blown of the tech.
+
+Now that I am an IOAI alumni, I feel good to give something back to the communtiy. I started in august, alongside a team of 4 other IOAI alumni (Gior, Walnit, Cowile, Convexhulltrick), the AI Community Contest. We wanted to create more practice tasks to help people learn and prepare for IOAI. Like codeforces rounds, but for IOAI prep. So far we had 3 rounds, with an average of 10-30 participants per rounds. I have released 3 tasks of mine so far (30% of AICC). I really hope this contest will grow into a beautiful community and we will have many quality learning resources. Only downside is that it's really time consuming.
+
+Happy New Year!

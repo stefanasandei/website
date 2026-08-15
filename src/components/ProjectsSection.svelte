@@ -7,6 +7,7 @@
 
     projects = projects
         .slice()
+        .filter((project) => !project.data.hidden)
         .sort((a, b) => b.data.year - a.data.year)
         .slice(0, 2);
 </script>

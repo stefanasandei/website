@@ -106,41 +106,45 @@
         class="border border-border bg-card/50 text-sm overflow-hidden"
         aria-label="Table of contents"
     >
-        <div
-            class="flex items-center justify-between px-3 py-2 border-b border-border"
-        >
+        <div class="px-4 py-3 border-b border-border">
             <span
-                class="text-sm font-bold tracking-[0.15em] text-muted-foreground"
-                >contents</span
+                class="text-xs font-bold tracking-[0.16em] text-muted-foreground"
+                >Table of Contents</span
             >
         </div>
-        <ol class="flex flex-col">
+        <ol class="flex flex-col py-1.5">
             {#each items as item (item.slug)}
                 <li>
                     <button
                         on:click={() => scrollTo(item.slug)}
-                        class="w-full text-left flex items-baseline gap-2 px-3 py-1.5 transition-colors border-l-2 {item.slug ===
+                        class="toc-link w-full text-left grid grid-cols-[1.25rem_minmax(0,1fr)] items-baseline gap-x-2 px-4 transition-colors border-l-2 {item.slug ===
                         activeSlug
                             ? 'border-primary bg-muted/60 text-foreground'
                             : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40'} {item.depth ===
                         3
-                            ? 'pl-7'
-                            : ''}"
+                            ? 'py-1 text-[0.8125rem]'
+                            : 'py-2 text-sm'}"
                         aria-current={item.slug === activeSlug
                             ? "location"
                             : undefined}
                     >
                         {#if item.chapter > 0}
                             <span
-                                class="shrink-0 tabular-nums {item.slug ===
+                                class="toc-index tabular-nums {item.slug ===
                                 activeSlug
                                     ? 'text-primary'
                                     : ''}"
                             >
                                 {String(item.chapter).padStart(2, "0")}
                             </span>
+                        {:else}
+                            <span aria-hidden="true"></span>
                         {/if}
-                        <span class="leading-snug">{item.text}</span>
+                        <span
+                            class="min-w-0 leading-[1.35] {item.depth === 2
+                                ? 'font-medium text-foreground'
+                                : ''}">{item.text}</span
+                        >
                     </button>
                 </li>
             {/each}
@@ -155,23 +159,28 @@
         >
             contents · {items.filter((i) => i.chapter > 0).length} chapters
         </summary>
-        <ol class="flex flex-col border-t border-border py-1">
+        <ol class="flex flex-col border-t border-border py-1.5">
             {#each items as item (item.slug)}
                 <li>
                     <a
                         href="#{item.slug}"
-                        class="flex items-baseline gap-2 px-3 py-1.5 !text-foreground hover:!text-primary hover:bg-muted/40 transition-colors {item.depth ===
+                        class="toc-link grid grid-cols-[1.25rem_minmax(0,1fr)] items-baseline gap-x-2 px-4 !text-foreground hover:!text-primary hover:bg-muted/40 transition-colors {item.depth ===
                         3
-                            ? 'pl-7'
-                            : ''}"
+                            ? 'py-1 text-[0.8125rem]'
+                            : 'py-2 text-sm'}"
                     >
                         {#if item.chapter > 0}
-                            <span class="shrink-0 tabular-nums text-primary">
+                            <span class="toc-index tabular-nums text-primary">
                                 {String(item.chapter).padStart(2, "0")}
                             </span>
+                        {:else}
+                            <span aria-hidden="true"></span>
                         {/if}
-                        <span class="leading-snug !text-foreground"
-                            >{item.text}</span
+                        <span
+                            class="min-w-0 leading-[1.35] !text-foreground {item.depth ===
+                            2
+                                ? 'font-medium'
+                                : ''}">{item.text}</span
                         >
                     </a>
                 </li>
@@ -181,6 +190,11 @@
 {/if}
 
 <style>
+    .toc-index {
+        font-size: inherit;
+        line-height: inherit;
+    }
+
     .toc-inline,
     .toc-inline summary,
     .toc-inline a,

@@ -1,11 +1,14 @@
 <script>
     import CoolLink from "./CoolLink.svelte";
     import SectionTitle from "./SectionTitle.svelte";
+    import { blogSlug, isArchived } from "../lib/blog";
 
     export let posts;
 
     posts = posts
         .slice()
+        .filter((post) => !post.data.hidden)
+        .filter((post) => !isArchived(post))
         .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
         .slice(0, 3);
 </script>
@@ -26,7 +29,7 @@
         {#each posts as post}
             <div class="flex justify-between items-start gap-4">
                 <a
-                    href="/blog/{post.id}"
+                    href="/blog/{blogSlug(post.id)}"
                     class="hover:text-primary transition-colors duration-100"
                 >
                     {post.data.title}

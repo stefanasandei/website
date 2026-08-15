@@ -1,17 +1,17 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import SectionTitle from "../../components/SectionTitle.svelte";
-import CoolLink from "../../components/CoolLink.svelte";
-import Tag from "../../components/Tag.svelte";
-import { readingTime } from "../../lib/reading-time";
-import { tagColorIndex } from "../../lib/tags";
-import { blogSlug, isArchived } from "../../lib/blog";
+import SectionTitle from "../../../components/SectionTitle.svelte";
+import CoolLink from "../../../components/CoolLink.svelte";
+import Tag from "../../../components/Tag.svelte";
+import { readingTime } from "../../../lib/reading-time";
+import { tagColorIndex } from "../../../lib/tags";
+import { blogSlug, isArchived } from "../../../lib/blog";
 
 // Get all blog posts sorted by date (newest first)
 const allPosts = (await getCollection("blog"))
     .filter((post) => !post.data.hidden)
-    .filter((post) => !isArchived(post))
+    .filter((post) => isArchived(post))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     .map((post) => ({ ...post, minutes: readingTime(post.body) }));
 
@@ -20,7 +20,7 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
 ---
 
 <BaseLayout
-    title="Blog - Asandei"
+    title="Blog Archive - Asandei"
     description="Collection of articles and thoughts on machine learning, research, and technology"
 >
     <div
@@ -28,16 +28,22 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
     >
         <div class="space-y-6">
             <div class="flex justify-between items-center">
-                <SectionTitle haveBorder={false} large={true}>Blog</SectionTitle
+                <SectionTitle haveBorder={false} large={true}>Archive</SectionTitle
                 >
-                <div id="current-tag-container"></div>
+                <div class="flex items-center gap-3">
+                    <a
+                        href="/blog"
+                        class="rounded-md border border-border px-3 py-1.5 text-sm hover:border-primary/50 hover:text-primary transition-colors"
+                    >Current posts</a>
+                    <div id="current-tag-container"></div>
+                </div>
             </div>
 
             <p
                 class="text-lg leading-relaxed text-justify text-muted-foreground"
             >
-                Explore my thoughts and insights on various topics in computer
-                science and deep learning through my blog posts.
+                Older writing from 2021–2025, preserved from my previous website. Explore topics in
+                systems programming, C++, machine learning, and technology.
             </p>
 
             <div id="posts-container" class="space-y-10">
@@ -106,7 +112,7 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
                                                                 (tag) => (
                                                                     <Tag
                                                                         {tag}
-                                                                        href={`/blog?tag=${tag}`}
+                                                                        href={`/blog/archive?tag=${tag}`}
                                                                         colorIndex={tagColorIndex(
                                                                             tag,
                                                                         )}
@@ -123,8 +129,6 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
                     ))
                 }
             </div>
-
-            <CoolLink href="/blog/archive">view archive</CoolLink>
         </div>
     </div>
 </BaseLayout>
@@ -147,7 +151,7 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
 </style>
 
 <script>
-    import { tagColors, tagColorIndex } from "../../lib/tags";
+    import { tagColors, tagColorIndex } from "../../../lib/tags";
 
     function colorClassFor(tag: string) {
         return tagColors[tagColorIndex(tag)];
@@ -198,7 +202,7 @@ const years = [...new Set(allPosts.map((p) => p.data.date.getFullYear()))];
         ) as HTMLElement;
         if (currentTagContainer) {
             currentTagContainer.innerHTML = tag
-                ? `<button onclick="window.history.pushState({}, '', '/blog'); filterPosts();" class="text-sm ${colorClassFor(tag)} px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
+                ? `<button onclick="window.history.pushState({}, '', '/blog/archive'); filterPosts();" class="text-sm ${colorClassFor(tag)} px-2 py-1 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors inline-block cursor-pointer">#${tag}</button>`
                 : "";
         }
     }

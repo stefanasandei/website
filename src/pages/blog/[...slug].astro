@@ -9,11 +9,12 @@ import ReadingProgress from "../../components/ReadingProgress.svelte";
 import Citation from "../../components/Citation.svelte";
 import { wordCount, readingTime } from "../../lib/reading-time";
 import { tagColorIndex } from "../../lib/tags";
+import { blogSlug, isArchived } from "../../lib/blog";
 
 export async function getStaticPaths() {
     const blogEntries = await getCollection("blog");
     return blogEntries.map((entry) => ({
-        params: { slug: entry.id },
+        params: { slug: blogSlug(entry.id) },
         props: { entry },
     }));
 }
@@ -25,9 +26,10 @@ const minutes = readingTime(entry.body);
 const words = wordCount(entry.body);
 
 // prev / next navigation (sorted newest first)
-const allPosts = (await getCollection("blog")).sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
+const allPosts = (await getCollection("blog"))
+    .filter((post) => !post.data.hidden)
+    .filter((post) => isArchived(post) === isArchived(entry))
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const index = allPosts.findIndex((p) => p.id === entry.id);
 const newerPost = index > 0 ? allPosts[index - 1] : null;
 const olderPost =
@@ -94,7 +96,7 @@ const olderPost =
                     <Citation
                         title={entry.data.title}
                         date={entry.data.date}
-                        path={`/blog/${entry.id}`}
+                        path={`/blog/${blogSlug(entry.id)}`}
                         client:load
                     />
                 </div>
@@ -108,7 +110,7 @@ const olderPost =
                         {
                             newerPost && (
                                 <a
-                                    href={`/blog/${newerPost.id}`}
+                                    href={`/blog/${blogSlug(newerPost.id)}`}
                                     class="group inline-flex flex-col"
                                 >
                                     <span class="text-sm text-muted-foreground">
@@ -125,7 +127,7 @@ const olderPost =
                         {
                             olderPost && (
                                 <a
-                                    href={`/blog/${olderPost.id}`}
+                                    href={`/blog/${blogSlug(olderPost.id)}`}
                                     class="group inline-flex flex-col"
                                 >
                                     <span class="text-sm text-muted-foreground">

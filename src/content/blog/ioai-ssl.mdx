@@ -2,128 +2,228 @@
 title: "How to approach SSL tasks in competitive AI"
 date: 2026-08-20
 tags: ["ioai"]
-description: "SSL techniques in the context of fast-paced context, with at most 6 to 24 hours."
+description: "Practical recommendations for self-supervised and tasks in fast-paced contests (under 8 hours, like IOAI). Some techniques are more useful than others thanks to their shorter code implementation or faster training times. Methods like SimCLR are often a trap in contests, otherwise seeming straight-forward."
 ---
 
-## Context on Self Supervised Learning
+## Context on self-supervised learning
 
-context on embeddings, what SSL is
+![](./images/ssl-map-welch.png)
+*Image from Welch Labs*
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam a magna mollis orci fringilla suscipit et eget quam. Sed in cursus diam. Nunc molestie rhoncus consequat. Suspendisse eget purus quis nibh interdum viverra at a nisl. Suspendisse potenti. Proin volutpat, turpis sit amet pharetra vulputate, nisi augue commodo mauris, consequat malesuada quam erat at orci. Ut sit amet quam auctor, fringilla sapien vitae, efficitur mauris. Cras finibus purus non mollis ultricies. Nullam hendrerit sagittis odio, vitae faucibus sapien facilisis eget. Cras quis lectus hendrerit, volutpat odio sed, elementum arcu. Phasellus laoreet eleifend malesuada. Donec bibendum augue sagittis accumsan auctor. Mauris varius commodo euismod. Cras ut dui vitae elit laoreet egestas a at justo. Sed ac odio sapien. Etiam diam purus, volutpat ut dolor ac, pellentesque euismod nunc.
+In a supervised learning task we have pairs $(x, y)$: an input and its correct label. In an unsupervised task we only have $x$. **Self-supervised learning** sits somewhere in between. We create the supervision directly from the data, usually by showing the model two different views of the same sample and asking it to produce similar representations for both.
 
-## Avoid "Contrastive" methods
+Suppose an encoder $f_\theta$ maps an image to an embedding $z$. We sample two augmentations $t_1$ and $t_2$, then compute
 
-Etiam malesuada, leo eget iaculis elementum, orci leo vestibulum diam, placerat volutpat est erat a leo. Pellentesque imperdiet tellus tellus, in malesuada ligula ullamcorper eu. In hac habitasse platea dictumst. Etiam vel ullamcorper purus, vel auctor orci. Aliquam id sem porta velit accumsan sollicitudin.
+$$
+z_1 = f_\theta(t_1(x)), \qquad z_2 = f_\theta(t_2(x)).
+$$
 
-## Self-Distillation methods
+The augmentations define what we want the representation to ignore. If color is changed aggressively, the model learns that color should not matter much. If we rotate an image, we are telling the model that both orientations mean the same thing. This is useful only when that assumption is true for the task! A vertical flip might be harmless for a brain MRI, but completely change the meaning of a traffic sign.
 
-more camps, international contests (go for experiences and memories) + less project-based contests, only objective ones
+The obvious objective is to minimize the distance between $z_1$ and $z_2$. Unfortunately, the easiest way to do that is for the encoder to output the same constant vector for every image. This is called **representation collapse**. Most SSL methods can be understood by how they prevent this collapse: negative examples, asymmetric teacher-student networks, or explicit regularization of the embedding distribution.
+
+This article is not a complete survey. I care about a much more specific setting: a competitive AI task, one GPU, and somewhere between a few hours and one day. In that setting, the theoretically coolest method is often not the useful one. You need fast experiments, stable losses, and code which you can still debug at 3 AM.
+
+One more naming annoyance: SSL can also mean **semi-supervised learning**, where only part of the dataset is labeled. I will cover that first, then use SSL to mean self-supervised learning for the rest of the article.
+
+## Start with semi-supervised learning
+
+Before pretraining an encoder from scratch, check whether you have *any* labels. Even a small labeled subset, or a few labels you can create manually, makes pseudo-labeling and FixMatch possible. These are much easier to implement and should usually be your first attempts.
+
+Always begin with a fully supervised baseline on the labeled subset. It gives you a real validation score, proves that the data pipeline works, and becomes the teacher for the unlabeled samples. Use a pretrained backbone when the rules allow it. SSL is not magic; a strong ImageNet encoder with basic fine-tuning will often beat an ambitious method trained badly from scratch.
+
+### Pseudo-labels
+
+Pseudo-labeling is the easiest default:
+
+1. Train a supervised model on the labeled data.
+2. Predict probabilities for every unlabeled sample.
+3. Keep only predictions above a confidence threshold.
+4. Add them to the training set as if they were real labels.
+5. Retrain, preferably giving pseudo-labels a smaller loss weight.
+
+For classification, the pseudo-label and its confidence are
+
+$$
+\hat y = \arg\max_c p_\theta(c \mid x), \qquad
+q = \max_c p_\theta(c \mid x).
+$$
+
+We only train on the sample if $q \geq \tau$. Start with a conservative threshold such as $0.95$, inspect the number of accepted samples per class, and lower it only when too little data survives. A single global threshold can amplify class imbalance: easy classes generate many pseudo-labels while hard classes generate almost none. Per-class thresholds or taking the top $k$ predictions from each class can help.
+
+The main failure mode is confirmation bias. A wrong but confident model creates wrong labels, then becomes even more confident about them. Out-of-fold predictions, an ensemble of a few folds, test-time augmentation, and soft probability targets all reduce this risk. In a contest, a simple two-stage pipeline is usually enough. Do not build five rounds of self-training before establishing that the first one improves cross-validation.
+
+### [FixMatch](https://arxiv.org/abs/2001.07685)
+
+FixMatch combines pseudo-labeling with consistency regularization. For an unlabeled image $x$, the model predicts a label from a weak augmentation $a_w(x)$. If that prediction is confident enough, the same label supervises a strongly augmented view $a_s(x)$:
+
+$$
+\mathcal L_u =
+\mathbf 1[\max(q) \geq \tau]
+H(\arg\max(q), p_\theta(y \mid a_s(x))),
+$$
+
+where $q = p_\theta(y \mid a_w(x))$ and $H$ is cross-entropy. The complete objective is the supervised loss plus $\lambda_u \mathcal L_u$.
+
+This is only slightly more complicated than ordinary pseudo-labeling, but it uses the unlabeled data during training instead of in a separate stage. The hard part is choosing a strong augmentation which changes appearance without destroying class information. Start with the augmentations from your supervised pipeline, add one stronger operation at a time, and visualize a full batch. Many failed SSL experiments are actually augmentation bugs.
+
+## Why I avoid contrastive methods in contests
+
+[SimCLR](https://arxiv.org/abs/2002.05709) is the classic example of contrastive SSL. Two augmentations of the same image form a positive pair; views from other images in the batch are negatives. The NT-Xent loss asks the positive pair to have high cosine similarity relative to all negatives:
+
+$$
+\ell_{i,j} = -\log
+\frac{\exp(\operatorname{sim}(z_i,z_j)/\tau)}
+{\sum_{k \ne i}\exp(\operatorname{sim}(z_i,z_k)/\tau)}.
+$$
+
+The idea is clean and SimCLR is important, but it is rarely my first choice in a fast contest. It benefits from large batches and long training, the temperature and augmentations matter, and false negatives can be a real issue. Two different samples from the same hidden class are treated as negatives even though we eventually want them near each other.
+
+This does not mean contrastive learning is bad. It means its requirements do not match the usual contest budget. If you already have a known-good implementation and enough compute, try it. Otherwise, methods without explicit negatives are easier to iterate.
+
+## Self-distillation methods
+
+Self-distillation methods replace the large set of negatives with an asymmetric learning problem. One branch predicts the representation produced by another branch. The asymmetry prevents both sides from immediately chasing the same collapsed solution.
 
 ### [BYOL](https://arxiv.org/abs/2006.07733)
 
-text here
+BYOL has an **online** network and a **target** network. The online branch contains an encoder, projector and predictor. The target branch contains an encoder and projector, but its parameters are not updated by backpropagation. Instead, they follow an exponential moving average of the online parameters:
+
+$$
+\xi \leftarrow m\xi + (1-m)\theta.
+$$
+
+The online prediction for one view is trained to match the stopped-gradient target projection of the other view, and the loss is made symmetric by swapping the views.
+
+BYOL removes negative samples and can learn excellent representations, but it introduces two copies of the network, a momentum schedule, stop-gradient placement and a predictor head. It is a good second-line method when you have enough memory and a trusted implementation. It is not what I would type from memory in the final hours of a contest.
 
 ### [SimSiam](https://arxiv.org/abs/2011.10566)
 
-text here
+SimSiam removes BYOL's momentum encoder. The same encoder processes both views, a predictor is applied on one side, and the target on the other side is detached:
 
-Self-distillation is also used to train the [DINO](https://arxiv.org/abs/2104.14294) models, among a lot of other techniques and heuristics.
+$$
+\mathcal L = \frac{1}{2}D(p_1, \operatorname{stopgrad}(z_2))
++ \frac{1}{2}D(p_2, \operatorname{stopgrad}(z_1)),
+$$
+
+where $D$ is negative cosine similarity. The stop-gradient is essential; removing it leads to collapse. SimSiam is much simpler than BYOL and does not require large batches, so it is the self-distillation method I would try first.
+
+Still, watch the representation statistics instead of trusting the training loss. A low similarity loss can mean useful invariance, but it can also mean that every sample maps to nearly the same point. Track the standard deviation of every embedding dimension and, if possible, periodically fit a cheap linear probe on the frozen features.
+
+Self-distillation also appears in [DINO](https://arxiv.org/abs/2104.14294), together with a momentum teacher, centering, sharpening and multi-crop training. DINO is extremely useful as a pretrained model. Reproducing its complete training recipe during a contest is a different story.
 
 ## Regularization methods
 
-Donec a mauris elementum, hendrerit diam ut, volutpat nulla. Phasellus eleifend orci porttitor lorem tempor volutpat. Cras metus dolor, tincidunt vitae molestie non, volutpat eget erat. Maecenas bibendum ex sit amet massa interdum, sed viverra elit ultricies. Proin enim turpis, finibus quis suscipit at, ornare sed lorem. Sed bibendum nunc ut lectus dignissim eleifend. Aliquam ullamcorper ut purus at tempus. Nullam arcu est, euismod in eros nec, sodales euismod sem. Nullam quis aliquam tortor, sit amet commodo sapien. Proin viverra elit eu molestie interdum. Etiam placerat vel arcu id malesuada. Maecenas euismod quam in leo finibus, vitae maximus lectus aliquet. Quisque vitae risus nunc. Donec maximus lobortis sollicitudin. Etiam orci augue, finibus in lorem eget, fermentum varius neque. Duis ac odio ut felis porttitor mollis.
+For contest work, this is my favorite family. Both augmented views use the same encoder, and collapse is prevented explicitly by adding terms to the loss. There is no queue of negatives and no momentum teacher to maintain.
 
 ### [VICReg](https://arxiv.org/abs/2105.04906)
 
-```py title="VICReg loss"
-def VICReg(z1, z2, sim_weight=25, var_weight=25, cov_weight=1):
-    # invariance loss
-    sim_loss = (z1 - z2).square().mean()
+VICReg stands for **Variance-Invariance-Covariance Regularization**. Its objective has three understandable parts:
 
-    # variance loss
-    std1 = torch.sqrt(z1.var(dim=0) + 1e-4)
-    std2 = torch.sqrt(z2.var(dim=0) + 1e-4)
+- **Invariance:** representations of two views of the same sample should be close.
+- **Variance:** every embedding dimension should vary across the batch instead of becoming constant.
+- **Covariance:** different embedding dimensions should carry non-redundant information.
+
+For two batches of embeddings $Z$ and $Z'$, the loss is
+
+$$
+\mathcal L = \lambda s(Z,Z') + \mu[v(Z)+v(Z')] + \nu[c(Z)+c(Z')].
+$$
+
+The invariance term is mean squared error. The variance term penalizes dimensions whose standard deviation falls below a target, normally one. The covariance term penalizes the off-diagonal entries of the covariance matrix. Here is a compact PyTorch implementation for a single-device contest notebook:
+
+```py title="VICReg loss"
+import torch
+import torch.nn.functional as F
+
+
+def off_diagonal(x):
+    n, m = x.shape
+    assert n == m
+    return x.flatten()[:-1].view(n - 1, n + 1)[:, 1:].flatten()
+
+
+def vicreg(z1, z2, sim_weight=25.0, var_weight=25.0, cov_weight=1.0):
+    # invariance
+    sim_loss = F.mse_loss(z1, z2)
+
+    # variance
+    std1 = torch.sqrt(z1.var(dim=0, unbiased=False) + 1e-4)
+    std2 = torch.sqrt(z2.var(dim=0, unbiased=False) + 1e-4)
     var_loss = (F.relu(1 - std1).mean() + F.relu(1 - std2).mean()) / 2
 
-    # covariance loss
-    batch_size, dim = z1.shape
+    # covariance
     z1 = z1 - z1.mean(dim=0)
     z2 = z2 - z2.mean(dim=0)
-
-    cov1 = z1.T @ z1 / (batch_size - 1)
-    cov2 = z2.T @ z2 / (batch_size - 1)
-
+    n = z1.size(0)
+    cov1 = z1.T @ z1 / max(n - 1, 1)
+    cov2 = z2.T @ z2 / max(n - 1, 1)
     cov_loss = (
-        cov1.square().sum() - cov1.diagonal().square().sum()
-        + cov2.square().sum() - cov2.diagonal().square().sum()
-    ) / dim
+        off_diagonal(cov1).square().sum()
+        + off_diagonal(cov2).square().sum()
+    ) / z1.size(1)
 
-    return sim_weight * sim_loss + var_weight * var_loss + cov_weight * cov_loss
+    return (
+        sim_weight * sim_loss
+        + var_weight * var_loss
+        + cov_weight * cov_loss
+    )
 ```
 
-text here
+Use a projector head during pretraining and discard it afterward; evaluate the encoder output, not necessarily the projection. The covariance term costs $O(d^2)$ for embedding dimension $d$, so keep the projector reasonably small if memory is tight. Batch size still matters because variance and covariance are batch statistics, but VICReg is generally less dependent on huge batches than contrastive objectives.
+
+VICReg is also easy to debug. If invariance stays high, the model cannot match the two augmentations or the augmentations are too destructive. If variance stays high, dimensions are collapsing. If covariance dominates, reduce the embedding dimension, verify the normalization, or lower its weight. Log all three components separately.
 
 ### [SIGReg](https://arxiv.org/abs/2511.08544)
 
-now as for newer methods, however with diminishing returns for contests (too much code, not huge improvement) - kept as reference to be aware of SOTA
+SIGReg, or **Sketched Isotropic Gaussian Regularization**, is the regularizer introduced with LeJEPA. Instead of separately controlling per-dimension variance and pairwise covariance, it pushes the embedding distribution toward an isotropic Gaussian. Checking that distribution directly in a high-dimensional space is expensive, so SIGReg samples random one-dimensional projections and compares their empirical characteristic functions with that of $\mathcal N(0,1)$.
 
-```py
-def SIGReg(x, global_step, num_slices=256):
-    # slice sampling -- synced across devices --
-    dev = dict(device=x.device)
-    g = torch.Generator(**dev)
-    g.manual_seed(global_step)
-    proj_shape = (x.size(1), num_slices)
-    A = torch.randn(proj_shape, generator=g, **dev)
-    A /= A.norm(p=2, dim=0)
+This replaces VICReg's quadratic covariance matrix with a computation linear in the embedding dimension. The official distributed implementation synchronizes the random projections and averages the empirical characteristic function across devices. That detail matters: a copied snippet containing `all_reduce` and `world_size` is not a drop-in single-GPU loss.
 
-    # Epps–Pulley stat. see Sec. 4.3 for alt. --
-    # integration points
-    t = torch.linspace(-5, 5, 17, **dev)
-
-    # theoretical CF for N(0, 1) and Gauss. window
-    exp_f = torch.exp(-0.5 * t**2)
-
-    # empirical CF -- gathered across devices
-    x_t = (x @ A).unsqueeze(2) * t  # (N, M, T)
-    ecf = (1j * x_t).exp().mean(0)
-    ecf = all_reduce(ecf, op="AVG")
-
-    # weighted L2 distance
-    err = (ecf - exp_f).abs().square().mul(exp_f)
-    N = x.size(0) * world_size
-    T = torch.trapz(err, t, dim=1) * N
-    return T
-```
+SIGReg is worth knowing and may become a very good contest option, particularly for large embeddings. However, it has more moving parts than VICReg: random slices, integration points, complex tensors and distributed behavior. I would first reproduce it in a clean notebook and keep that implementation ready, rather than code it for the first time during an olympiad.
 
 ### [LeJEPA](https://arxiv.org/abs/2511.08544)
 
-text here
+LeJEPA combines a JEPA prediction objective with SIGReg. Multiple global and local views are embedded, the global views define a per-sample center, and every view is trained to predict that center. SIGReg prevents the centers from collapsing by regularizing their distribution. Conceptually, the objective is
 
-```py
-def LeJEPA(global_views: list[torch.Tensor], all_views: list[torch.Tensor], lambd: float):
-    # embedding of global views
-    g_emb = forward(torch.cat(global_views))
+$$
+\mathcal L_{\text{LeJEPA}} =
+(1-\lambda)\mathcal L_{\text{prediction}}
++ \lambda\mathcal L_{\text{SIGReg}}.
+$$
 
-    # embedding of local views
-    # if resnet: skip with a_emb = g_emb
-    a_emb = forward(torch.cat(all_views))
+The appealing part is what it removes: no negatives, stop-gradient, teacher-student pair or momentum schedule, and only one main trade-off hyperparameter. The paper reports stability across many datasets and architectures. For competition purposes, though, newer does not automatically mean better. The expected gain over a well-tuned VICReg or FixMatch baseline might be smaller than the value of two extra experiments. Use LeJEPA when the task genuinely calls for unsupervised pretraining and you already trust your implementation.
 
-    # LeJEPA loss
-    centers = g_emb.view(-1, bs, K).mean(0)
-    a_emb = a_emb.view(-1, bs, K)
-    sim = (centers - a_emb).square().mean()
-    sigreg = mean(SIGReg(emb, global_step) for emb in a_emb)
-    return (1 - lambd) * sim + lambd * sigreg
-```
+## A practical contest recipe
 
-## Conclusion
+My order of attack would be:
 
-Donec a mauris elementum, hendrerit diam ut, volutpat nulla. Phasellus eleifend orci porttitor lorem tempor volutpat. Cras metus dolor, tincidunt vitae molestie non, volutpat eget erat. Maecenas bibendum ex sit amet massa interdum, sed viverra elit ultricies.
+1. Build a supervised baseline and reliable cross-validation.
+2. Use a pretrained backbone if allowed.
+3. Try pseudo-labeling when labeled and unlabeled data share the same classes.
+4. Try FixMatch when you have a sensible strong augmentation.
+5. Use VICReg when labels are extremely scarce, absent, or the task evaluates embeddings directly.
+6. Only then try SimSiam, BYOL, SIGReg or LeJEPA, preferably from code tested before the contest.
+
+Keep the encoder, projector and classifier separate. This lets you pretrain once, then compare a frozen linear probe against full fine-tuning. A good SSL loss does not guarantee a good downstream representation, so use the actual contest metric whenever possible.
+
+Monitor more than one number:
+
+- each component of the SSL loss;
+- mean per-dimension embedding standard deviation;
+- average off-diagonal covariance or feature correlation;
+- nearest neighbors for a few fixed samples;
+- linear-probe or fine-tuning validation score;
+- pseudo-label coverage and class distribution.
+
+Most importantly, iterate quickly. Run short experiments first, cache decoded or resized data, use mixed precision, and make every run answer one question. In a 24-hour contest, a stable method with six completed experiments will usually beat a sophisticated method which finishes training once.
+
+## Apply in practice
 
 Practice tasks (easiest -> hardest):
-- "Find Brain Tumors": [Kaggle link](https://www.kaggle.com/competitions/aicc-round-0-brain-tumor) (AICC Round 0)
-- "Toilet Sign Matching": [MLC link](https://platform.olimpiada-ai.ro/en/problems/73) (IOAI 2025 day 2)
-- "Broken": [Nitro Judge link](https://judge.nitro-ai.org/competitions/cram-school/preonia-2026/2/view) (CramSchool preONIA 2026)
+- "Find Brain Tumors": [Kaggle link](https://www.kaggle.com/competitions/aicc-round-0-brain-tumor) (AICC Round 0): FixMatch, BYOL, VICReg
+- **Grid Collage** — [baseline notebook](https://github.com/stefanasandei/roai-solved/blob/main/international-contests/ioai/2025/mock-contest/baseline/IOAI2025%20Online%20Practice%20Contest%20Grid%20Collage%20Classification%20S1.ipynb) (IOAI 2025 Mock Contest): Pseudo Labels
+- "Toilet Sign Matching": [MLC link](https://platform.olimpiada-ai.ro/en/problems/73) (IOAI 2025 day 2): VICReg
+- "Broken": [Nitro Judge link](https://judge.nitro-ai.org/competitions/cram-school/preonia-2026/2/view) (CramSchool preONIA 2026): LeJEPA
 
 Good luck and have fun!

@@ -6,9 +6,9 @@ import Tag from "../../components/Tag.svelte";
 import ProjectLink from "../../components/ProjectLink.svelte";
 import { tagColorIndex, tagColors } from "../../lib/tags";
 
-const allProjects = (await getCollection("project")).sort(
-  (a, b) => b.data.year - a.data.year,
-);
+const allProjects = (await getCollection("project"))
+  .filter((project) => !project.data.hidden)
+  .sort((a, b) => b.data.year - a.data.year);
 
 const categories = [...new Set(allProjects.map((p) => p.data.category))];
 const countFor = (c: string) =>
