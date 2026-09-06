@@ -6,11 +6,15 @@ import ContactSection from "../components/ContactSection.svelte";
 import AwardsSection from "../components/AwardsSection.svelte";
 import IntroSection from "../components/IntroSection.svelte";
 import NewsSection from "../components/NewsSection.svelte";
+import ResearchSection from "../components/ResearchSection.svelte";
 import ProjectsSection from "../components/ProjectsSection.svelte";
 import BlogSection from "../components/BlogSection.svelte";
+import { getPublications } from "../lib/arxiv";
+import { arxivLinks, codeLinks } from "../data/publications";
 
 const posts = await getCollection("blog");
 const projects = await getCollection("project");
+const publications = await getPublications(arxivLinks, codeLinks);
 ---
 
 <BaseLayout
@@ -22,6 +26,7 @@ const projects = await getCollection("project");
 	>
 		<IntroSection />
 		<NewsSection />
+		<ResearchSection {publications} />
 		<BlogSection {posts} />
 		<ProjectsSection {projects} />
 		<AwardsSection />

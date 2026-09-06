@@ -1,0 +1,85 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionTitle from "../components/SectionTitle.svelte";
+import { getPublications } from "../lib/arxiv";
+import { arxivLinks, codeLinks } from "../data/publications";
+
+const publications = await getPublications(arxivLinks, codeLinks);
+---
+
+<BaseLayout
+    title="Research - Asandei"
+    description="Publications of Asandei Stefan-Alexandru"
+>
+    <div
+        class="md:max-w-2xl min-h-[85vh] px-2 lg:max-w-6xl mx-2 md:mx-auto flex flex-col gap-12"
+    >
+        <div class="space-y-6">
+            <SectionTitle haveBorder={false} large={true}>Research</SectionTitle>
+
+            <div>
+                {publications.map((pub) => (
+                    <div class="py-4 border-b border-border">
+                        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4 mb-2">
+                            <a
+                                href={pub.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="hover:text-primary transition-colors duration-100 text-lg font-medium"
+                            >
+                                {pub.title}
+                            </a>
+                            <div class="flex items-baseline gap-3 whitespace-nowrap shrink-0">
+                                <span class="flex gap-3 text-sm">
+                                    <a
+                                        href={pub.pdfUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="text-primary hover:underline"
+                                    >
+                                        [PDF]
+                                    </a>
+                                    {pub.code && (
+                                        <a
+                                            href={pub.code}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-primary hover:underline"
+                                        >
+                                            [Code]
+                                        </a>
+                                    )}
+                                </span>
+                                {pub.year > 0 && (
+                                    <span class="text-muted-foreground text-sm">
+                                        {pub.year}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                        {pub.authors.length > 0 && (
+                            <p class="text-sm text-muted-foreground">
+                                <strong class="font-bold text-foreground">{pub.authors[0]}</strong>{pub.authors.length > 1
+                                    ? `, ${pub.authors.slice(1).join(", ")}`
+                                    : ""}
+                            </p>
+                        )}
+                        {pub.year > 0 && (
+                            <p class="text-sm text-muted-foreground/80 mt-0.5">
+                                <a
+                                    href={pub.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="transition-colors hover:text-primary hover:underline"
+                                >
+                                    arXiv:{pub.id}
+                                </a>
+                                {pub.primaryCategory ? ` [${pub.primaryCategory}]` : ""}
+                            </p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+</BaseLayout>

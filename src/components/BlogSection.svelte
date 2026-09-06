@@ -17,7 +17,7 @@
     <SectionTitle>Blog</SectionTitle>
 
     <!-- <p class="mb-6">
-        Explore my thoughts and insights on various topics in computer science
+        Explore my ideas on various topics in computer science
         and deep learning through my blog posts.
     </p> -->
 

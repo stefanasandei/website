@@ -227,6 +227,7 @@ body {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
+    color: var(--foreground);
 }
 
 .article-body .katex-display > .katex {

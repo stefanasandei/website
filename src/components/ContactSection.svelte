@@ -37,6 +37,17 @@
                 stefan-asandei
             </a>
         </div>
+        <div>
+            <span class="text-muted-foreground">google scholar:</span>
+            <a
+                href="https://scholar.google.com/citations?user=zfaGdIAAAAAJ"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-foreground hover:text-primary hover:underline transition-colors"
+            >
+                Stefan-Alexandru Asandei
+            </a>
+        </div>
         <!-- <div>
             <span class="text-muted-foreground">orcid:</span>
             <a

@@ -4,7 +4,7 @@
 
     export let links = [
         { href: "/blog", text: "Blog" },
-        { href: "/papers", text: "papers", disabled: true },
+        { href: "/research", text: "Research" },
         { href: "/projects", text: "Projects" },
         { href: "/public/Asandei_CV.pdf", text: "CV" },
         // { href: "/webring", text: "webring" },
