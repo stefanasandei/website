@@ -90,6 +90,24 @@ const olderProject =
                         )
                     }
                     {
+                        entry.data.links.arxiv && (
+                            <ProjectLink
+                                href={entry.data.links.arxiv}
+                                type="arxiv"
+                                label="arXiv"
+                            />
+                        )
+                    }
+                    {
+                        entry.data.links.huggingface && (
+                            <ProjectLink
+                                href={entry.data.links.huggingface}
+                                type="huggingface"
+                                label="weights"
+                            />
+                        )
+                    }
+                    {
                         entry.data.links.docs && (
                             <ProjectLink
                                 href={entry.data.links.docs}

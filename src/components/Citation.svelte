@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import type { HighlighterCore, ShikiTransformer } from "shiki";
 
     export let title: string;
     export let date: Date;
@@ -8,6 +9,7 @@
 
     let url = path;
     let copied = false;
+    let highlighted = "";
 
     onMount(() => {
         url = window.location.origin + path;
@@ -26,6 +28,51 @@
   howpublished = {\\url{${url}}},
   note         = {Blog post. Accessed ${new Date().toISOString().slice(0, 10)}}
 }`;
+
+    const astroCodeClass: ShikiTransformer = {
+        name: "citation-astro-code",
+        pre(node) {
+            this.addClassToHast(node, "astro-code");
+        },
+    };
+
+    let highlighterPromise: Promise<HighlighterCore> | null = null;
+
+    function getHighlighter() {
+        if (!highlighterPromise) {
+            highlighterPromise = (async () => {
+                const [{ createHighlighterCore }, { createJavaScriptRegexEngine }] =
+                    await Promise.all([
+                        import("shiki/core"),
+                        import("shiki/engine/javascript"),
+                    ]);
+                return createHighlighterCore({
+                    themes: [
+                        import("@shikijs/themes/github-light"),
+                        import("@shikijs/themes/houston"),
+                    ],
+                    langs: [import("@shikijs/langs/bibtex")],
+                    engine: createJavaScriptRegexEngine(),
+                });
+            })();
+        }
+        return highlighterPromise;
+    }
+
+    let highlightId = 0;
+    async function highlight(code: string) {
+        if (typeof window === "undefined") return;
+        const id = ++highlightId;
+        const highlighter = await getHighlighter();
+        const html = highlighter.codeToHtml(code, {
+            lang: "bibtex",
+            themes: { light: "github-light", dark: "houston" },
+            transformers: [astroCodeClass],
+        });
+        if (id === highlightId) highlighted = html;
+    }
+
+    $: if (typeof window !== "undefined") highlight(bibtex);
 
     async function copy() {
         try {
@@ -58,6 +105,10 @@
             {copied ? "copied ✓" : "copy bibtex"}
         </button>
     </div>
-    <pre
-        class="m-0 px-3 py-2 border border-border bg-card/50 font-mono text-muted-foreground overflow-x-auto">{bibtex}</pre>
+    {#if highlighted}
+        <div class="citation-code">{@html highlighted}</div>
+    {:else}
+        <pre
+            class="m-0 px-3 py-2 border border-border bg-card/50 font-mono text-muted-foreground overflow-x-auto">{bibtex}</pre>
+    {/if}
 </section>

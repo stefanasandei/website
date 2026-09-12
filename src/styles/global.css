@@ -369,6 +369,33 @@ body {
     color: var(--shiki-dark) !important;
 }
 
+/* BibTeX citation: lazy Shiki highlighting reuses the dual-theme tokens
+   above, with the compact chrome of the "cite this post" panel. */
+.citation-code pre.astro-code {
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.citation-code pre::-webkit-scrollbar {
+    height: 0.5rem;
+}
+
+.citation-code pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.citation-code pre::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 999px;
+}
+
 .slug-article {
     animation: fadeIn 0.3s ease;
 }

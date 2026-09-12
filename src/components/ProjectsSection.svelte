@@ -13,7 +13,7 @@
 </script>
 
 <div>
-    <SectionTitle>Projects</SectionTitle>
+    <SectionTitle>projects</SectionTitle>
 
     <div class="grid gap-4 sm:grid-cols-2">
         {#each projects as project}
@@ -38,33 +38,19 @@
                 >
                     {project.data.description}
                 </p>
-                {#if (project.data.tech && project.data.tech.length > 0) || project.data.links?.arxiv}
-                    <div class="mt-auto flex items-end justify-between gap-3 pt-4">
-                        {#if project.data.tech && project.data.tech.length > 0}
-                            <div class="flex flex-wrap items-center gap-1">
-                                {#each project.data.tech.slice(0, 3) as tech}
-                                    <span
-                                        class={`text-sm ${tagColors[tagColorIndex(tech)]} px-2 py-1 rounded-md inline-block`}
-                                    >
-                                        {tech}
-                                    </span>
-                                {/each}
-                                {#if project.data.tech.length > 3}
-                                    <span class="text-sm text-muted-foreground/80">
-                                        +{project.data.tech.length - 3}
-                                    </span>
-                                {/if}
-                            </div>
-                        {/if}
-                        {#if project.data.links?.arxiv}
-                            <a
-                                href={project.data.links.arxiv}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="shrink-0 text-sm text-muted-foreground transition-colors hover:text-primary"
+                {#if project.data.tech && project.data.tech.length > 0}
+                    <div class="mt-auto flex flex-wrap items-center gap-1 pt-4">
+                        {#each project.data.tech.slice(0, 3) as tech}
+                            <span
+                                class={`text-sm ${tagColors[tagColorIndex(tech)]} px-2 py-1 rounded-md inline-block`}
                             >
-                                arxiv link
-                            </a>
+                                {tech}
+                            </span>
+                        {/each}
+                        {#if project.data.tech.length > 3}
+                            <span class="text-sm text-muted-foreground/80">
+                                +{project.data.tech.length - 3}
+                            </span>
                         {/if}
                     </div>
                 {/if}

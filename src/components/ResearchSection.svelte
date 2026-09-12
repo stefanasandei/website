@@ -5,7 +5,7 @@
 </script>
 
 <section class="space-y-4">
-    <SectionTitle>Research</SectionTitle>
+    <SectionTitle>research</SectionTitle>
     {#if publications && publications.length > 0}
         <ul class="space-y-5">
             {#each publications.slice(0, 3) as pub}

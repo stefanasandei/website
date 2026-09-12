@@ -26,6 +26,7 @@ const project = defineCollection({
             demo: z.string().optional(),
             paper: z.string().optional(),
             arxiv: z.string().optional(),
+            huggingface: z.string().optional(),
             docs: z.string().optional(),
         }),
         category: z.string(),

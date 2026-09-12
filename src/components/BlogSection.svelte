@@ -14,7 +14,7 @@
 </script>
 
 <div>
-    <SectionTitle>Blog</SectionTitle>
+    <SectionTitle>blog</SectionTitle>
 
     <!-- <p class="mb-6">
         Explore my ideas on various topics in computer science

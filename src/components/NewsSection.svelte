@@ -24,7 +24,7 @@
 </script>
 
 <section class="space-y-4">
-    <SectionTitle>News</SectionTitle>
+    <SectionTitle>news</SectionTitle>
     <div class="space-y-3">
         {#each posts as post}
             <div
