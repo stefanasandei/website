@@ -1,6 +1,6 @@
 ---
 title: "Multi-Adapter Composition in Diffusion Models"
-description: "compared 10+ adapter training and composition methods for subject-driven diffusion model fine-tuning."
+description: "Comparing 9 adapter methods and 6 composition methods for subject-focused fine-tuning"
 featured: false
 tech: ["PyTorch", "PEFT", "Diffusers"]
 links:
@@ -9,4 +9,231 @@ category: "peft"
 year: 2026
 ---
 
-good adapters
+Everyone who fine-tunes diffusion models at home ends up with the same pile of LoRAs: one per subject, one per style, each trained on a handful of images. Two questions follow naturally. Which adapter parameterization should you actually train? And once you have several, how do you combine them into one model without the subjects bleeding into each other? This project is my attempt to answer both with numbers instead of folklore.
+
+I compared 9 adapter methods (LoRA, DoRA, NoRA, PiSSA, LoKr, LoHa, OFTv2, COFTv2, PEANuT), 4 training recipes (standard, DreamBooth, DOP, joint), and 6 composition methods (Sum, TIES, ESM, SSR-Merge, RegMean++, IterIS) for subject-driven fine-tuning. Everything runs on one RTX 3090 with 24GB of VRAM, every method must add little to no inference cost, and the merged artifact must be an ordinary PEFT adapter you can load like any other.
+
+## The setup
+
+The backbone for all experiments is `SANA1.5_1.6B_1024px`, a compact linear-attention DiT with a deep-compression autoencoder. Small enough to train at home, big enough for the comparisons to mean something. The dataset is a collection of Seinfeld stills with VLM-generated captions: four subjects (Jerry, George, Elaine, Kramer), each with a trigger phrase ("Jerry Seinfeld") and a preservation class ("a man").
+
+Training is standard flow matching. The text encoder is frozen and all prompt embeddings are cached, the VAE latents are cached too, and only the attention projections (`to_q`, `to_k`, `to_v`, `to_out.0`) are adapted. Default budget: rank 32, 200 epochs (at most 2400 steps), AdamW at $10^{-4}$, batch size 1.
+
+Evaluation samples each artifact on held-out prompts and measures four things. **Identity** is ArcFace similarity to the trained subject, normalized against the metric's intrinsic ceiling (the subject's own reference photos self-score $\approx 0.819$). **Prompt** is CLIP alignment. **Preservation** is $1 - \mathrm{LPIPS}$ against the frozen base model on non-target prompts, i.e. how much of the base model survives. For compositions, **Disentanglement** is the correct-assignment rate of faces to subjects in multi-subject generations. The headline **Balanced** score is $\mathrm{Identity}_{\mathrm{norm}} \cdot \sqrt{\mathrm{Preservation}}$, with prompt-bootstrapped confidence intervals saved per run.
+
+> Note: Read the tables as observations for this specific setup, not as a global ranking of methods. 
+
+Requirements for all tested methods:
+- training must work within 24gb VRAM, and be scalable to larger models (with quantization)
+- frozen text encoder with cached text embeddings
+- natural language prompts, from VLM generated captions
+- little to no additional inference cost
+
+## The adapters
+
+All adapters are single-file implementations behind a common registry (`apply`, `create_config`, optional optimizer hooks), most of them thin wrappers over PEFT configs. The interesting part is what each one learns.
+
+### Low-rank family
+
+**LoRA** is the baseline. The frozen weight gets a low-rank residual update, with $B$ zero-initialized so training starts as a no-op:
+
+$$
+W = W_0 + s\,\Delta W, \qquad \Delta W = BA, \qquad s = \frac{\alpha}{r},
+$$
+
+with $A \in \mathbb{R}^{r \times k}$, $B \in \mathbb{R}^{d \times r}$, $r \ll \min(d, k)$. Simple, mergeable, and the format every composition method consumes.
+
+**DoRA** decomposes the update into magnitude and direction. A learnable vector $m$ rescales the columns of the LoRA-updated weight, which decouples "how much" each neuron fires from "which direction" it points:
+
+$$
+W = m \, \frac{W_0 + s\,BA}{\lVert W_0 + s\,BA \rVert_c}.
+$$
+
+In PEFT this is one flag (`use_dora=True`) on top of LoRA. In my runs it tracked LoRA almost exactly — same identity, slightly better preservation.
+
+**NoRA** normalizes the down-projection along the rank dimension on every forward pass. Each column of $A$ is constrained to unit norm, so magnitude lives entirely in $B$:
+
+$$
+\Delta y = s \cdot B \, \mathrm{Norm}_r(A) \, x, \qquad \mathrm{Norm}_r(A)_{:,\,j} = \frac{a_j}{\max(\lVert a_j \rVert_2, \epsilon)}.
+$$
+
+The motivation is that LoRA behaves like full fine-tuning under an implicit input-side preconditioner $\alpha^2 A^\top A$, and unit columns pin its diagonal to $I$ — better-conditioned early training, when $B$ is still near zero and $A$ does all the work. Because the normalization depends only on parameters, not on $x$, the update stays linear and merges exactly back into $W_0$. This one is a custom implementation rather than a PEFT config:
+
+```python title="adapters/nora.py"
+def forward(self, x):
+    column_norms = self.lora_A.weight.norm(dim=0, keepdim=True)
+    normalized_A = self.lora_A.weight / column_norms.clamp_min(self.eps)
+    update = F.linear(self.dropout(x), normalized_A)
+    update = self.lora_B(update) * self.scaling
+    return self.base_layer(x) + update
+```
+
+At save time the normalized $A$ is baked into a standard PEFT checkpoint, so a NoRA adapter is indistinguishable from a LoRA at inference — which is also what makes it composable with every merging method below.
+
+**PiSSA** changes only the initialization. Instead of Gaussian $A$ and zero $B$, it takes the top-$r$ singular components of the pretrained weight $W_0 = USV^\top$:
+
+$$
+A = \sqrt{S_r}\, V_r^\top, \qquad B = U_r \sqrt{S_r},
+$$
+
+and freezes the residual $W_0 - BA$. The adapter starts by refining the principal directions of the weight instead of random ones, which converges faster in the paper. At this scale it did not beat LoRA on identity and lost noticeable preservation — the principal subspace of $W_0$ is apparently not where a new face lives.
+
+**LoKr** replaces the matrix product with a Kronecker product, $\Delta W = A \otimes B$, which is parameter-efficient at large effective ranks and breaks the strict rank bottleneck of $BA$. It preserved the base model the best of the low-rank family but gave the weakest identity of the bunch.
+
+### Orthogonal family
+
+**OFTv2** learns a rotation instead of a residual. The weight is reparameterized as $W = R W_0$ with $R$ block-diagonal orthogonal, so pairwise angles between neurons — the "hyperspherical energy" that encodes pretrained semantics — are preserved by construction. Each block is parameterized by a skew-symmetric matrix $Q_i$ through the Cayley transform, with the matrix inverse approximated by a truncated Neumann series:
+
+$$
+R_i = (I + Q_i)(I - Q_i)^{-1} \approx (I + Q_i)\Big(I + \textstyle\sum_{j=1}^{k} Q_i^j\Big), \qquad Q_i = -Q_i^\top.
+$$
+
+OFTv2's contribution over OFT is input-centric evaluation — $z = R\,(W_0 x)$ needs two matrix-vector products instead of a cubic-cost merged matrix-matrix product — which is what makes it cheap enough for a consumer GPU. Empirically it is the strongest low-cost adapter I trained: best prompt adherence in the single-adapter table and near-top identity.
+
+**COFTv2** is the constrained variant: an explicit deviation budget $\lVert R - I \rVert \le \epsilon$, pushed inside the Cayley transform as $\lVert Q \rVert \le \epsilon'$ and enforced by projected gradient descent. Smaller $\epsilon$ hugs the pretrained model tighter. In my runs the constraint cost real identity for a preservation gain that DOP (below) delivers more cheaply, so I kept plain OFTv2 for the recipe experiments.
+
+### Nonlinear
+
+**PEANuT** drops the linear residual entirely and learns a weight-conditioned update. A tiny bottleneck network reads the frozen weight and emits its own delta:
+
+$$
+y = \big(W_0 + s\, f(W_0; \theta)\big)x, \qquad f(W_0; \theta) = \sigma(W_0 \Theta_1)\,\Theta_2,
+$$
+
+with $\Theta_1 \in \mathbb{R}^{d \times r}$, $\Theta_2 \in \mathbb{R}^{r \times d}$, and $\sigma$ a ReLU. The update is an explicit function of $W_0$, so it can express patterns that no low-rank linear map can, at the same parameter count as LoRA. It scored the highest single-adapter identity in my runs, with the expected preservation cost of a more expressive update.
+
+## Training recipes
+
+Recipes are orthogonal to adapters: they construct the batches and the loss, the adapter just provides the parameters. The **standard** recipe is plain flow-matching MSE on cached latents. **DreamBooth** adds the classic prior-preservation term, generating class images with the frozen base model and training on a mixture, $\mathcal{L} = \mathcal{L}_{\text{instance}} + \lambda \, \mathcal{L}_{\text{prior}}$. **Joint** trains one adapter on several subjects at once, interleaving datasets so each subject gets equal samples per epoch.
+
+The recipe that actually moved the numbers is **DOP** (differential output preservation). Instead of DreamBooth's generated prior images, every caption is duplicated with the trigger word replaced by its class ("Jerry Seinfeld" → "a man"), and the adapter is forced to match the frozen base model's velocity on the swapped caption while learning the subject on the original:
+
+$$
+\mathcal{L}_{\text{DOP}} = \big\lVert v_\theta(z_t, c_{\text{inst}}) - v \big\rVert^2 + \lambda \big\lVert v_\theta(z_t, c_{\text{class}}) - v_{\text{base}}(z_t, c_{\text{class}}) \big\rVert^2 .
+$$
+
+No image generation stage, no extra dataset, just one extra no-grad forward through the frozen model and one extra adapted forward. The two backward passes are done sequentially so only one autograd graph is alive at a time and peak memory matches the standard recipe:
+
+```python title="recipes/dop.py"
+instance_loss.backward()
+with torch.no_grad(), transformer.disable_adapter():
+    prior_pred = predict(transformer, inputs, batch["class_prompt_embeds"], ...)
+preservation_pred = predict(transformer, inputs, batch["class_prompt_embeds"], ...)
+weighted_preservation_loss = cfg.recipe.preservation_loss_weight * preservation_loss
+weighted_preservation_loss.backward()
+```
+
+DOP-LoRA beat DreamBooth-LoRA on both identity and preservation, and DOP adapters are what all composition results below use.
+
+## Composing adapters
+
+The composition problem: given $K$ trained LoRAs $\{A_k, B_k\}$ on the same base model, produce one adapter that keeps all $K$ subjects — no retraining, no inference overhead. All methods emit a standard rank-$Kr$ (or recompressed) PEFT adapter with a manifest of source hashes.
+
+**Sum** is the identity-router baseline: stack the down-projections, concatenate the scaled up-projections, done.
+
+$$
+A_{\text{cat}} = \begin{bmatrix} A_1 \\ \vdots \\ A_K \end{bmatrix}, \quad
+B_{\text{cat}} = \begin{bmatrix} s_1 B_1 & \cdots & s_K B_K \end{bmatrix}, \quad
+\Delta W = B_{\text{cat}} A_{\text{cat}} = \sum_k s_k B_k A_k .
+$$
+
+Exact, lossless, rank $Kr$ — and the subjects interfere, because nothing stops one adapter's subspace from reading another's activations.
+
+**TIES** treats each dense delta $\tau_k = \mathrm{vec}(\Delta W_k)$ as a task vector: trim all but the largest-magnitude entries, elect a sign per coordinate by total mass, and average only the entries that agree with the elected sign. The merged dense matrix then has to be SVD-recompressed back to low rank. TIES is built for multi-task merging where sign conflicts are real; this eval has none, so trimming only discards signal that Sum keeps — its numbers are reported for completeness, not as an indictment.
+
+The remaining four methods calibrate on real activations: each source gets one representative prompt, a few short sampler runs collect features at every adapted layer, and the merge is a closed-form solve.
+
+**ESM** works in the output-feature space. For source $k$ with input Gram $G_k = X_k^\top X_k$, the output-shift covariance $\Delta_k G_k \Delta_k^\top$ is eigendecomposed and the top-$r$ eigenvectors form the essential basis $E_k$ — the directions where the adapter actually changes the output. Each delta is projected onto its basis, $C_k = E_k^\top \Delta_k$, the per-source bases are concatenated, polar-orthogonalized ($E_{\text{cat}} \leftarrow U_E V_E$ from the SVD), and rescaled to match the norm of the naive target:
+
+$$
+B = s \cdot E_{\text{cat}}, \qquad A = \begin{bmatrix} C_1 \\ \vdots \\ C_K \end{bmatrix}, \qquad
+s = \alpha \, \frac{\lVert \textstyle\sum_k \Delta_k \rVert_F}{\lVert E_{\text{cat}} C_{\text{cat}} \rVert_F}.
+$$
+
+**SSR-Merge** reframes merging as routing inside the concatenated subspace instead of parameter arithmetic. With $Z_k = A_{\text{comb}} X_k$ the projections of task-$k$ features into the unified space, a router is built from second-order statistics — a correlation matrix that decorrelates the mixed signals, and a guide that steers them back to the right task block:
+
+$$
+G = \sum_k Z_k Z_k^\top + \lambda I, \qquad Q_k = (A_k X_k)\, Z_k^\top, \qquad R = Q\,G^{-1},
+$$
+
+which is provably the OLS-optimal routing, then folded into the up-projection, $\tilde B_{\text{comb}} = B_{\text{comb}} R$. The statistics accumulate as sufficient statistics in a streaming pass, so memory stays at $O((Kr)^2)$ per layer.
+
+**RegMean++** solves a per-layer ridge regression: find the merged delta whose outputs match every candidate's outputs on its own calibration features, with off-diagonal Gram entries shrunk by $\alpha$ for stability:
+
+$$
+W^* = \Big(\textstyle\sum_k \Delta_k \hat G_k\Big)\Big(\textstyle\sum_k \hat G_k\Big)^{-1}, \qquad
+\hat G_k = \alpha G_k + (1 - \alpha)\,\mathrm{diag}(G_k).
+$$
+
+The ++ part is that features propagate through the *merged* model block by block — earlier blocks already use merged factors when later blocks are solved — which captures cross-layer dependencies that per-layer RegMean ignores. The dense solve is then SVD-recompressed to the target rank.
+
+**IterIS** is the most involved and, empirically, the best. It aligns the merged adapter's *activations* with each source's, solving for a shared down-projection in the joint row space of all sources:
+
+$$
+A^* = \arg\min_A \sum_k w_k \big\lVert A \tilde X_k - A_k X_k \big\rVert_F^2 + \text{ridge}, \qquad
+w_k = \frac{\lVert B_k A_k \rVert_F^2}{\lVert B_k A_k X_k \rVert_F^2}.
+$$
+
+Three details matter. The adaptive weights $w_k$ balance sources by signal strength. The ridge is scaled by Frobenius norms of the feature inner products, so a handful of calibration prompts (the paper needs 1–5% of prior methods' samples) suffices. And $\tilde X_k$ is the *merged model's* own input distribution, not the source's — the merge is solved, installed, and re-captured for 5 iterations, progressively refining the objective. Feature capture uses a CountSketch hash (signed hashing into 256 buckets per layer), so RAM stays bounded regardless of how many tokens the calibration touches:
+
+```python title="compositions/iteris.py"
+hashed = (positions ^ (positions >> 16)) * 73244475
+hashed = (hashed ^ (hashed >> 16)) * 73244475
+hashed ^= hashed >> 16
+buckets = hashed.remainder(size)
+signs = torch.where((hashed >> 32).bitwise_and(1).bool(), 1.0, -1.0)
+features[name].index_add_(0, buckets, current.float() * signs.unsqueeze(1))
+```
+
+## Results
+
+Single adapters, one subject, at most 2400 steps each. Best in bold, second underlined:
+
+| Method | Identity $\uparrow$ | Prompt $\uparrow$ | Preservation $\uparrow$ | Balanced $\uparrow$ |
+| ------ | ------------------- | ----------------- | ----------------------- | ------------------- |
+| LoRA   | 0.491               | 0.359             | 0.717                   | 0.416               |
+| NoRA   | 0.523               | <ins>0.360</ins>  | 0.657                   | 0.423               |
+| DoRA   | 0.483               | 0.353             | 0.722                   | 0.411               |
+| LoKr   | 0.451               | 0.358             | <ins>0.746</ins>        | 0.390               |
+| LoHa   | 0.225               | 0.339             | **0.779**               | 0.198               |
+| PiSSA  | 0.457               | 0.359             | 0.626                   | 0.361               |
+| OFTv2  | <ins>0.599</ins>    | **0.366**         | 0.657                   | <ins>0.486</ins>    |
+| COFTv2 | 0.402               | 0.355             | 0.712                   | 0.339               |
+| PEANuT | **0.629**           | 0.349             | 0.604                   | **0.489**           |
+
+A notable failure mode: methods that restrict *rows* of learned matrices (LoRA-CLR, QR-LoRA, BlockLoRA, Multi-SBoRA) all collapsed on identity for this backbone, whatever their preservation.
+
+Recipe comparison on the two strongest adapter families:
+
+| Method           | Identity $\uparrow$ | Prompt $\uparrow$ | Preservation $\uparrow$ | Balanced $\uparrow$ |
+| ---------------- | ------------------- | ----------------- | ----------------------- | ------------------- |
+| DreamBooth-LoRA  | 0.377               | **0.361**         | <ins>0.703</ins>        | 0.316               |
+| DOP-LoRA         | <ins>0.537</ins>    | 0.345             | **0.766**               | <ins>0.470</ins>    |
+| DreamBooth-OFTv2 | 0.507               | <ins>0.357</ins>  | 0.682                   | 0.418               |
+| DOP-OFTv2        | **0.651**           | 0.343             | 0.681                   | **0.537**           |
+
+And the headline composition table — four DOP-LoRA subject adapters merged into one artifact:
+
+| Method    | Adapter  | Identity $\uparrow$ | Disentanglement $\uparrow$ | Prompt $\uparrow$ | Balanced $\uparrow$ |
+| --------- | -------- | ------------------- | -------------------------- | ----------------- | ------------------- |
+| Sum       | LoRA     | 0.206               | 0.078                      | 0.357             | 0.178               |
+| Sum       | DOP-LoRA | 0.256               | 0.057                      | 0.340             | 0.250               |
+| ESM       | DOP-LoRA | 0.196               | 0.057                      | 0.349             | 0.247               |
+| SSR Merge | DOP-LoRA | <ins>0.325</ins>    | 0.109                      | 0.361             | 0.275               |
+| RegMean++ | DOP-LoRA | 0.292               | <ins>0.135</ins>           | **0.375**         | <ins>0.284</ins>    |
+| IterIS    | DOP-LoRA | **0.354**           | **0.167**                  | <ins>0.365</ins>  | **0.336**           |
+
+The ordering is clear: every calibrated method beats naive summation, and the iterative, activation-aligned solve (IterIS) beats the one-shot ones. Disentanglement — actually getting the right face on the right body in a four-person prompt — is where the gap is largest.
+
+## Conclusions
+
+For single-subject fine-tuning at this scale, the boring answer (LoRA) is beaten by two less-boring ones: OFTv2, which gets you prompt adherence and identity while protecting the base model's structure by construction, and PEANuT, which gets the most identity if you can afford the preservation hit. NoRA is a genuinely free improvement over LoRA — same cost, same format, better conditioning. For recipes, DOP is strictly preferable to DreamBooth-style priors: cheaper to run, higher preservation, higher identity. For composition, calibration pays for itself — IterIS's iterative activation alignment is worth its extra sampler passes, with RegMean++ and SSR-Merge as strong one-shot alternatives.
+
+Two honest limitations. First, everything above is one backbone (SANA 1.5 1.6B), one dataset, one seed budget; the eval is noisy enough that small gaps are meaningless. Second, several implementations are my own reading of the papers (NoRA, the DOP recipe, and all four calibrated merges), not ports of official code.
+
+That points directly at the future work, in order of priority:
+
+1. **Verify correctness of the current implementations.** Diff my NoRA, ESM, SSR-Merge, RegMean++, and IterIS against the official reference codebases where they exist, on their published settings, before trusting any of these numbers further.
+2. **Audit the hyperparameters.** Each method has its own sweet spot ($r$, $\alpha$, lr, block size, $\epsilon$, calibration budget) and I have not swept them all fairly — e.g. COFTv2's $\epsilon$ and PEANuT's depth were barely touched. Every config lives under `config/training/` for exactly this reason.
+3. **Implement more methods.** The bench is modular by design — new adapters and merges are one file plus one config each. On the list: rsLoRA, VeRA, BOFT, MiLoRA, DARE, and more recent composition papers.
+4. **Scale up the final ensemble.** The pipeline is built to quantize and move to larger backbones; the plan is to train the winning recipe + composition stack on a frontier open model and see what survives contact with a real eval.

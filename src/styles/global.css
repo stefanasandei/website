@@ -195,6 +195,18 @@ body {
     color: var(--muted-foreground);
 }
 
+/* Tighter vertical rhythm between list items */
+.article-body li {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+/* Remove the decorative quotation marks Tailwind Typography adds around blockquotes */
+.prose blockquote p:first-of-type::before,
+.prose blockquote p:last-of-type::after {
+    content: none;
+}
+
 /* Numbered chapters for long-form articles, matching the TOC numbering */
 .article-body {
     counter-reset: chapter;
