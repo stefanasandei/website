@@ -2,7 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-import ContactSection from "../components/ContactSection.svelte";
 import AwardsSection from "../components/AwardsSection.svelte";
 import IntroSection from "../components/IntroSection.svelte";
 import NewsSection from "../components/NewsSection.svelte";
@@ -30,6 +29,5 @@ const publications = await getPublications(arxivLinks, codeLinks);
 		<BlogSection {posts} />
 		<ProjectsSection {projects} />
 		<AwardsSection />
-		<ContactSection />
 	</main>
 </BaseLayout>
