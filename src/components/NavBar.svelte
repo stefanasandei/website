@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Menu from "@lucide/svelte/icons/menu";
+    import X from "@lucide/svelte/icons/x";
     import { onMount } from "svelte";
     import ThemeToggle from "./ThemeToggle.svelte";
 
@@ -85,12 +87,16 @@
             <button
                 bind:this={menuButton}
                 on:click={toggleMenu}
-                class="px-2 py-1 border border-foreground hover:bg-primary/20 transition-colors"
+                class="inline-flex size-9 items-center justify-center rounded-lg border border-border/40 bg-secondary/60 text-secondary-foreground transition-all duration-200 hover:border-primary/50 hover:bg-primary hover:text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu"
             >
-                {mobileMenuOpen ? "✕" : "≡"}
+                {#if mobileMenuOpen}
+                    <X class="size-4" aria-hidden="true" />
+                {:else}
+                    <Menu class="size-4" aria-hidden="true" />
+                {/if}
             </button>
         </div>
     </div>
