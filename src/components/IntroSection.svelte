@@ -154,7 +154,7 @@
         <p
             class="text-base md:text-lg leading-relaxed text-foreground/90 text-justify max-w-none"
         >
-            Hello, I'm an bachelor student at École Polytechnique, passionate
+            Hello, I'm a bachelor student at École Polytechnique, passionate
             about deep learning, computer vision. If you want to
             collaborate on a project, feel free to <a
                 href="mailto:asandei.stefanel@gmail.com"
