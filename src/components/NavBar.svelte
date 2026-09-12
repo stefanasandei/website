@@ -6,7 +6,7 @@
         { href: "/blog", text: "Blog" },
         { href: "/research", text: "Research" },
         { href: "/projects", text: "Projects" },
-        { href: "/public/Asandei_CV.pdf", text: "CV" },
+        { href: "/Asandei_CV.pdf", text: "CV" },
         // { href: "/webring", text: "webring" },
     ];
 
